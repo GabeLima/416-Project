@@ -70,10 +70,7 @@ io.on('connection', function (socket) {
                 socket.join(g.gameID);
 
                 //Tell other users that a new player is joining
-                socket.to(g.gameID.emit({
-                    event: gameEvents.joiningGame,
-                    userName: data.userName,
-                }));
+                socket.to(g.gameID).emit(gameEvents.JOINING_GAME, data.userName);
 
                 //Tell the user joining they can switch to the game-lobby
                 socket.emit({
