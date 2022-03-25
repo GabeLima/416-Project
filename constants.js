@@ -1,15 +1,15 @@
 const gameEvents ={
-    joiningGame : "USER-JOINING",
-    leavingGame : "USER-LEAVING",
-    startGame : "GAME-STARTED",
+    JOINING_GAME : "JoiningGame",
+    LEAVING_GAME: "LeavingGame",
+    START_GAME: "StartGame",
 };
 
 const gameRules = {
-    playerLimit:8
+    PLAYER_LIMIT : 8
 };
 
 const gameStatus ={
-    lobby: "LOBBY", // Waiting for players
-    playing: "PLAYING", // Drawing the games
-    done: "DONE" //We finished playing, but users are still voting
+    LOBBY : "lobby", // Waiting for players
+    PLAYING: "playing", // Drawing the games
+    DONE: "done" //We finished playing, but users are still voting
 }
