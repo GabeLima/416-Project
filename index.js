@@ -73,17 +73,13 @@ io.on('connection', function (socket) {
                 socket.to(g.gameID).emit(gameEvents.JOINING_GAME, data.userName);
 
                 //Tell the user joining they can switch to the game-lobby
-                socket.emit({
-                    success: true
-                });
+                socket.emit("joinSuccess", true);
                 console.log("The user with email:" + data.userEmail + " joined the game:" + data.gameID);
                 return;
             }
         }
         //Joining the game failed
-        socket.emit({
-            success: false
-        });
+        socket.emit("joinSuccess", false);
         console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
     });
 
