@@ -63,7 +63,7 @@ io.on('connection', function (socket) {
     socket.on('joinGame', function (data) {
         for(var i=0; i < games.length; i++){
             var g = games[i];
-            if(g.gameStatus === gameStatus.lobby && g.gameID === data.gameID && g.players.length < gameRules.playerLimit){
+            if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
 
                 //Add their data to the game
                 g.players.push(data.userEmail);
@@ -89,7 +89,7 @@ io.on('connection', function (socket) {
     */
     socket.on('getAllGames', function (data) {
         console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
-        let lobbyGames = games.filter(game => game.gameStatus === gameStatus.lobby)
+        let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
         socket.emit({
             success: true,
             games: lobbyGames
