@@ -94,10 +94,6 @@ updateGame = (req, res) => {
     // players, panels, playerVotes, rounds, timePerRound, isPublic, tags will be immutable after a game is published.
     // TODO - We could have the client selectively send the relevant fields, but that might be something we discuss later when implementing front end.
 
-    if (isLive) {
-        return res.status(400).json({ errorMessage: "This game is running."});
-    }
-
     await Game.findOne({gameID: gameID}, (err, game) => {
         if (!game) {
             return res.status(404).json({
