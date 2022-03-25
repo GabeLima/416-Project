@@ -90,10 +90,7 @@ io.on('connection', function (socket) {
     socket.on('getAllGames', function (data) {
         console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
         let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
-        socket.emit({
-            success: true,
-            games: lobbyGames
-        });
+        socket.emit("gameList", lobbyGames);
     });
 
 
