@@ -63,7 +63,7 @@ io.on('connection', function (socket) {
     socket.on('joinGame', function (data) {
         for(var i=0; i < games.length; i++){
             var g = games[i];
-            if(g.gameStatus === gameStatus.lobby && g.gameID == data.gameID && g.players.length < gameRules.playerLimit){
+            if(g.gameStatus === gameStatus.lobby && g.gameID === data.gameID && g.players.length < gameRules.playerLimit){
 
                 //Add their data to the game
                 g.players.push(data.userEmail);
