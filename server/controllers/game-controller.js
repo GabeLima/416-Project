@@ -115,7 +115,7 @@ updateGame = (req, res) => {
         game.
             save().
             then(() => {
-                return res.status.too(200).json({
+                return res.status(200).json({
                     success: true,
                     game: game,
                     message: "Game updated"
