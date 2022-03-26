@@ -1,4 +1,3 @@
-
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
@@ -55,6 +54,51 @@ io.on('connection', function (socket) {
         }
     });
 
+    /*
+        When we create a game we'll have to create proper game session in our games variable. Their display will also
+        switch to the game lobby.
+    */
+    socket.on(gameEvents.CREATE_GAME, (data) => {
+
+        for (const g of games) {
+            if (g.gameID === data.gameID || g.players.includes(data.userEmail)) {
+                // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
+                console.log("User " + data.userEmail + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
+                socket.emit("createSuccess", false);
+                canMake = false;
+                return;
+            }
+        };
+
+        const gameInfo = {
+            gameID: data.gameID,
+            players: [data.userEmail],
+            gameStatus: gameStatus.LOBBY
+        };
+        games.push(gameInfo);
+        socket.join(data.gameID);
+
+        // TODO - can we actually re-use the joinSuccess in joinGame to do this? Both serve the purpose of telling a user if they can join a room.
+        socket.emit("createSuccess", true); 
+
+        console.log("Game with ID " + data.gameID + " was created by: " + clients[i].userEmail);
+        
+    });
+
+
+    socket.on(gameEvents.START_GAME, (data) => {
+        for (const g of games) {
+            if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT) {
+                g.gameStatus = gameStatus.PLAYING;
+
+                // Tell the users that the game is starting.
+                io.to(g.gameID).emit("GameBeginning");
+                return;
+            }
+        }
+        console.log("The game with ID " + data.gameID + " could not be successfully started.");
+    });
+
 
     /*
         When a player joins a game, they'll notify other players in that game they're joining,
@@ -90,7 +134,10 @@ io.on('connection', function (socket) {
     socket.on('getAllGames', function (data) {
         console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
         let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
-        socket.emit("gameList", lobbyGames);
+        socket.emit({
+            success: true,
+            games: lobbyGames
+        });
     });
 
 

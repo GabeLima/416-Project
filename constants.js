@@ -2,6 +2,7 @@ const gameEvents ={
     JOINING_GAME : "JoiningGame",
     LEAVING_GAME: "LeavingGame",
     START_GAME: "StartGame",
+    CREATE_GAME: "CreateGame"
 };
 
 const gameRules = {
