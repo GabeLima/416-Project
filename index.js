@@ -65,7 +65,6 @@ io.on('connection', function (socket) {
                 // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
                 console.log("User " + data.userEmail + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
                 socket.emit("createSuccess", false);
-                canMake = false;
                 return;
             }
         };
