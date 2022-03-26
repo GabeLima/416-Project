@@ -21,6 +21,9 @@ var clients =[];
 //     gameID: "",
 //     players: [],
 //     gameStatus: gameStatus.STATUS,
+//     numRounds: data.numRounds,
+//     timePerRound: data.timePerRound,
+//     currentRound: 0
 // };
 var games = [];
 
@@ -64,21 +67,41 @@ io.on('connection', function (socket) {
             if (g.gameID === data.gameID || g.players.includes(data.userEmail)) {
                 // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
                 console.log("User " + data.userEmail + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
-                socket.emit("createSuccess", false);
+                socket.emit("joinSuccess", false);
                 return;
             }
         };
 
+        let numRounds, timePerRound;
+
+        // TODO - enforce minimum num rounds and timeperround on client side instead of server side? that sounds like best practice.
+        if (!data.numRounds) {
+            numRounds = gameRules.DEFAULT_NUM_ROUNDS;
+        }
+        else {
+            numRounds = data.numRounds;
+        }
+
+        if (!data.timePerRound) {
+            timePerRound = gameRules.DEFAULT_TIME_PER_ROUND;
+        }
+        else {
+            timePerRound = data.timePerRound
+        }
         const gameInfo = {
             gameID: data.gameID,
             players: [data.userEmail],
-            gameStatus: gameStatus.LOBBY
+            gameStatus: gameStatus.LOBBY,
+            numRounds: numRounds,
+            timePerRound: timePerRound,
+            currentRound: 0
         };
+
         games.push(gameInfo);
         socket.join(data.gameID);
 
         // TODO - can we actually re-use the joinSuccess in joinGame to do this? Both serve the purpose of telling a user if they can join a room.
-        socket.emit("createSuccess", true); 
+        socket.emit("joinSuccess", true); 
 
         console.log("Game with ID " + data.gameID + " was created by: " + clients[i].userEmail);
         
@@ -87,14 +110,21 @@ io.on('connection', function (socket) {
 
     socket.on(gameEvents.START_GAME, (data) => {
         for (const g of games) {
-            if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT) {
+            if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
                 g.gameStatus = gameStatus.PLAYING;
 
                 // Tell the users that the game is starting.
-                io.to(g.gameID).emit("GameBeginning");
+                io.to(g.gameID).emit(gameEvents.START_GAME);
+
+                // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
+                setTimeout(() => {
+                    io.to(g.gameID).emit(gameEvents.ROUND_END);
+                }, g.timePerRound * 1000);
                 return;
             }
         }
+
+        io.to(g.gameID).emit("startFailure");
         console.log("The game with ID " + data.gameID + " could not be successfully started.");
     });
 
@@ -133,10 +163,7 @@ io.on('connection', function (socket) {
     socket.on('getAllGames', function (data) {
         console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
         let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
-        socket.emit({
-            success: true,
-            games: lobbyGames
-        });
+        socket.emit("gameList", lobbyGames);
     });
 
 
