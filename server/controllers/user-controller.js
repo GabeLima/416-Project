@@ -261,6 +261,56 @@ registerUser = async (req, res) => {
 }
 
 
+updateFollowers = (req, res) => {
+    const email = req.body.email
+    const followers = req.body.followers
+
+    if(!email){
+        return res.status(400).json({
+            success: false,
+            error: "A email has to be provided"
+        });
+    }
+    if(!followers){
+        return res.status(400).json({
+            success: false,
+            error: "A followers payload has to be provided"
+        });
+    }
+
+    await User.findOne({email: email}, (err, user) => {
+        if(err){
+            return res.status(404).json({
+                success:false,
+                err,
+                message: "Valid user with such email not found"
+            });
+        }
+        else if(!user){
+            return res.status(404).json({
+                success:false,
+                message: "Valid user with such email not found"
+            });
+        }
+
+        user.followers = followers
+
+        user.save().then(() => {
+            return res.status(200).json({
+                success: true,
+                user: user,
+                message: "User's followers has been updated"
+            });
+        }).catch(err => {
+            console.log("FAILUREL " + JSON.stringify(err));
+            return res.status(404).json({
+                success: false,
+                err,
+                message: "User's followers has not been updated"
+            });
+        });
+    });
+}
 
 module.exports = {
     getLoggedIn,
