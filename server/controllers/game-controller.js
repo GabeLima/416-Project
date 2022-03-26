@@ -36,7 +36,7 @@ createGame = (req, res) => {
 }
 
 
-search = (req, res) => {
+search = async (req, res) => {
     const query = req.body.query;
     if (!query) {
         return res.status(400).json({
@@ -65,7 +65,7 @@ search = (req, res) => {
 }
 
 
-getGame = (req, res) => {
+getGame = async (req, res) => {
     const gameID = req.body.gameID;
     if (!gameID) {
         return res.status(400).json({
@@ -93,7 +93,7 @@ getGame = (req, res) => {
 }
 
 
-updateGame = (req, res) => {
+updateGame = async (req, res) => {
     const {isLive, players, panels, playerVotes, communityVotes, gameID, comments, rounds, timePerRound, isPublic, tags} = req.body;
 
     // ALL of these must be present.
@@ -129,4 +129,11 @@ updateGame = (req, res) => {
                 })
             });
     });
+}
+
+module.exports = {
+    createGame,
+    search,
+    getGame,
+    updateGame
 }
