@@ -3,6 +3,9 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const fs = require("fs");
+const Games = require("../models/game-model");
+const Images = require("../models/image-model");
+const Users = require("../models/user-model.js");
 
 const app = express();
 const server = http.createServer(app);
@@ -93,6 +96,82 @@ io.on('connection', function (socket) {
         socket.emit("gameList", lobbyGames);
     });
 
+    /*
+        Notifies Followers that a game has been created
+    */
+    socket.on('notifyFollowers', function(data) {
+        // get a list of followed users from the database
+        const userEmail = data.userEmail;
+        Users.find({email: userEmail}, (err, data) => {
+            if(err) {
+                console.log("Error in notifyFollowers: " + err);
+                socket.emit('notifyFollowers', false);
+            }
+            else {
+                // reduce the clients list to those who follow this user
+                let followers = data.followers; // list of emails I assume?
+                const online_followers = clients.filter(client => followers.includes(client.userEmail));
+
+                // notify every online follower
+                online_followers.forEach( (follower) => {
+                    /* 
+                        Currently there's no way to know what the gameID is
+                        if we want to include the gameID 
+                        either include the gameID as a paramater to this function
+                        or add a creator field to the games list
+                    */
+                    io.to(follower.clientId, userEmail + " has started a game!");
+                });
+                socket.emit("notifyFollowers", true);
+            }
+        });
+    });
+
+    /*
+        Returns an image from the database
+        TODO: 
+            Using roundNumber?
+            Figure out how to return properly
+    */
+    socket.on('getImage', function(data) {
+        // get imgID from gameID and storyNumber
+        const {gameID, storyNumber, roundNumber} = data;
+        Games.findOne({gameID: gameID}, (err, data) => {
+            if(err) {
+                console.log("Error in getImage: " + err);
+                socket.emit('getImage', false);
+            }
+            else {
+                // get image from imgID
+                let imgID = data.panels[storyNumber];
+                Images.findOne({imageID: imgID}, (err, data) => {
+                    if(err) {
+                        console.log("Error in getImage: " + err);
+                        socket.emit('getImage', false);
+                    }
+                    else {
+                        socket.emit('getImage', data.image);
+                    }
+                });
+            }
+        });
+    });
+
+    /*
+        Updates the playerVotes field for a game 
+        (votes from game participants)
+        TODO:
+            Figure out how votes are represented in the schema
+    */
+    socket.on('updateVotes', function(data) {
+        const userEmail = data.userEmail;
+
+        // find if this player has already cast a vote
+        // remove existing vote if true
+        // add new vote 
+
+        socket.emit("updateVotes", true);
+    });
 
 });
 
