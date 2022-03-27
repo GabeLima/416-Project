@@ -103,7 +103,7 @@ io.on('connection', function (socket) {
         // get a list of followed users from the database
         const userEmail = data.userEmail;
         Users.find({email: userEmail}, (err, data) => {
-            if(err) {
+            if(err || !data) {
                 console.log("Error in notifyFollowers: " + err);
                 socket.emit('notifyFollowers', false);
             }
@@ -137,7 +137,7 @@ io.on('connection', function (socket) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber, roundNumber} = data;
         Games.findOne({gameID: gameID}, (err, data) => {
-            if(err) {
+            if(err || !data) {
                 console.log("Error in getImage: " + err);
                 socket.emit('getImage', false);
             }
