@@ -159,18 +159,36 @@ io.on('connection', function (socket) {
 
     /*
         Updates the playerVotes field for a game 
-        (votes from game participants)
-        TODO:
-            Figure out how votes are represented in the schema
+        Deletes previous vote if present then adds a new vote
+        inputs:
+            gameID, userEmail, storyNumber
     */
     socket.on('updateVotes', function(data) {
-        const userEmail = data.userEmail;
+        // get game data from db
+        const {gameID, userEmail, storyNumber} = data;
+        Games.findOne({gameID: gameID}, (err, data) => {
+            if(err || !data) {
+                console.log("Error in updateVotes: " + err);
+                socket.emit("updateVotes", false);
+            }
+            else {
+                // remove vote if already present
+                for(var i=0; i<data.playerVotes.length; i++) {
+                    let removeIndex = data.playerVotes[i].findIndex(userEmail);
+                    if(removeIndex > -1) {
+                        data.playerVotes.splice(removeIndex, 1);
+                        break;
+                    }
+                }
 
-        // find if this player has already cast a vote
-        // remove existing vote if true
-        // add new vote 
+                // add new vote
+                data.playerVotes[storyNumber].push(userEmail);
 
-        socket.emit("updateVotes", true);
+                // apply changes
+                data.save();
+                socket.emit("updateVotes", true);
+            }
+        });
     });
 
 });
