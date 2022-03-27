@@ -102,7 +102,7 @@ io.on('connection', function (socket) {
     socket.on('notifyFollowers', function(data) {
         // get a list of followed users from the database
         const userEmail = data.userEmail;
-        Users.find({email: userEmail}, (err, data) => {
+        Users.findOne({email: userEmail}, (err, data) => {
             if(err || !data) {
                 console.log("Error in notifyFollowers: " + err);
                 socket.emit('notifyFollowers', false);
