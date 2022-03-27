@@ -120,7 +120,7 @@ io.on('connection', function (socket) {
                         either include the gameID as a paramater to this function
                         or add a creator field to the games list
                     */
-                    io.to(follower.clientId, userEmail + " has started a game!");
+                    io.to(follower.clientId).emit("newGameNotification", userEmail + " has started a game!");
                 });
                 socket.emit("notifyFollowers", true);
             }
