@@ -2,6 +2,7 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const fs = require("fs");
+const Image = require('../server/models/image-model')
 
 const app = express();
 const server = http.createServer(app);
@@ -164,6 +165,35 @@ io.on('connection', function (socket) {
         let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
         socket.emit("gameList", lobbyGames);
     });
+
+    /*
+        Uploading the image that was received from the message (saving it to the database)
+    */
+   socket.on('saveImage', async (data) => {
+       //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
+       if(!data.image || !data.imageID)
+       {
+            console.log("The necessary parameters for saving the image was not provided.");
+            return;
+       }
+
+       console.log("Image received");
+       console.log(data.imageID + " : " + data.image);
+
+       const imageData = new Image({
+           image: data.image,
+           imageID: data.imageID
+       });
+
+       savedImage = await imageData.save();
+
+       console.log(savedImage.imageID + " was successfully saved.")
+
+       /*
+        Are we going to handle send the image to the next random person here?
+        TODO: choosing a random person if not end of next round
+       */
+   })
 
 
 });
