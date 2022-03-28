@@ -36,7 +36,7 @@ createGame = (req, res) => {
 }
 
 
-search = (req, res) => {
+search = async (req, res) => {
     const query = req.body.query;
     if (!query) {
         return res.status(400).json({
@@ -45,12 +45,18 @@ search = (req, res) => {
         });
     }
 
-    // TODO - implement searching by user? We could find all games that have a specified user(s) present. Currently only searching by tag.
+    // TODO - Do you think this is a good way to handle searches? ORing of tag results (OR) and user results (AND)
+    const tags = []; // search must include AT LEAST ONE TAG
+    const users = []; // search must include ALL USERS
 
-    const searchTags = query.split(",").map(i => i.trim());
+    query.split(",")
+        .map(i => i.trim())
+        .forEach((elem, i) => {
+            elem.substring(0, 2) === "u:" ? users.push(elem.substring(2)) : tags.push(elem);
 
-    // Any game w/ at least one matching tag will be returned.
-    await Game.find( {tags: { $in: searchTags }}, (err, games) => {
+    });
+
+    await Game.find( {tags: { $in: tags }, players: { $all: users}}, (err, games) => {
         if (err) {
             return res.status(400).json({ success: false, error: err});
         }
@@ -59,7 +65,7 @@ search = (req, res) => {
 }
 
 
-getGame = (req, res) => {
+getGame = async (req, res) => {
     const gameID = req.body.gameID;
     if (!gameID) {
         return res.status(400).json({
@@ -87,7 +93,7 @@ getGame = (req, res) => {
 }
 
 
-updateGame = (req, res) => {
+updateGame = async (req, res) => {
     const {isLive, players, panels, playerVotes, communityVotes, gameID, comments, rounds, timePerRound, isPublic, tags} = req.body;
 
     // ALL of these must be present.
@@ -123,4 +129,11 @@ updateGame = (req, res) => {
                 })
             });
     });
+}
+
+module.exports = {
+    createGame,
+    search,
+    getGame,
+    updateGame
 }

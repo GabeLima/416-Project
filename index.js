@@ -1,8 +1,8 @@
-
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const fs = require("fs");
+
 const Games = require("../models/game-model");
 const Images = require("../models/image-model");
 const Users = require("../models/user-model.js");
@@ -25,6 +25,9 @@ var clients =[];
 //     gameID: "",
 //     players: [],
 //     gameStatus: gameStatus.STATUS,
+//     numRounds: data.numRounds,
+//     timePerRound: data.timePerRound,
+//     currentRound: 0
 // };
 var games = [];
 
@@ -56,6 +59,76 @@ io.on('connection', function (socket) {
                 break;
             }
         }
+    });
+
+    /*
+        When we create a game we'll have to create proper game session in our games variable. Their display will also
+        switch to the game lobby.
+    */
+    socket.on(gameEvents.CREATE_GAME, (data) => {
+
+        for (const g of games) {
+            if (g.gameID === data.gameID || g.players.includes(data.email)) {
+                // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
+                console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
+                socket.emit("joinSuccess", false);
+                return;
+            }
+        };
+
+        let numRounds, timePerRound;
+
+        // TODO - enforce minimum num rounds and timeperround on client side instead of server side? that sounds like best practice.
+        if (!data.numRounds) {
+            numRounds = gameRules.DEFAULT_NUM_ROUNDS;
+        }
+        else {
+            numRounds = data.numRounds;
+        }
+
+        if (!data.timePerRound) {
+            timePerRound = gameRules.DEFAULT_TIME_PER_ROUND;
+        }
+        else {
+            timePerRound = data.timePerRound
+        }
+        const gameInfo = {
+            gameID: data.gameID,
+            players: [data.email],
+            gameStatus: gameStatus.LOBBY,
+            numRounds: numRounds,
+            timePerRound: timePerRound,
+            currentRound: 0
+        };
+
+        games.push(gameInfo);
+        socket.join(data.gameID);
+
+        socket.emit("joinSuccess", true); 
+
+        console.log("Game with ID " + data.gameID + " was created by: " + clients[i].email);
+        
+    });
+
+
+    socket.on(gameEvents.START_GAME, (data) => {
+        for (const g of games) {
+            if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
+                g.gameStatus = gameStatus.PLAYING;
+
+                // Tell the users that the game is starting.
+                io.to(g.gameID).emit(gameEvents.START_GAME);
+
+                // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
+                setTimeout(() => {
+                    io.to(g.gameID).emit(gameEvents.ROUND_END);
+                }, g.timePerRound * 1000);
+                return;
+            }
+        }
+
+        io.to(g.gameID).emit("startFailure");
+        console.log("The game with ID " + data.gameID + " could not be successfully started.");
     });
 
 
@@ -180,6 +253,36 @@ Images.findOne({imageID: imgID}, (err, data) => {
             }
         });
     });
+
+    /*
+        Uploading the image that was received from the message (saving it to the database)
+    */
+   socket.on('saveImage', async (data) => {
+       //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
+       if(!data.image || !data.imageID)
+       {
+            console.log("The necessary parameters for saving the image was not provided.");
+            return;
+       }
+
+       console.log("Image received");
+       console.log(data.imageID + " : " + data.image);
+
+       const imageData = new Image({
+           image: data.image,
+           imageID: data.imageID
+       });
+
+       savedImage = await imageData.save();
+
+       console.log(savedImage.imageID + " was successfully saved.")
+
+       /*
+        Are we going to handle send the image to the next random person here?
+        TODO: choosing a random person if not end of next round
+       */
+   })
+
 
 });
 
