@@ -2,7 +2,7 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const fs = require("fs");
-const Image = require('./server/models/image-model')
+const Image = require('../server/models/image-model')
 
 const app = express();
 const server = http.createServer(app);
