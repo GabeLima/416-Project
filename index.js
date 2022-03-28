@@ -173,7 +173,6 @@ io.on('connection', function (socket) {
        //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
        if(!data.image || !data.imageID)
        {
-            io.to(data.gameID).emit("saveSuccess", false);              //Only tells room if image is saved, cause no one else would care
             console.log("The necessary parameters for saving the image was not provided.");
             return;
        }
