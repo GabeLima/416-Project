@@ -317,5 +317,6 @@ module.exports = {
     registerUser,
     loginUser,
     logoutUser,
-    updateUser
+    updateUser,
+    updateFollowers
 }
