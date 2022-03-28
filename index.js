@@ -100,7 +100,6 @@ io.on('connection', function (socket) {
         games.push(gameInfo);
         socket.join(data.gameID);
 
-        // TODO - can we actually re-use the joinSuccess in joinGame to do this? Both serve the purpose of telling a user if they can join a room.
         socket.emit("joinSuccess", true); 
 
         console.log("Game with ID " + data.gameID + " was created by: " + clients[i].email);
