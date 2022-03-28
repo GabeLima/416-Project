@@ -7,6 +7,7 @@ const Games = require("./models/game-model");
 const Images = require("./models/image-model");
 const Users = require("./models/user-model.js");
 
+const socketWrapper = require('./socketWrapper.js');
 import {gameEvents, gameRules, gameStatus }from "./constants.js";
 
 const app = express();
@@ -99,18 +100,17 @@ io.on('connection', function (socket) {
         const gameInfo = {
             gameID: data.gameID,
             players: [data.email],
+            creator: data.email,
             gameStatus: gameStatus.LOBBY,
+            playerVotes: [[]],
             numRounds: numRounds,
             timePerRound: timePerRound,
             currentRound: 0
         };
-
         games.push(gameInfo);
-        socket.join(data.gameID);
-
-        socket.emit("joinSuccess", true); 
-
-        console.log("Game with ID " + data.gameID + " was created by: " + clients[i].email);
+        
+        socketWrapper.createGame(socket, data);
+        
         
     });
 
@@ -118,16 +118,7 @@ io.on('connection', function (socket) {
     socket.on(gameEvents.START_GAME, (data) => {
         for (const g of games) {
             if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
-                g.gameStatus = gameStatus.PLAYING;
-
-                // Tell the users that the game is starting.
-                io.to(g.gameID).emit(gameEvents.START_GAME);
-
-                // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
-                setTimeout(() => {
-                    io.to(g.gameID).emit(gameEvents.ROUND_END);
-                }, g.timePerRound * 1000);
-                return;
+                socketWrapper.startGame(io, g);
             }
         }
 
@@ -144,18 +135,10 @@ io.on('connection', function (socket) {
         for(var i=0; i < games.length; i++){
             var g = games[i];
             if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
-
                 //Add their data to the game
                 g.players.push(data.userEmail);
-                socket.join(g.gameID);
 
-                //Tell other users that a new player is joining
-                socket.to(g.gameID).emit(gameEvents.JOINING_GAME, data.userName);
-
-                //Tell the user joining they can switch to the game-lobby
-                socket.emit("joinSuccess", true);
-                console.log("The user with email:" + data.userEmail + " joined the game:" + data.gameID);
-                return;
+                socketWrapper.joinGame(socket, data, g);
             }
         }
         //Joining the game failed
