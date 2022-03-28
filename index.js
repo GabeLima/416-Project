@@ -188,7 +188,6 @@ io.on('connection', function (socket) {
 
        savedImage = await imageData.save();
 
-       io.to(data.gameID).emit("saveSuccess", true)
        console.log(savedImage.imageID + " was successfully saved.")
 
        /*
