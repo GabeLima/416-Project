@@ -3,9 +3,11 @@ const express = require('express');
 const socketio = require('socket.io');
 const fs = require("fs");
 
-const Games = require("../models/game-model");
-const Images = require("../models/image-model");
-const Users = require("../models/user-model.js");
+const Games = require("./models/game-model");
+const Images = require("./models/image-model");
+const Users = require("./models/user-model.js");
+
+import {gameEvents, gameRules, gameStatus }from "./constants.js";
 
 const app = express();
 const server = http.createServer(app);
