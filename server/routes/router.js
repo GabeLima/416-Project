@@ -11,6 +11,7 @@ router.put('/game/:email/followers', auth.verify, UserController.updateFollowers
 
 router.post('/register', UserController.registerUser)
 router.post('/user', UserController.loginUser)
+router.get('/user/:query', UserController.getUser);
 router.get('/logout', UserController.logoutUser)
 router.get('/loggedIn', UserController.getLoggedIn)
 
