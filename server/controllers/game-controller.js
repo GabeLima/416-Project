@@ -37,7 +37,7 @@ createGame = (req, res) => {
 
 
 search = async (req, res) => {
-    const query = req.body.query;
+    const query = req.params.query;
     if (!query) {
         return res.status(400).json({
             success: false,
@@ -45,7 +45,6 @@ search = async (req, res) => {
         });
     }
 
-    // TODO - Do you think this is a good way to handle searches? ORing of tag results (OR) and user results (AND)
     const tags = []; // search must include AT LEAST ONE TAG
     const users = []; // search must include ALL USERS
 
@@ -66,7 +65,7 @@ search = async (req, res) => {
 
 
 getGame = async (req, res) => {
-    const gameID = req.body.gameID;
+    const gameID = req.params.gameID;
     if (!gameID) {
         return res.status(400).json({
             success: false,
@@ -94,8 +93,9 @@ getGame = async (req, res) => {
 
 
 updateGame = async (req, res) => {
-    const {isLive, players, panels, playerVotes, communityVotes, gameID, comments, rounds, timePerRound, isPublic, tags} = req.body;
-
+    const {communityVotes, comments} = req.body;
+    const gameID = req.params.gameID;
+    
     // ALL of these must be present.
     // players, panels, playerVotes, rounds, timePerRound, isPublic, tags will be immutable after a game is published.
     // TODO - We could have the client selectively send the relevant fields, but that might be something we discuss later when implementing front end.
@@ -131,9 +131,25 @@ updateGame = async (req, res) => {
     });
 }
 
+deleteGame = async (req, res) => {
+    const gameID = req.params.gameID;
+    Game.findOne({gameID: gameID}, (err, game) => {
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Game not found!',
+            })
+        }
+        Game.findOneAndDelete({ gameID: gameID }, () => {
+            return res.status(200).json({ success: true })
+        }).catch(err => console.log(err))
+    });
+}
+
 module.exports = {
     createGame,
     search,
     getGame,
-    updateGame
+    updateGame,
+    deleteGame
 }

@@ -262,7 +262,7 @@ registerUser = async (req, res) => {
 
 
 updateFollowers = async (req, res) => {
-    const email = req.body.email
+    const email = req.params.email
     const followers = req.body.followers
 
     if(!email){
@@ -314,7 +314,7 @@ updateFollowers = async (req, res) => {
 
 
 getUser = async (req, res) => {
-    const username = req.body.username;
+    const username = req.params.username;
     if (!username) {
         return res.status(400).json({
             success: false,
