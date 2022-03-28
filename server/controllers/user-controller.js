@@ -260,6 +260,7 @@ registerUser = async (req, res) => {
     }
 }
 
+
 updateFollowers = (req, res) => {
     const email = req.body.email
     const followers = req.body.followers
@@ -315,5 +316,6 @@ module.exports = {
     getLoggedIn,
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser,
+    updateUser
 }
