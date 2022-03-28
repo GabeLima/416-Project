@@ -136,15 +136,7 @@ io.on('connection', function (socket) {
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber, roundNumber} = data;
-        Games.findOne({gameID: gameID}, (err, data) => {
-            if(err || !data) {
-                console.log("Error in getImage: " + err);
-                socket.emit('getImage', false);
-            }
-            else {
-                // get image from imgID
-                let imgID = data.panels[storyNumber];
-                Images.findOne({imageID: imgID}, (err, data) => {
+Images.findOne({imageID: imgID}, (err, data) => {
                     if(err) {
                         console.log("Error in getImage: " + err);
                         socket.emit('getImage', false);
@@ -153,8 +145,6 @@ io.on('connection', function (socket) {
                         socket.emit('getImage', data.image);
                     }
                 });
-            }
-        });
     });
 
     /*
