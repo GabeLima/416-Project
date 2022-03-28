@@ -27,6 +27,8 @@ var clients =[];
 //     gameID: "",
 //     players: [],
 //     gameStatus: gameStatus.STATUS,
+//     playerVotes: [[]],
+//     creator: "",
 //     numRounds: data.numRounds,
 //     timePerRound: data.timePerRound,
 //     currentRound: 0
