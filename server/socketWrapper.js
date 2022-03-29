@@ -10,7 +10,7 @@ joinGame = (socket, data, g) => {
 
     //Tell the user joining they can switch to the game-lobby
     socket.emit("joinSuccess", true);
-    console.log("The user with email:" + data.userEmail + " joined the game:" + data.gameID);
+    console.log("The user with email:" + data.email + " joined the game:" + data.gameID);
     return;
 }
 
