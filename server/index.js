@@ -34,7 +34,11 @@ var clients =[];
 //     timePerRound: data.timePerRound,
 //     currentRound: 0
 // };
-var games = [];
+/*
+    Changing games to a map
+    gameID : gameInfo
+*/
+var games = new Map();
 
 
 
@@ -71,15 +75,24 @@ io.on('connection', function (socket) {
         switch to the game lobby.
     */
     socket.on(gameEvents.CREATE_GAME, (data) => {
+        //Commenting out the array stuff so it isn't lost when i mess up
+        
+        // for (const g of games) {
+        //     if (g.gameID === data.gameID || g.players.includes(data.email)) {
+        //         // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
+        //         console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
+        //         socket.emit("joinSuccess", false);
+        //         return;
+        //     }
+        // };
 
-        for (const g of games) {
-            if (g.gameID === data.gameID || g.players.includes(data.email)) {
-                // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
-                console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
-                socket.emit("joinSuccess", false);
-                return;
-            }
-        };
+        if(games.has(data.gameID))
+        {
+            // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
+            console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
+            socket.emit("joinSuccess", false);
+            return;
+        }
 
         let numRounds, timePerRound;
 
@@ -107,7 +120,8 @@ io.on('connection', function (socket) {
             timePerRound: timePerRound,
             currentRound: 0
         };
-        games.push(gameInfo);
+        //Map uses set instead of push
+        games.set(data.gameID, gameInfo)
         
         socketWrapper.joinGame(socket, data, gameInfo);
         
@@ -116,13 +130,23 @@ io.on('connection', function (socket) {
 
 
     socket.on(gameEvents.START_GAME, (data) => {
-        for (const g of games) {
-            if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
+        //Comment out for loop to change to map
+
+        // for (const g of games) {
+        //     if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
+        //         socketWrapper.startGame(io, g);
+        //     }
+        // }
+        if(games.has(data.gameID))
+        {
+            g = games.get(data.gameID);
+            if(g.gameStatus === gameStatus.LOBBY)
+            {
                 socketWrapper.startGame(io, g);
             }
         }
 
-        io.to(g.gameID).emit("startFailure");
+        io.to(data.gameID).emit("startFailure");
         console.log("The game with ID " + data.gameID + " could not be successfully started.");
     });
 
@@ -132,15 +156,27 @@ io.on('connection', function (socket) {
         and their display will switch to the game lobby.
     */
     socket.on('joinGame', function (data) {
-        for(var i=0; i < games.length; i++){
-            var g = games[i];
-            if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
+        // for(var i=0; i < games.length; i++){
+        //     var g = games[i];
+        //     if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
+        //         //Add their data to the game
+        //         g.players.push(data.email);
+
+        //         socketWrapper.joinGame(socket, data, g);
+        //     }
+        // }
+        if(games.has(data.gameID))
+        {
+            g = games.get(data.gameID)
+            if(g.gameStatus === gameStatus.LOBBY && g.players.length < gameRules.PLAYER_LIMIT)
+            {
                 //Add their data to the game
                 g.players.push(data.email);
 
                 socketWrapper.joinGame(socket, data, g);
             }
         }
+
         //Joining the game failed
         socket.emit("joinSuccess", false);
         console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
@@ -152,7 +188,14 @@ io.on('connection', function (socket) {
     */
     socket.on('getAllGames', function (data) {
         console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
-        let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
+        //let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
+        let lobbyGames = [];
+        for (let gInfo of games.values()){
+            if(gInfo.gameStatus === gameStatus.LOBBY)                                   //Gets games that are still in lobby state
+            {
+                lobbyGames.push(gInfo);
+            }
+        }
         socket.emit("gameList", lobbyGames);
     });
 
@@ -263,12 +306,9 @@ Images.findOne({imageID: imgID}, (err, data) => {
        savedImage = await imageData.save();
 
        console.log(savedImage.imageID + " was successfully saved.")
-
-       /*
-        Are we going to handle send the image to the next random person here?
-        TODO: choosing a random person if not end of next round
-       */
    })
+
+
 
 
 });
