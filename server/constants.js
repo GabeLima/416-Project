@@ -3,7 +3,9 @@ export const gameEvents ={
     LEAVING_GAME: "LeavingGame",
     START_GAME: "StartGame",
     CREATE_GAME: "CreateGame",
-    ROUND_END: "RoundEnd"
+    ROUND_END: "RoundEnd",
+    START_ROUND: "StartRound",
+    GAME_OVER: "GameOver"
 };
 
 export const gameRules = {
@@ -16,4 +18,8 @@ export const gameStatus ={
     LOBBY : "lobby", // Waiting for players
     PLAYING: "playing", // Drawing the games
     DONE: "done" //We finished playing, but users are still voting
+}
+
+export const images ={
+    BLANK_IMAGE : "0"
 }
