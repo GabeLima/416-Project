@@ -136,11 +136,7 @@ io.on('connection', function (socket) {
             var g = games[i];
             if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
                 //Add their data to the game
-<<<<<<< HEAD
-                g.players.push(data.userEmail);
-=======
                 g.players.push(data.email);
->>>>>>> master
 
                 socketWrapper.joinGame(socket, data, g);
             }
@@ -165,7 +161,7 @@ io.on('connection', function (socket) {
     */
     socket.on('notifyFollowers', function(data) {
         // get a list of followed users from the database
-        const email = data.email;
+        const {email, gameID} = data;
         Users.findOne({email: email}, (err, data) => {
             if(err || !data) {
                 console.log("Error in notifyFollowers: " + err);
@@ -178,13 +174,7 @@ io.on('connection', function (socket) {
 
                 // notify every online follower
                 online_followers.forEach( (follower) => {
-                    /* 
-                        Currently there's no way to know what the gameID is
-                        if we want to include the gameID 
-                        either include the gameID as a paramater to this function
-                        or add a creator field to the games list
-                    */
-                    io.to(follower.clientId).emit("newGameNotification", email + " has started a game!", data.gameID);
+                    io.to(follower.clientId).emit("newGameNotification", email + " has started a game with gameID " + gameID);
                 });
                 socket.emit("notifyFollowers", true);
             }
@@ -193,22 +183,19 @@ io.on('connection', function (socket) {
 
     /*
         Returns an image from the database
-        TODO: 
-            Using roundNumber?
-            Figure out how to return properly
     */
     socket.on('getImage', function(data) {
-        // get imgID from gameID and storyNumber
         const {gameID, storyNumber, roundNumber} = data;
-Images.findOne({imageID: imgID}, (err, data) => {
-                    if(err) {
-                        console.log("Error in getImage: " + err);
-                        socket.emit('getImage', false);
-                    }
-                    else {
-                        socket.emit('getImage', data.image);
-                    }
-                });
+        let imgID = gameID + String(storyNumber) + String(roundNumber);
+        Images.findOne({imageID: imgID}, (err, data) => {
+            if(err || !data) {
+                console.log("Error in getImage: " + err);
+                socket.emit('getImage', false);
+            }
+            else {
+                socket.emit('getImage', data.image);
+            }
+        });
     });
 
     /*
@@ -218,31 +205,19 @@ Images.findOne({imageID: imgID}, (err, data) => {
             gameID, email, storyNumber
     */
     socket.on('updateVotes', function(data) {
-        // get game data from db
         const {gameID, email, storyNumber} = data;
-        Games.findOne({gameID: gameID}, (err, data) => {
-            if(err || !data) {
-                console.log("Error in updateVotes: " + err);
-                socket.emit("updateVotes", false);
+    
+        // remove user from votes if already present
+        for(let i=0; i<games[gameID].playerVotes.length; i++) {
+            let r = game[gameID].playerVotes[i].indexOf(email);
+            if(r > -1) {
+                games[gameID].playerVotes[i].splice(r, 1);
+                break;
             }
-            else {
-                // remove vote if already present
-                for(var i=0; i<data.playerVotes.length; i++) {
-                    let removeIndex = data.playerVotes[i].findIndex(email);
-                    if(removeIndex > -1) {
-                        data.playerVotes.splice(removeIndex, 1);
-                        break;
-                    }
-                }
+        }
 
-                // add new vote
-                data.playerVotes[storyNumber].push(email);
-
-                // apply changes
-                data.save();
-                socket.emit("updateVotes", true);
-            }
-        });
+        // add vote
+        games[gameID].playerVotes[storyNumber].push(email);
     });
 
     /*
