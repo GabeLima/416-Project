@@ -19,7 +19,7 @@ const io = socketio(server, {
 });
 //Array of objects of clientInfo
 // const clientInfo = {
-//     userEmail: data.userEmail,
+//     email: data.email,
 //     clientId: socket.id,
 // };
 var clients =[];
@@ -43,7 +43,7 @@ io.on('connection', function (socket) {
 
     socket.on('storeClientInfo', function (data) {
         const clientInfo = {
-            userEmail: data.userEmail,
+            email: data.email,
             clientId: socket.id,
         };
         clients.push(clientInfo);
@@ -136,14 +136,14 @@ io.on('connection', function (socket) {
             var g = games[i];
             if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
                 //Add their data to the game
-                g.players.push(data.userEmail);
+                g.players.push(data.email);
 
                 socketWrapper.joinGame(socket, data, g);
             }
         }
         //Joining the game failed
         socket.emit("joinSuccess", false);
-        console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
+        console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
     });
 
 
@@ -151,7 +151,7 @@ io.on('connection', function (socket) {
         Returns the list of games that can be joined.
     */
     socket.on('getAllGames', function (data) {
-        console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
+        console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
         let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
         socket.emit("gameList", lobbyGames);
     });
@@ -161,8 +161,8 @@ io.on('connection', function (socket) {
     */
     socket.on('notifyFollowers', function(data) {
         // get a list of followed users from the database
-        const userEmail = data.userEmail;
-        Users.findOne({email: userEmail}, (err, data) => {
+        const email = data.email;
+        Users.findOne({email: email}, (err, data) => {
             if(err || !data) {
                 console.log("Error in notifyFollowers: " + err);
                 socket.emit('notifyFollowers', false);
@@ -170,7 +170,7 @@ io.on('connection', function (socket) {
             else {
                 // reduce the clients list to those who follow this user
                 let followers = data.followers; // list of emails I assume?
-                const online_followers = clients.filter(client => followers.includes(client.userEmail));
+                const online_followers = clients.filter(client => followers.includes(client.email));
 
                 // notify every online follower
                 online_followers.forEach( (follower) => {
@@ -180,7 +180,7 @@ io.on('connection', function (socket) {
                         either include the gameID as a paramater to this function
                         or add a creator field to the games list
                     */
-                    io.to(follower.clientId).emit("newGameNotification", userEmail + " has started a game!", data.gameID);
+                    io.to(follower.clientId).emit("newGameNotification", email + " has started a game!", data.gameID);
                 });
                 socket.emit("notifyFollowers", true);
             }
@@ -211,11 +211,11 @@ Images.findOne({imageID: imgID}, (err, data) => {
         Updates the playerVotes field for a game 
         Deletes previous vote if present then adds a new vote
         inputs:
-            gameID, userEmail, storyNumber
+            gameID, email, storyNumber
     */
     socket.on('updateVotes', function(data) {
         // get game data from db
-        const {gameID, userEmail, storyNumber} = data;
+        const {gameID, email, storyNumber} = data;
         Games.findOne({gameID: gameID}, (err, data) => {
             if(err || !data) {
                 console.log("Error in updateVotes: " + err);
@@ -224,7 +224,7 @@ Images.findOne({imageID: imgID}, (err, data) => {
             else {
                 // remove vote if already present
                 for(var i=0; i<data.playerVotes.length; i++) {
-                    let removeIndex = data.playerVotes[i].findIndex(userEmail);
+                    let removeIndex = data.playerVotes[i].findIndex(email);
                     if(removeIndex > -1) {
                         data.playerVotes.splice(removeIndex, 1);
                         break;
@@ -232,7 +232,7 @@ Images.findOne({imageID: imgID}, (err, data) => {
                 }
 
                 // add new vote
-                data.playerVotes[storyNumber].push(userEmail);
+                data.playerVotes[storyNumber].push(email);
 
                 // apply changes
                 data.save();
