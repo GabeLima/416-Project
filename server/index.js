@@ -216,7 +216,7 @@ io.on('connection', function (socket) {
 
         //Based off David's updateVote but for the live data in gameInfo, David should change updateVotes
         //To just take the live data and store it instead
-        if(data.vote)                   //Player submited a vote
+        if(data.vote != undefined)                   //Player submited a vote
         {
             //Remove vote if already present
             for(let i = 0; i < g.playerVotes.length; i++)
