@@ -29,7 +29,6 @@ startGame = (io, g) => {
 
 
 modules.export = {
-    createGame,
     joinGame,
     startGame
 }
