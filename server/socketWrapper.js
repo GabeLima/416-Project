@@ -1,14 +1,5 @@
 import {gameEvents, gameRules, gameStatus }from "./constants.js";
 
-createGame = (socket, data) => {
-
-    socket.join(data.gameID);
-
-    socket.emit("joinSuccess", true); 
-
-    console.log("Game with ID " + data.gameID + " was created");
-    return gameInfo;
-}
 
 joinGame = (socket, data, g) => {
     
