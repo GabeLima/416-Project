@@ -130,7 +130,7 @@ io.on('connection', function (socket) {
             numRounds: numRounds,
             timePerRound: timePerRound,
             currentRound: 0,
-            tags = data.tags
+            tags: data.tags
         };
         //Map uses set instead of push
         games.set(data.gameID, gameInfo)
