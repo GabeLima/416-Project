@@ -77,16 +77,6 @@ io.on('connection', function (socket) {
         switch to the game lobby.
     */
     socket.on(gameEvents.CREATE_GAME, (data) => {
-        //Commenting out the array stuff so it isn't lost when i mess up
-        
-        // for (const g of games) {
-        //     if (g.gameID === data.gameID || g.players.includes(data.email)) {
-        //         // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
-        //         console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
-        //         socket.emit("joinSuccess", false);
-        //         return;
-        //     }
-        // };
 
         if(games.has(data.gameID))
         {
