@@ -33,7 +33,8 @@ var clients =[];
 //     creator: "",
 //     numRounds: data.numRounds,
 //     timePerRound: data.timePerRound,
-//     currentRound: 0
+//     currentRound: 0,
+//     tags: []
 // };
 /*
     Changing games to a map
@@ -111,6 +112,15 @@ io.on('connection', function (socket) {
         else {
             timePerRound = data.timePerRound
         }
+
+        //Checking tags
+        if (!data.tags)
+        {
+            tags = [];
+        } else {
+            tags = data.tags;
+        }
+
         const gameInfo = {
             gameID: data.gameID,
             players: [data.email],
@@ -119,7 +129,8 @@ io.on('connection', function (socket) {
             playerVotes: [[]],
             numRounds: numRounds,
             timePerRound: timePerRound,
-            currentRound: 0
+            currentRound: 0,
+            tags = data.tags
         };
         //Map uses set instead of push
         games.set(data.gameID, gameInfo)
@@ -237,6 +248,12 @@ io.on('connection', function (socket) {
         if(data.currentRound != undefined)
         {
             g.currentRound = data.currentRound;
+        }
+
+        //Updating tags
+        if(data.tags != undefined)
+        {
+            g.tags = data.tags;
         }
 
         //After all potential updates/checks are done, actually update the info in the map
