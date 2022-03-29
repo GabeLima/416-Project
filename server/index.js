@@ -8,7 +8,7 @@ const Images = require("./models/image-model");
 const Users = require("./models/user-model.js");
 
 const socketWrapper = require('./socketWrapper.js');
-import {gameEvents, gameRules, gameStatus }from "./constants.js";
+import {gameEvents, gameRules, gameStatus, images}from "./constants.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -195,8 +195,20 @@ io.on('connection', function (socket) {
     */
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
-        const {gameID, storyNumber, roundNumber} = data;
-        Images.findOne({imageID: imgID}, (err, data) => {
+        const {gameID, storyNumber, imageID} = data;
+        if(!imageID || !(gameID && storyNumber)){
+            console.log("Error on getImage, missing data from the payload: ", data);
+            return;
+        }
+        if(gameID && storyNumber){
+            const g = games.get(gameID);
+            let panel = g.panels.get(storyNumber);
+            while(panel.length < g.roundNumber){
+                panel.push(images.BLANK_IMAGE);
+            }
+            imageID = panel[panel.length - 1];
+        }
+        Images.findOne({imageID: imageID}, (err, data) => {
             if(err) {
                 console.log("Error in getImage: " + err);
                 socket.emit('getImage', false);
@@ -271,26 +283,27 @@ io.on('connection', function (socket) {
    });
 
    socket.on('roundEnd', function(data) {
-    const {gameID, storyNumber, email} = data;
-    const g = games.get(data.gameID);
+    const {gameID, storyNumber, currentRound} = data;
+    const g = games.get(gameID);
+    //currentRound will be passed from the client, and will be the ID of the round that JUST ended
+    g.currentRound = Math.max(g.currentRound, currentRound + 1);
     //Add the imageID to every story
-    g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + g.currentRound);
-    //Need to manage concurrency in the following:
-    
+    g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + currentRound);
 
-    //After the 1/2 second timer, if we are missing images, we fill in their expected image with some blank image
     setTimeout(() => {
-        for(const panel of g.panels){
-            if(panel.length < roundNumber + 1){
-                panel.push("" + 0); //imageID 0 will represent a blank image
-            }
+        //Generate the new story they'll be adding to
+        if(g.roundNumber == g.numRounds){
+            socket.emit(gameEvents.GAME_OVER, g);    
         }
-        
+        else{
+            let newStoryNumber = (storyNumber + g.currentRound) % g.players.length;
+            socket.emit(gameEvents.START_ROUND, newStoryNumber);
+        }
     }, 500);
 
     //Call client round end, which will call saveImage and this function again (if the game isn't over)
     setTimeout(() => {
-        io.to(g.gameID).emit(gameEvents.ROUND_END);
+        io.to(gameID).emit(gameEvents.ROUND_END);
     }, g.timePerRound * 1000);
 });
 
