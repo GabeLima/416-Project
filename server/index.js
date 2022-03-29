@@ -2,7 +2,13 @@ const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
 const fs = require("fs");
-const Image = require('../server/models/image-model')
+
+const Games = require("./models/game-model");
+const Images = require("./models/image-model");
+const Users = require("./models/user-model.js");
+
+const socketWrapper = require('./socketWrapper.js');
+import {gameEvents, gameRules, gameStatus }from "./constants.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -13,7 +19,7 @@ const io = socketio(server, {
 });
 //Array of objects of clientInfo
 // const clientInfo = {
-//     userEmail: data.userEmail,
+//     email: data.email,
 //     clientId: socket.id,
 // };
 var clients =[];
@@ -22,6 +28,8 @@ var clients =[];
 //     gameID: "",
 //     players: [],
 //     gameStatus: gameStatus.STATUS,
+//     playerVotes: [[]],
+//     creator: "",
 //     numRounds: data.numRounds,
 //     timePerRound: data.timePerRound,
 //     currentRound: 0
@@ -35,7 +43,7 @@ io.on('connection', function (socket) {
 
     socket.on('storeClientInfo', function (data) {
         const clientInfo = {
-            userEmail: data.userEmail,
+            email: data.email,
             clientId: socket.id,
         };
         clients.push(clientInfo);
@@ -92,18 +100,17 @@ io.on('connection', function (socket) {
         const gameInfo = {
             gameID: data.gameID,
             players: [data.email],
+            creator: data.email,
             gameStatus: gameStatus.LOBBY,
+            playerVotes: [[]],
             numRounds: numRounds,
             timePerRound: timePerRound,
             currentRound: 0
         };
-
         games.push(gameInfo);
-        socket.join(data.gameID);
-
-        socket.emit("joinSuccess", true); 
-
-        console.log("Game with ID " + data.gameID + " was created by: " + clients[i].email);
+        
+        socketWrapper.joinGame(socket, data, gameInfo);
+        
         
     });
 
@@ -111,16 +118,7 @@ io.on('connection', function (socket) {
     socket.on(gameEvents.START_GAME, (data) => {
         for (const g of games) {
             if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
-                g.gameStatus = gameStatus.PLAYING;
-
-                // Tell the users that the game is starting.
-                io.to(g.gameID).emit(gameEvents.START_GAME);
-
-                // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
-                setTimeout(() => {
-                    io.to(g.gameID).emit(gameEvents.ROUND_END);
-                }, g.timePerRound * 1000);
-                return;
+                socketWrapper.startGame(io, g);
             }
         }
 
@@ -137,23 +135,15 @@ io.on('connection', function (socket) {
         for(var i=0; i < games.length; i++){
             var g = games[i];
             if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
-
                 //Add their data to the game
-                g.players.push(data.userEmail);
-                socket.join(g.gameID);
+                g.players.push(data.email);
 
-                //Tell other users that a new player is joining
-                socket.to(g.gameID).emit(gameEvents.JOINING_GAME, data.userName);
-
-                //Tell the user joining they can switch to the game-lobby
-                socket.emit("joinSuccess", true);
-                console.log("The user with email:" + data.userEmail + " joined the game:" + data.gameID);
-                return;
+                socketWrapper.joinGame(socket, data, g);
             }
         }
         //Joining the game failed
         socket.emit("joinSuccess", false);
-        console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
+        console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
     });
 
 
@@ -161,9 +151,94 @@ io.on('connection', function (socket) {
         Returns the list of games that can be joined.
     */
     socket.on('getAllGames', function (data) {
-        console.log("The user with email:" + data.userEmail + " failed to join the game:" + data.gameID);
+        console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
         let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
         socket.emit("gameList", lobbyGames);
+    });
+
+    /*
+        Notifies Followers that a game has been created
+    */
+    socket.on('notifyFollowers', function(data) {
+        // get a list of followed users from the database
+        const email = data.email;
+        Users.findOne({email: email}, (err, data) => {
+            if(err || !data) {
+                console.log("Error in notifyFollowers: " + err);
+                socket.emit('notifyFollowers', false);
+            }
+            else {
+                // reduce the clients list to those who follow this user
+                let followers = data.followers; // list of emails I assume?
+                const online_followers = clients.filter(client => followers.includes(client.email));
+
+                // notify every online follower
+                online_followers.forEach( (follower) => {
+                    /* 
+                        Currently there's no way to know what the gameID is
+                        if we want to include the gameID 
+                        either include the gameID as a paramater to this function
+                        or add a creator field to the games list
+                    */
+                    io.to(follower.clientId).emit("newGameNotification", email + " has started a game!", data.gameID);
+                });
+                socket.emit("notifyFollowers", true);
+            }
+        });
+    });
+
+    /*
+        Returns an image from the database
+        TODO: 
+            Using roundNumber?
+            Figure out how to return properly
+    */
+    socket.on('getImage', function(data) {
+        // get imgID from gameID and storyNumber
+        const {gameID, storyNumber, roundNumber} = data;
+Images.findOne({imageID: imgID}, (err, data) => {
+                    if(err) {
+                        console.log("Error in getImage: " + err);
+                        socket.emit('getImage', false);
+                    }
+                    else {
+                        socket.emit('getImage', data.image);
+                    }
+                });
+    });
+
+    /*
+        Updates the playerVotes field for a game 
+        Deletes previous vote if present then adds a new vote
+        inputs:
+            gameID, email, storyNumber
+    */
+    socket.on('updateVotes', function(data) {
+        // get game data from db
+        const {gameID, email, storyNumber} = data;
+        Games.findOne({gameID: gameID}, (err, data) => {
+            if(err || !data) {
+                console.log("Error in updateVotes: " + err);
+                socket.emit("updateVotes", false);
+            }
+            else {
+                // remove vote if already present
+                for(var i=0; i<data.playerVotes.length; i++) {
+                    let removeIndex = data.playerVotes[i].findIndex(email);
+                    if(removeIndex > -1) {
+                        data.playerVotes.splice(removeIndex, 1);
+                        break;
+                    }
+                }
+
+                // add new vote
+                data.playerVotes[storyNumber].push(email);
+
+                // apply changes
+                data.save();
+                socket.emit("updateVotes", true);
+            }
+        });
     });
 
     /*
