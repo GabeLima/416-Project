@@ -5,6 +5,7 @@ const fs = require("fs");
 
 const Games = require("./models/game-model");
 const Images = require("./models/image-model");
+const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
 
 const socketWrapper = require('./socketWrapper.js');
@@ -287,28 +288,49 @@ Images.findOne({imageID: imgID}, (err, data) => {
     /*
         Uploading the image that was received from the message (saving it to the database)
     */
-   socket.on('saveImage', async (data) => {
-       //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
-       if(!data.image || !data.imageID)
-       {
+    socket.on('saveImage', async (data) => {
+        //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
+        if(!data.image || !data.imageID)
+        {
             console.log("The necessary parameters for saving the image was not provided.");
             return;
-       }
+        }
 
-       console.log("Image received");
-       console.log(data.imageID + " : " + data.image);
+        console.log("Image received");
+        console.log(data.imageID + " : " + data.image);
 
-       const imageData = new Image({
-           image: data.image,
-           imageID: data.imageID
-       });
+        const imageData = new Images({
+            image: data.image,
+            imageID: data.imageID
+        });
 
-       savedImage = await imageData.save();
+        savedImage = await imageData.save();
 
-       console.log(savedImage.imageID + " was successfully saved.")
-   })
+        console.log(savedImage.imageID + " was successfully saved.");
+    });
 
+   /*
+        Uploading/Saving the text that was received from the message (saving it to the database)
+   */
+    socket.on('saveText', async (data) => {
+        if(!data.text || !data.textID)
+        {
+            console.log("The necessary parameters for saving the text was not provided.");
+            return;
+        }
 
+        console.log("Text received");
+        console.log(data.textID + " : " + data.text);
+
+        const textData = new Texts({
+            text : data.text,
+            textID : data.textID
+        });
+
+        savedText = await textData.save();
+
+        console.log(savedText.textID + " was successfully saved.");
+    });
 
 
 });
