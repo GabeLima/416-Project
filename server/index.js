@@ -331,7 +331,7 @@ Images.findOne({imageID: imgID}, (err, data) => {
                 for(var i=0; i<data.playerVotes.length; i++) {
                     let removeIndex = data.playerVotes[i].findIndex(email);
                     if(removeIndex > -1) {
-                        data.playerVotes.splice(removeIndex, 1);        //removed a story's entire vote not a voter's vote
+                        data.playerVotes[i].splice(removeIndex, 1);        //removed a story's entire vote not a voter's vote
                         break;
                     }
                 }
