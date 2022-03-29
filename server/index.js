@@ -137,7 +137,6 @@ io.on('connection', function (socket) {
             if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
                 //Add their data to the game
                 g.players.push(data.email);
-
                 socketWrapper.joinGame(socket, data, g);
             }
         }
