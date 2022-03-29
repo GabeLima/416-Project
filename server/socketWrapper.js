@@ -16,6 +16,12 @@ joinGame = (socket, data, g) => {
 
 startGame = (io, g) => {
     g.gameStatus = gameStatus.PLAYING;
+    //We're going to be tracking the playerPanels throughout the game
+    g.panels = new Map();
+    for(let i = 0; i < g.players.length; g++){
+        //Fill in every storyNumber with an empty array to represent the story
+        g.panels.put(i, []);
+    }
 
     // Tell the users that the game is starting.
     io.to(g.gameID).emit(gameEvents.START_GAME);

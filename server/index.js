@@ -196,15 +196,15 @@ io.on('connection', function (socket) {
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber, roundNumber} = data;
-Images.findOne({imageID: imgID}, (err, data) => {
-                    if(err) {
-                        console.log("Error in getImage: " + err);
-                        socket.emit('getImage', false);
-                    }
-                    else {
-                        socket.emit('getImage', data.image);
-                    }
-                });
+        Images.findOne({imageID: imgID}, (err, data) => {
+            if(err) {
+                console.log("Error in getImage: " + err);
+                socket.emit('getImage', false);
+            }
+            else {
+                socket.emit('getImage', data.image);
+            }
+        });
     });
 
     /*
@@ -268,7 +268,34 @@ Images.findOne({imageID: imgID}, (err, data) => {
         Are we going to handle send the image to the next random person here?
         TODO: choosing a random person if not end of next round
        */
-   })
+   });
+
+   socket.on('roundEnd', function(data) {
+    const {gameID, storyNumber, email} = data;
+    const g = games.get(data.gameID);
+    //Add the imageID to every story
+    g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + g.currentRound);
+    //Need to manage concurrency in the following:
+    
+
+    //After the 1/2 second timer, if we are missing images, we fill in their expected image with some blank image
+    setTimeout(() => {
+        for(const panel of g.panels){
+            if(panel.length < roundNumber + 1){
+                panel.push("" + 0); //imageID 0 will represent a blank image
+            }
+        }
+        
+    }, 500);
+
+    //Call client round end, which will call saveImage and this function again (if the game isn't over)
+    setTimeout(() => {
+        io.to(g.gameID).emit(gameEvents.ROUND_END);
+    }, g.timePerRound * 1000);
+});
+
+
+
 
 
 });
