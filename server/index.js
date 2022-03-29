@@ -77,7 +77,6 @@ io.on('connection', function (socket) {
         switch to the game lobby.
     */
     socket.on(gameEvents.CREATE_GAME, (data) => {
-
         if(games.has(data.gameID))
         {
             // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
@@ -100,12 +99,13 @@ io.on('connection', function (socket) {
             timePerRound = gameRules.DEFAULT_TIME_PER_ROUND;
         }
         else {
-            timePerRound = data.timePerRound
+            timePerRound = data.timePerRound;
         }
 
         //Checking tags
         let tags = [];
         if (data.tags)
+        {
             tags = data.tags;
         }
 
@@ -209,10 +209,16 @@ io.on('connection', function (socket) {
             g.playerVotes[data.vote].push(data.email);
         }
 
-        //Updating Current Round
-        if(data.currentRound != undefined)
+        //Updating number of rounds
+        if(data.numRounds != undefined)
         {
-            g.currentRound = data.currentRound;
+            g.numRounds = data.numRounds;
+        }
+
+        //Updating the time per round
+        if(data.timePerRound != undefined)
+        {
+            g.timePerRound = data.timePerRound;
         }
 
         //Updating tags
@@ -283,7 +289,7 @@ io.on('connection', function (socket) {
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber, roundNumber} = data;
-Images.findOne({imageID: imgID}, (err, data) => {
+        Images.findOne({imageID: imgID}, (err, data) => {
                     if(err) {
                         console.log("Error in getImage: " + err);
                         socket.emit('getImage', false);
