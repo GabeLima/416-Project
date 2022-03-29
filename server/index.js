@@ -293,6 +293,7 @@ io.on('connection', function (socket) {
         //Generate the new story they'll be adding to
         if(g.roundNumber == g.numRounds){
             socket.emit(gameEvents.GAME_OVER, g);    
+            g.gameStatus = gameStatus.DONE;
         }
         else{
             let newStoryNumber = (storyNumber + g.currentRound) % g.players.length;
