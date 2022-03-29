@@ -104,10 +104,8 @@ io.on('connection', function (socket) {
         }
 
         //Checking tags
-        if (!data.tags)
-        {
-            tags = [];
-        } else {
+        let tags = [];
+        if (data.tags)
             tags = data.tags;
         }
 
@@ -120,7 +118,7 @@ io.on('connection', function (socket) {
             numRounds: numRounds,
             timePerRound: timePerRound,
             currentRound: 0,
-            tags: data.tags
+            tags: tags
         };
         //Map uses set instead of push
         games.set(data.gameID, gameInfo)
@@ -132,13 +130,6 @@ io.on('connection', function (socket) {
 
 
     socket.on(gameEvents.START_GAME, (data) => {
-        //Comment out for loop to change to map
-
-        // for (const g of games) {
-        //     if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
-        //         socketWrapper.startGame(io, g);
-        //     }
-        // }
         if(games.has(data.gameID))
         {
             let g = games.get(data.gameID);
@@ -163,15 +154,6 @@ io.on('connection', function (socket) {
         and their display will switch to the game lobby.
     */
     socket.on('joinGame', function (data) {
-        // for(var i=0; i < games.length; i++){
-        //     var g = games[i];
-        //     if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
-        //         //Add their data to the game
-        //         g.players.push(data.email);
-
-        //         socketWrapper.joinGame(socket, data, g);
-        //     }
-        // }
         if(games.has(data.gameID))
         {
             let g = games.get(data.gameID)
