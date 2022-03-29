@@ -109,7 +109,7 @@ io.on('connection', function (socket) {
         };
         games.push(gameInfo);
         
-        socketWrapper.createGame(socket, data, data.gameID);
+        socketWrapper.joinGame(socket, data, gameInfo);
         
         
     });
