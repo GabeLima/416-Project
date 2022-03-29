@@ -234,7 +234,7 @@ io.on('connection', function (socket) {
         }
 
         //Updating Current Round
-        if(data.currentRound)
+        if(data.currentRound != undefined)
         {
             g.currentRound = data.currentRound;
         }
