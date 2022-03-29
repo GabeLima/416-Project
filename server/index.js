@@ -154,18 +154,11 @@ io.on('connection', function (socket) {
             let g = games.get(data.gameID);
             if(g.gameStatus === gameStatus.LOBBY)
             {
-                //Have to unwrap the startGame function call because we have to set g to the games map for changes to apply
                 g.gameStatus = gameStatus.PLAYING;
                 //Updating the games map with the new gameInfo (new game status)
                 games.set(g.gameID, g);
 
-                // Tell the users that the game is starting.
-                io.to(g.gameID).emit(gameEvents.START_GAME);
-
-                // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
-                setTimeout(() => {
-                    io.to(g.gameID).emit(gameEvents.ROUND_END);
-                }, g.timePerRound * 1000);
+                socketWrapper.startGame(io, g);
                 return;
             }
         }
