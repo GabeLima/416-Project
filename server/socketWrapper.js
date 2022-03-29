@@ -14,18 +14,18 @@ joinGame = (socket, data, g) => {
     return;
 }
 
-startGame = (io, g) => {
-    g.gameStatus = gameStatus.PLAYING;
+// startGame = (io, g) => {
+//     g.gameStatus = gameStatus.PLAYING;
 
-    // Tell the users that the game is starting.
-    io.to(g.gameID).emit(gameEvents.START_GAME);
+//     // Tell the users that the game is starting.
+//     io.to(g.gameID).emit(gameEvents.START_GAME);
 
-    // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
-    setTimeout(() => {
-        io.to(g.gameID).emit(gameEvents.ROUND_END);
-    }, g.timePerRound * 1000);
-    return;
-}
+//     // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
+//     setTimeout(() => {
+//         io.to(g.gameID).emit(gameEvents.ROUND_END);
+//     }, g.timePerRound * 1000);
+//     return;
+// }
 
 
 modules.export = {

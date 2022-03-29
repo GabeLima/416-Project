@@ -140,10 +140,22 @@ io.on('connection', function (socket) {
         // }
         if(games.has(data.gameID))
         {
-            g = games.get(data.gameID);
+            let g = games.get(data.gameID);
             if(g.gameStatus === gameStatus.LOBBY)
             {
-                socketWrapper.startGame(io, g);
+                //Have to unwrap the startGame function call because we have to set g to the games map for changes to apply
+                g.gameStatus = gameStatus.PLAYING;
+                //Updating the games map with the new gameInfo (new game status)
+                games.set(g.gameID, g);
+
+                // Tell the users that the game is starting.
+                io.to(g.gameID).emit(gameEvents.START_GAME);
+
+                // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
+                setTimeout(() => {
+                    io.to(g.gameID).emit(gameEvents.ROUND_END);
+                }, g.timePerRound * 1000);
+                return;
             }
         }
 
@@ -168,19 +180,68 @@ io.on('connection', function (socket) {
         // }
         if(games.has(data.gameID))
         {
-            g = games.get(data.gameID)
+            let g = games.get(data.gameID)
             if(g.gameStatus === gameStatus.LOBBY && g.players.length < gameRules.PLAYER_LIMIT)
             {
-                //Add their data to the game
+                //Add their data to the game and updating the map
                 g.players.push(data.email);
+                games.set(g.gameID, g);
 
                 socketWrapper.joinGame(socket, data, g);
+                return;
             }
         }
 
         //Joining the game failed
         socket.emit("joinSuccess", false);
         console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
+    });
+
+    /*
+        Updating the live game data in the games map
+        Called by a player when they want to give new information
+        gameID, players (set by createGame/join game), gameStatus (governed by other functions)
+        numRounds (decided by createGame), timePerRound (decided by createGame)
+
+        Changes that can be done by function:
+        playerVotes, currentRound
+    */
+    socket.on('updateGameInfo', (data) => {
+        if(!data.gameID)
+        {
+            console.log("There is no gameID provided so there is no way to update a game.")
+        }
+
+        let g = games.get(data.gameID);
+
+        //Based off David's updateVote but for the live data in gameInfo, David should change updateVotes
+        //To just take the live data and store it instead
+        if(data.vote)                   //Player submited a vote
+        {
+            //Remove vote if already present
+            for(let i = 0; i < g.playerVotes.length; i++)
+            {
+                let removedI = g.playerVotes[i].findIndex(data.email);
+                if(removedI > -1)
+                {
+                    g.playerVotes[i].splice(removedI, 1);
+                    break;
+                }
+            }
+
+            //Adds the vote to the 
+            g.playerVotes[data.vote].push(data.email);
+        }
+
+        //Updating Current Round
+        if(data.currentRound)
+        {
+            g.currentRound = data.currentRound;
+        }
+
+        //After all potential updates/checks are done, actually update the info in the map
+        games.set(g.gameID, g);
+        console.log(g.gameID + "'s information has been updated.");
     });
 
 
@@ -270,7 +331,7 @@ Images.findOne({imageID: imgID}, (err, data) => {
                 for(var i=0; i<data.playerVotes.length; i++) {
                     let removeIndex = data.playerVotes[i].findIndex(email);
                     if(removeIndex > -1) {
-                        data.playerVotes.splice(removeIndex, 1);
+                        data.playerVotes.splice(removeIndex, 1);        //removed a story's entire vote not a voter's vote
                         break;
                     }
                 }
