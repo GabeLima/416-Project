@@ -200,15 +200,16 @@ io.on('connection', function (socket) {
 
     /*
         Updates the playerVotes field for a game 
-        Deletes previous vote if present then adds a new vote
-        inputs:
-            gameID, email, storyNumber
     */
     socket.on('updateVotes', function(data) {
         const {gameID, email, storyNumber} = data;
     
         // remove user from votes if already present
         for(let i=0; i<games[gameID].playerVotes.length; i++) {
+            if(!games.containsKey(gameID)) {
+                socket.emit('updateVotes', false);
+                return;
+            }
             let r = game[gameID].playerVotes[i].indexOf(email);
             if(r > -1) {
                 games[gameID].playerVotes[i].splice(r, 1);
@@ -218,6 +219,7 @@ io.on('connection', function (socket) {
 
         // add vote
         games[gameID].playerVotes[storyNumber].push(email);
+        socket.emit('updateVotes', true);
     });
 
     /*
