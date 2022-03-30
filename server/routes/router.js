@@ -15,5 +15,7 @@ router.post('/user', UserController.loginUser)
 router.get('/user/:username', UserController.getUser);
 router.get('/logout', UserController.logoutUser)
 router.get('/loggedIn', UserController.getLoggedIn)
+router.get('/resetPassword', UserController.resetPassword)
+router.get('/changePassword', UserController.changePassword)
 
 module.exports = router
