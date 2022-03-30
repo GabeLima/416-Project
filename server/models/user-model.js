@@ -8,7 +8,9 @@ const UserSchema = new Schema(
         passwordHash: { type: String, required: true },
         followers: { type: [String], required: true },
         following: { type: [String], required: true },
-        followedTags: { type: [String], required: true }
+        followedTags: { type: [String], required: true },
+        securityQuestion: { type: String, required: true },
+        securityAnswer: {type: String, required: true }
     },
     { timestamps: true },
 );
