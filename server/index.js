@@ -319,7 +319,7 @@ io.on('connection', function (socket) {
         for(let i=0; i<games.get(gameID).playerVotes.length; i++) {
             let r = game.get(gameID).playerVotes[i].indexOf(email);
             if(r > -1) {
-                games[gameID].playerVotes[i].splice(r, 1);
+                games.get(gameID).playerVotes[i].splice(r, 1);
                 break;
             }
         }
@@ -336,6 +336,7 @@ io.on('connection', function (socket) {
         const {textID} = data;
         if(!textID) {
             console.log("Error in getText, textID not provided");
+            socket.emit('getText', false);
             return;
         }
         Texts.findOne({textID: textID}, (err, data) => {
