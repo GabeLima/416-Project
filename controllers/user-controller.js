@@ -511,5 +511,3 @@ module.exports = {
     resetPassword,
     changePassword
 }
-    getUser
-}
