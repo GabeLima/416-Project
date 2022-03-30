@@ -649,8 +649,3 @@ module.exports = {
     resetPassword,
     changePassword
 }
-<<<<<<< HEAD
-=======
-    getUser
-}
->>>>>>> master
