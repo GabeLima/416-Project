@@ -1,21 +1,46 @@
 const chai = require('chai');
-const userController = require("../controllers/user-controller");
+const sinon = require("sinon");
+const mongoose = require("mongoose");
+const UserModel = require("../models/user-model");
+const UserController = require("../controllers/user-controller");
 
 chai.should();
+let sandbox = sinon.createSandbox();
 
 describe("how the user controller deals with requests", () => {
-  
-    before(() => {
+  let res = {};
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+        res = {
+            json: sandbox.spy(),
+            status: sandbox.stub().returns({end: sandbox.spy()})
+        };
     });
   
-    after(() => {
+    afterEach(() => {
+        sandbox.restore();
     });
   
    
     // TODO - IMPLEMENT BELOW
     // Tim: changePassword
-    it("changes a password", () => {
+    it("changes a password", (done) => {
+        let req = {
+                body: {
+                    email: "test@gmail.com",
+                    password: "oldpassword",
+                    newPassword: "newpassword",
+                    newPasswordVerify: "newpassword"
+                }
+        };
 
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+
+        UserController.changePassword(req, res);
+
+        sinon.assert.calledWith(UserModel.findOne, { email: 'test@gmail.com' });
+
+        done();
     });
 
 
