@@ -197,8 +197,8 @@ loginUser = async (req, res) => {
 registerUser = async (req, res) => {
     try {
         console.log("Attempting to register the user");
-        const {email, password, passwordVerify, userName, securityQuestion, securityAnswer } = req.body;
-        if (!email || !password || !passwordVerify || !userName || !securityQuestion || !securityAnswer) {
+        const {email, password, passwordVerify, username, securityQuestion, securityAnswer } = req.body;
+        if (!email || !password || !passwordVerify || !username || !securityQuestion || !securityAnswer) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
@@ -235,7 +235,7 @@ registerUser = async (req, res) => {
         let following = []
         let followedTags = []
         const newUser = new User({
-            email, passwordHash, followers, following, followedTags, userName, securityQuestion, securityAnswer
+            email, passwordHash, followers, following, followedTags, username, securityQuestion, securityAnswer
         });
         const savedUser = await newUser.save();
 
