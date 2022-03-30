@@ -1,17 +1,43 @@
 const http = require('http');
 const express = require('express');
+const cors = require('cors');
 const socketio = require('socket.io');
 const fs = require("fs");
+const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
+const path = require("path");
 
 const Games = require("./models/game-model");
 const Images = require("./models/image-model");
 const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
 
-const socketWrapper = require('./socketWrapper.js');
-import {gameEvents, gameRules, gameStatus, images}from "./constants.js";
-
+dotenv.config();
 const app = express();
+// SETUP THE MIDDLEWARE
+app.use(express.urlencoded({ extended: true }))
+app.use(cors({
+    origin: ["https://testderit.herokuapp.com/"],
+    credentials: true
+}))
+app.use(express.json())
+app.use(cookieParser())
+
+// SETUP OUR OWN ROUTERS AS MIDDLEWARE
+const router = require('./routes/router')
+app.use('/api', router)
+
+// INITIALIZE OUR DATABASE OBJECT
+const db = require('./db')
+db.on('error', console.error.bind(console, 'MongoDB connection error:'))
+
+
+// Step 1:
+app.use(express.static(path.resolve(__dirname, "./client/build")));
+// Step 2:
+app.get("*", function (request, response) {
+  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+});
 const server = http.createServer(app);
 const io = socketio(server, {
     cors: {
@@ -123,7 +149,7 @@ io.on('connection', function (socket) {
         //Map uses set instead of push
         games.set(data.gameID, gameInfo)
         
-        socketWrapper.joinGame(socket, data, gameInfo);
+        joinGame(socket, data, gameInfo);
         
         
     });
@@ -139,7 +165,7 @@ io.on('connection', function (socket) {
                 //Updating the games map with the new gameInfo (new game status)
                 games.set(g.gameID, g);
 
-                socketWrapper.startGame(io, g);
+                startGame(io, g);
                 return;
             }
         }
@@ -163,7 +189,7 @@ io.on('connection', function (socket) {
                 g.players.push(data.email);
                 games.set(g.gameID, g);
 
-                socketWrapper.joinGame(socket, data, g);
+                joinGame(socket, data, g);
                 return;
             }
         }
@@ -254,7 +280,7 @@ io.on('connection', function (socket) {
     */
     socket.on('notifyFollowers', function(data) {
         // get a list of followed users from the database
-        const email = data.email;
+        const {email, gameID} = data;
         Users.findOne({email: email}, (err, data) => {
             if(err || !data) {
                 console.log("Error in notifyFollowers: " + err);
@@ -267,13 +293,7 @@ io.on('connection', function (socket) {
 
                 // notify every online follower
                 online_followers.forEach( (follower) => {
-                    /* 
-                        Currently there's no way to know what the gameID is
-                        if we want to include the gameID 
-                        either include the gameID as a paramater to this function
-                        or add a creator field to the games list
-                    */
-                    io.to(follower.clientId).emit("newGameNotification", email + " has started a game!", data.gameID);
+                    io.to(follower.clientId).emit("newGameNotification", email + " has started a game with gameID " + gameID);
                 });
                 socket.emit("notifyFollowers", true);
             }
@@ -282,9 +302,6 @@ io.on('connection', function (socket) {
 
     /*
         Returns an image from the database
-        TODO: 
-            Using roundNumber?
-            Figure out how to return properly
     */
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
@@ -314,36 +331,78 @@ io.on('connection', function (socket) {
 
     /*
         Updates the playerVotes field for a game 
-        Deletes previous vote if present then adds a new vote
-        inputs:
-            gameID, email, storyNumber
     */
     socket.on('updateVotes', function(data) {
-        // get game data from db
         const {gameID, email, storyNumber} = data;
-        Games.findOne({gameID: gameID}, (err, data) => {
+    
+        if(!gameID || !email || !storyNumber || !games.has(gameID)) {
+            socket.emit('updateVotes', false);
+            console.log("Error in updateVotes, missing paramaters");
+            return;
+        }
+
+        // remove user from votes if already present
+        for(let i=0; i<games.get(gameID).playerVotes.length; i++) {
+            let r = game.get(gameID).playerVotes[i].indexOf(email);
+            if(r > -1) {
+                games.get(gameID).playerVotes[i].splice(r, 1);
+                break;
+            }
+        }
+
+        // add vote
+        games.get(gameID).playerVotes[storyNumber].push(email);
+        socket.emit('updateVotes', true);
+    });
+
+    /*
+        Returns text from the database
+    */
+    socket.on('getText', function(data) {
+        const {textID} = data;
+        if(!textID) {
+            console.log("Error in getText, textID not provided");
+            socket.emit('getText', false);
+            return;
+        }
+        Texts.findOne({textID: textID}, (err, data) => {
             if(err || !data) {
-                console.log("Error in updateVotes: " + err);
-                socket.emit("updateVotes", false);
+                socket.emit('getText', false);
+                console.log("Error in getText " + err);
+                socket.emit('getText', false);
             }
             else {
-                // remove vote if already present
-                for(var i=0; i<data.playerVotes.length; i++) {
-                    let removeIndex = data.playerVotes[i].findIndex(email);
-                    if(removeIndex > -1) {
-                        data.playerVotes[i].splice(removeIndex, 1);        //removed a story's entire vote not a voter's vote
-                        break;
-                    }
-                }
-
-                // add new vote
-                data.playerVotes[storyNumber].push(email);
-
-                // apply changes
-                data.save();
-                socket.emit("updateVotes", true);
+                socket.emit('getText', data.text);
             }
+        })
+    });
+
+    /*
+        Save the game to the database
+    */
+    socket.on('saveGame', async (data) => {
+        const {gameID} = data
+        if(!gameID) {
+            console.log("Error in saveGame, gameID not provided");
+        }
+        const g = games.get(gameID);
+        let communityVotes = [];
+        for(let i=0; i<g.playerVotes; i++) {
+            communityVotes.push([]);
+        }
+        const gameData = new Games( {
+            isComic: true,
+            players: g.players,
+            panels: g.panels, // This doesn't exist but how else would this be constructed?
+            playerVotes: g.playerVotes,
+            communityVotes: communityVotes,
+            gameID: g.gameID,
+            comments: [],
+            tags: g.tags,
+            creator: g.creator
         });
+        const savedGame = await gameData.save();
+        console.log(savedGame.gameID + " was successfully saved");
     });
 
     /*

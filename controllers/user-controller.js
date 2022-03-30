@@ -197,8 +197,8 @@ loginUser = async (req, res) => {
 registerUser = async (req, res) => {
     try {
         console.log("Attempting to register the user");
-        const {email, password, passwordVerify, userName } = req.body;
-        if (!email || !password || !passwordVerify || !userName) {
+        const {email, password, passwordVerify, username, securityQuestion, securityAnswer } = req.body;
+        if (!email || !password || !passwordVerify || !username || !securityQuestion || !securityAnswer) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
@@ -235,7 +235,7 @@ registerUser = async (req, res) => {
         let following = []
         let followedTags = []
         const newUser = new User({
-            email, passwordHash, followers, following, followedTags, userName
+            email, passwordHash, followers, following, followedTags, username, securityQuestion, securityAnswer
         });
         const savedUser = await newUser.save();
 
@@ -340,7 +340,166 @@ getUser = async (req, res) => {
     });
 }
 
+/*
+    Resets a user's passwordHash in the database.
+    Requires a correct answer for that user's security question.
+    STATUS CODES:
+    200: Success
+    400: Body not provided
+    404: Failure to reset password
+*/
+resetPassword = async(req, res) => {
+    const body = req.body;
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to update',
+        });
+    }
+    const {email, securityAnswer, newPassword, newPasswordVerify} = req.body;        
+    if (!email || !securityAnswer || !newPassword || !newPasswordVerify) {
+        return res
+            .status(400)
+            .json({ errorMessage: "Please enter all required fields." });
+    }
 
+    // verification
+    var loggedInUser = await User.findOne({ email: email });
+    if(!loggedInUser) {
+        return res
+        .status(400)
+        .json({ errorMessage: "Couldn't find an account with that email!"});
+    }
+    if(securityAnswer !== loggedInUser.securityAnswer) {
+        return res
+        .status(400)
+        .json({ errorMessage: "Incorrect Answer"});
+    }
+    if (newPassword.length < 8) {
+        return res
+            .status(400)
+            .json({
+                errorMessage: "Please enter a password of at least 8 characters."
+            });
+    }
+    if (newPassword !== newPasswordVerify) {
+        return res
+            .status(400)
+            .json({
+                errorMessage: "Please enter the same password twice."
+            });
+    }
+
+    // reseting password
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const newPasswordHash = await bcrypt.hash(newPassword, salt);
+    await User.findOne({email: email}, (err, user) => {
+        if(err || !user) {
+            return res.status(404).json({
+                success:false,
+                message: "Valid user with such email not found"
+            });
+        }
+
+        user.passwordHash = newPasswordHash;
+
+        user.save().then(() => {
+            return res.status(200).json({
+                success: true,
+                user: user,
+                message: "User's password has been reset"
+            });
+        }).catch(err => {
+            console.log("FAILURE " + JSON.stringify(err));
+            return res.status(404).json({
+                success: false,
+                err,
+                message: "User's password has not been reset"
+            });
+        });
+    });
+}
+
+/*
+    Updates a user's passwordHash in the database.
+    Requires the current password to be entered.
+    STATUS CODES:
+    200: Success
+    400: Body not provided
+    404: Failure to change password
+*/
+changePassword = async (req, res) => {
+    const body = req.body;
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body to update',
+        });
+    }
+    const {email, password, newPasswordVerify, newPassword} = req.body;
+    if (!email || !password || !newPassword || !newPasswordVerify) {
+        return res
+            .status(400)
+            .json({ errorMessage: "Please enter all required fields." });
+    }
+
+    // verification
+    var loggedInUser = await User.findOne({ email: email });
+    if(!loggedInUser) {
+        return res
+        .status(400)
+        .json({ errorMessage: "Couldn't find an account with that email!"});
+    }
+    // verify current password
+    var result = await compareAsync(password, loggedInUser.passwordHash);
+    if(!result){
+        console.log("Incorrect Password");
+        return res.status(400).json({ errorMessage: "Incorrect Password"});
+    }
+    if (newPassword.length < 8) {
+        return res
+            .status(400)
+            .json({
+                errorMessage: "Please enter a password of at least 8 characters."
+            });
+    }
+    if(newPassword !== newPasswordVerify) {
+        return res
+        .status(400)
+        .json({ errorMessage: "Please enter the same password twice."});
+    }
+
+    // changing password
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+    const newPasswordHash = await bcrypt.hash(newPassword, salt);
+    await User.findOne({email: email}, (err, user) => {
+        if(err || !user) {
+            return res.status(404).json({
+                success:false,
+                message: "Valid user with such email not found"
+            });
+        }
+
+        user.passwordHash = newPasswordHash;
+
+        user.save().then(() => {
+            return res.status(200).json({
+                success: true,
+                user: user,
+                message: "User's password has been changed"
+            });
+        }).catch(err => {
+            console.log("FAILURE " + JSON.stringify(err));
+            return res.status(404).json({
+                success: false,
+                err,
+                message: "User's password has not been changed"
+            });
+        });
+    });
+}
 module.exports = {
     getLoggedIn,
     registerUser,
@@ -348,5 +507,9 @@ module.exports = {
     logoutUser,
     updateUser,
     updateFollowers,
+    getUser,
+    resetPassword,
+    changePassword
+}
     getUser
 }

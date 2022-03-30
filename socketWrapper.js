@@ -1,7 +1,5 @@
-import {gameEvents, gameRules, gameStatus }from "./constants.js";
 
-
-joinGame = (socket, data, g) => {
+function joinGame(socket, data, g){
     
     socket.join(g.gameID);
 
@@ -14,7 +12,7 @@ joinGame = (socket, data, g) => {
     return;
 }
 
-startGame = (io, g) => {
+function startGame(io, g){
     // Tell the users that the game is starting.
     io.to(g.gameID).emit(gameEvents.START_GAME);
 
@@ -26,7 +24,7 @@ startGame = (io, g) => {
 }
 
 
-modules.export = {
+module.export = {
     joinGame,
     startGame
 }
