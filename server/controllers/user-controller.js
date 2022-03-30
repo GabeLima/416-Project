@@ -446,7 +446,7 @@ changePassword = async (req, res) => {
 
     // verification
     var loggedInUser = await User.findOne({ email: email });
-    if(loggedInUser === null){
+    if(!loggedInUser) {
         return res
         .status(400)
         .json({ errorMessage: "Couldn't find an account with that email!"});
