@@ -372,9 +372,9 @@ io.on('connection', function (socket) {
             comments: [],
             tags: g.tags,
             creator: g.creator
-        })
+        });
         const savedGame = await gameData.save();
-        console.log(savedGame.gameID + " was successfully saved")
+        console.log(savedGame.gameID + " was successfully saved");
     });
 
     /*
