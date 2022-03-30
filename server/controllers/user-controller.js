@@ -349,7 +349,7 @@ getUser = async (req, res) => {
     404: Failure to reset password
 */
 resetPassword = async(req, res) => {
-    const body = req.body
+    const body = req.body;
     if (!body) {
         return res.status(400).json({
             success: false,
@@ -430,7 +430,7 @@ resetPassword = async(req, res) => {
     404: Failure to change password
 */
 changePassword = async (req, res) => {
-    const body = req.body
+    const body = req.body;
     if (!body) {
         return res.status(400).json({
             success: false,
