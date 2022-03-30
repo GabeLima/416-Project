@@ -1,14 +1,36 @@
 const http = require('http');
 const express = require('express');
+const cors = require('cors');
 const socketio = require('socket.io');
 const fs = require("fs");
+const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 
 const Games = require("./models/game-model");
 const Images = require("./models/image-model");
 const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
 
+dotenv.config();
 const app = express();
+// SETUP THE MIDDLEWARE
+app.use(express.urlencoded({ extended: true }))
+app.use(cors({
+    origin: ["http://localhost:3000"],
+    credentials: false
+}))
+app.use(express.json())
+app.use(cookieParser())
+
+// SETUP OUR OWN ROUTERS AS MIDDLEWARE
+const router = require('./routes/router')
+app.use('/api', router)
+
+// INITIALIZE OUR DATABASE OBJECT
+const db = require('./db')
+db.on('error', console.error.bind(console, 'MongoDB connection error:'))
+
+
 const server = http.createServer(app);
 const io = socketio(server, {
     cors: {
