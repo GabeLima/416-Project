@@ -10,11 +10,14 @@ router.put('/game/:gameID', auth.verify, GameController.updateGame)         //3 
 router.delete("/game/:gameID", auth.verify, GameController.deleteGame)
 router.post('/game/createGame', auth.verify, GameController.createGame)
 
-router.put('/user/:username/followers', auth.verify, UserController.updateFollowers)
+
+router.put('/game/:email/followers', auth.verify, UserController.updateFollowers)
 router.post('/register', UserController.registerUser)
 router.post('/user', UserController.loginUser)
 router.get('/user/:username', UserController.getUser);
 router.get('/logout', UserController.logoutUser)
 router.get('/loggedIn', UserController.getLoggedIn)
+router.get('/resetPassword', UserController.resetPassword)
+router.get('/changePassword', UserController.changePassword)
 
 module.exports = router
