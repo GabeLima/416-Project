@@ -32,9 +32,6 @@ const db = require('./db')
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 
-// Accessing the path module
-const path = require("path");
-
 // Step 1:
 app.use(express.static(path.resolve(__dirname, "../client/build")));
 // Step 2:
