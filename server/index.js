@@ -309,13 +309,15 @@ io.on('connection', function (socket) {
     socket.on('updateVotes', function(data) {
         const {gameID, email, storyNumber} = data;
     
+        if(!gameID || !email || !storyNumber || !games.containsKey(gameID)) {
+            socket.emit('updateVotes', false);
+            console.log("Error in updateVotes, missing paramaters");
+            return;
+        }
+
         // remove user from votes if already present
-        for(let i=0; i<games[gameID].playerVotes.length; i++) {
-            if(!games.containsKey(gameID)) {
-                socket.emit('updateVotes', false);
-                return;
-            }
-            let r = game[gameID].playerVotes[i].indexOf(email);
+        for(let i=0; i<games.get(gameID).playerVotes.length; i++) {
+            let r = game.get(gameID).playerVotes[i].indexOf(email);
             if(r > -1) {
                 games[gameID].playerVotes[i].splice(r, 1);
                 break;
@@ -323,8 +325,56 @@ io.on('connection', function (socket) {
         }
 
         // add vote
-        games[gameID].playerVotes[storyNumber].push(email);
+        games.get(gameID).playerVotes[storyNumber].push(email);
         socket.emit('updateVotes', true);
+    });
+
+    /*
+        Returns text from the database
+    */
+    socket.on('getText', function(data) {
+        const {textID} = data;
+        if(!textID) {
+            console.log("Error in getText, textID not provided");
+            return;
+        }
+        Texts.findOne({textID: textID}, (err, data) => {
+            if(err || !data) {
+                socket.emit('getText', false);
+                console.log("Error in getText " + err);
+            }
+            else {
+                socket.emit('getText', data.text);
+            }
+        })
+    });
+
+    /*
+        Save the game to the database
+    */
+    socket.on('saveGame', async (data) => {
+        const {gameID} = data
+        if(!gameID) {
+            console.log("Error in saveGame, gameID not provided");
+        }
+        const g = games.get(gameID);
+        let communityVotes = [];
+        for(let i=0; i<g.playerVotes; i++) {
+            communityVotes.push([]);
+        }
+        const gameData = new Games( {
+            isComic: false,
+            players: g.players,
+            panels: g.panels, // This doesn't exist but how else would this be constructed?
+            playerVotes: g.playerVotes,
+            communityVotes: communityVotes,
+            gameID: g.gameID,
+            comments: [],
+            tags: g.tags,
+            creator: g.creator
+        })
+        const savedGame = await gameData.save();
+        console.log(savedGame.gameID + " was successfully saved")
     });
 
     /*
