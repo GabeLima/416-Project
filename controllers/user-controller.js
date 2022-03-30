@@ -500,7 +500,6 @@ changePassword = async (req, res) => {
         });
     });
 }
-
 module.exports = {
     getLoggedIn,
     registerUser,
@@ -511,4 +510,6 @@ module.exports = {
     getUser,
     resetPassword,
     changePassword
+}
+    getUser
 }

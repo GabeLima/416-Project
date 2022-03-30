@@ -10,6 +10,7 @@ router.put('/game/:gameID', auth.verify, GameController.updateGame)         //3 
 router.delete("/game/:gameID", auth.verify, GameController.deleteGame)
 router.post('/game/createGame', auth.verify, GameController.createGame)
 
+
 router.put('/game/:email/followers', auth.verify, UserController.updateFollowers)
 router.post('/register', UserController.registerUser)
 router.post('/user', UserController.loginUser)

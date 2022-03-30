@@ -18,5 +18,12 @@
     "nodemon": "^2.0.15",
     "request": "^2.88.2",
     "socket.io": "4.4.1"
+  },
+  "scripts": {
+    "start": "nodemon index.js",
+    "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build"
+  },
+  "engines": {
+    "node": "14.17.4" 
   }
 }
