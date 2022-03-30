@@ -5,6 +5,7 @@ const fs = require("fs");
 
 const Games = require("./models/game-model");
 const Images = require("./models/image-model");
+const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
 
 const socketWrapper = require('./socketWrapper.js');
@@ -32,9 +33,14 @@ var clients =[];
 //     creator: "",
 //     numRounds: data.numRounds,
 //     timePerRound: data.timePerRound,
-//     currentRound: 0
+//     currentRound: 0,
+//     tags: []
 // };
-var games = [];
+/*
+    Changing games to a map
+    gameID : gameInfo
+*/
+var games = new Map();
 
 
 
@@ -71,15 +77,13 @@ io.on('connection', function (socket) {
         switch to the game lobby.
     */
     socket.on(gameEvents.CREATE_GAME, (data) => {
-
-        for (const g of games) {
-            if (g.gameID === data.gameID || g.players.includes(data.email)) {
-                // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
-                console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
-                socket.emit("joinSuccess", false);
-                return;
-            }
-        };
+        if(games.has(data.gameID))
+        {
+            // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
+            console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
+            socket.emit("joinSuccess", false);
+            return;
+        }
 
         let numRounds, timePerRound;
 
@@ -95,8 +99,16 @@ io.on('connection', function (socket) {
             timePerRound = gameRules.DEFAULT_TIME_PER_ROUND;
         }
         else {
-            timePerRound = data.timePerRound
+            timePerRound = data.timePerRound;
         }
+
+        //Checking tags
+        let tags = [];
+        if (data.tags)
+        {
+            tags = data.tags;
+        }
+
         const gameInfo = {
             gameID: data.gameID,
             players: [data.email],
@@ -105,9 +117,11 @@ io.on('connection', function (socket) {
             playerVotes: [[]],
             numRounds: numRounds,
             timePerRound: timePerRound,
-            currentRound: 0
+            currentRound: 0,
+            tags: tags
         };
-        games.push(gameInfo);
+        //Map uses set instead of push
+        games.set(data.gameID, gameInfo)
         
         socketWrapper.joinGame(socket, data, gameInfo);
         
@@ -116,13 +130,21 @@ io.on('connection', function (socket) {
 
 
     socket.on(gameEvents.START_GAME, (data) => {
-        for (const g of games) {
-            if (g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID) {
+        if(games.has(data.gameID))
+        {
+            let g = games.get(data.gameID);
+            if(g.gameStatus === gameStatus.LOBBY)
+            {
+                g.gameStatus = gameStatus.PLAYING;
+                //Updating the games map with the new gameInfo (new game status)
+                games.set(g.gameID, g);
+
                 socketWrapper.startGame(io, g);
+                return;
             }
         }
 
-        io.to(g.gameID).emit("startFailure");
+        io.to(data.gameID).emit("startFailure");
         console.log("The game with ID " + data.gameID + " could not be successfully started.");
     });
 
@@ -132,17 +154,82 @@ io.on('connection', function (socket) {
         and their display will switch to the game lobby.
     */
     socket.on('joinGame', function (data) {
-        for(var i=0; i < games.length; i++){
-            var g = games[i];
-            if(g.gameStatus === gameStatus.LOBBY && g.gameID === data.gameID && g.players.length < gameRules.PLAYERLIMIT){
-                //Add their data to the game
+        if(games.has(data.gameID))
+        {
+            let g = games.get(data.gameID)
+            if(g.gameStatus === gameStatus.LOBBY && g.players.length < gameRules.PLAYER_LIMIT)
+            {
+                //Add their data to the game and updating the map
                 g.players.push(data.email);
+                games.set(g.gameID, g);
+
                 socketWrapper.joinGame(socket, data, g);
+                return;
             }
         }
+
         //Joining the game failed
         socket.emit("joinSuccess", false);
         console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
+    });
+
+    /*
+        Updating the live game data in the games map
+        Called by a player when they want to give new information
+        gameID, players (set by createGame/join game), gameStatus (governed by other functions)
+        numRounds (decided by createGame), timePerRound (decided by createGame)
+
+        Changes that can be done by function:
+        playerVotes, currentRound
+    */
+    socket.on('updateGameInfo', (data) => {
+        if(!data.gameID)
+        {
+            console.log("There is no gameID provided so there is no way to update a game.")
+        }
+
+        let g = games.get(data.gameID);
+
+        //Based off David's updateVote but for the live data in gameInfo, David should change updateVotes
+        //To just take the live data and store it instead
+        if(data.vote != undefined)                   //Player submited a vote
+        {
+            //Remove vote if already present
+            for(let i = 0; i < g.playerVotes.length; i++)
+            {
+                let removedI = g.playerVotes[i].findIndex(data.email);
+                if(removedI > -1)
+                {
+                    g.playerVotes[i].splice(removedI, 1);
+                    break;
+                }
+            }
+
+            //Adds the vote to the 
+            g.playerVotes[data.vote].push(data.email);
+        }
+
+        //Updating number of rounds
+        if(data.numRounds != undefined)
+        {
+            g.numRounds = data.numRounds;
+        }
+
+        //Updating the time per round
+        if(data.timePerRound != undefined)
+        {
+            g.timePerRound = data.timePerRound;
+        }
+
+        //Updating tags
+        if(data.tags != undefined)
+        {
+            g.tags = data.tags;
+        }
+
+        //After all potential updates/checks are done, actually update the info in the map
+        games.set(g.gameID, g);
+        console.log(g.gameID + "'s information has been updated.");
     });
 
 
@@ -151,7 +238,14 @@ io.on('connection', function (socket) {
     */
     socket.on('getAllGames', function (data) {
         console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
-        let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
+        //let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
+        let lobbyGames = [];
+        for (let gInfo of games.values()){
+            if(gInfo.gameStatus === gameStatus.LOBBY)                                   //Gets games that are still in lobby state
+            {
+                lobbyGames.push(gInfo);
+            }
+        }
         socket.emit("gameList", lobbyGames);
     });
 
@@ -237,7 +331,7 @@ io.on('connection', function (socket) {
                 for(var i=0; i<data.playerVotes.length; i++) {
                     let removeIndex = data.playerVotes[i].findIndex(email);
                     if(removeIndex > -1) {
-                        data.playerVotes.splice(removeIndex, 1);
+                        data.playerVotes[i].splice(removeIndex, 1);        //removed a story's entire vote not a voter's vote
                         break;
                     }
                 }
@@ -255,31 +349,49 @@ io.on('connection', function (socket) {
     /*
         Uploading the image that was received from the message (saving it to the database)
     */
-   socket.on('saveImage', async (data) => {
-       //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
-       if(!data.image || !data.imageID)
-       {
+    socket.on('saveImage', async (data) => {
+        //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
+        if(!data.image || !data.imageID)
+        {
             console.log("The necessary parameters for saving the image was not provided.");
             return;
-       }
+        }
 
-       console.log("Image received");
-       console.log(data.imageID + " : " + data.image);
+        console.log("Image received");
+        console.log(data.imageID + " : " + data.image);
 
-       const imageData = new Image({
-           image: data.image,
-           imageID: data.imageID
-       });
+        const imageData = new Images({
+            image: data.image,
+            imageID: data.imageID
+        });
 
-       savedImage = await imageData.save();
+        savedImage = await imageData.save();
 
-       console.log(savedImage.imageID + " was successfully saved.")
+        console.log(savedImage.imageID + " was successfully saved.");
+    });
 
-       /*
-        Are we going to handle send the image to the next random person here?
-        TODO: choosing a random person if not end of next round
-       */
-   });
+   /*
+        Uploading/Saving the text that was received from the message (saving it to the database)
+   */
+    socket.on('saveText', async (data) => {
+        if(!data.text || !data.textID)
+        {
+            console.log("The necessary parameters for saving the text was not provided.");
+            return;
+        }
+
+        console.log("Text received");
+        console.log(data.textID + " : " + data.text);
+
+        const textData = new Texts({
+            text : data.text,
+            textID : data.textID
+        });
+
+        savedText = await textData.save();
+
+        console.log(savedText.textID + " was successfully saved.");
+    });
 
    socket.on('roundEnd', function(data) {
     const {gameID, storyNumber, currentRound} = data;
@@ -304,10 +416,8 @@ io.on('connection', function (socket) {
     //Call client round end, which will call saveImage and this function again (if the game isn't over)
     setTimeout(() => {
         io.to(gameID).emit(gameEvents.ROUND_END);
-    }, g.timePerRound * 1000);
-});
-
-
+        }, g.timePerRound * 1000);
+    });
 
 
 
