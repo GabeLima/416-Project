@@ -363,7 +363,7 @@ io.on('connection', function (socket) {
             communityVotes.push([]);
         }
         const gameData = new Games( {
-            isComic: false,
+            isComic: true,
             players: g.players,
             panels: g.panels, // This doesn't exist but how else would this be constructed?
             playerVotes: g.playerVotes,
