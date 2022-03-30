@@ -17,7 +17,7 @@ const app = express();
 // SETUP THE MIDDLEWARE
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://testderit.herokuapp.com/"],
     credentials: true
 }))
 app.use(express.json())
@@ -33,10 +33,10 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 
 // Step 1:
-app.use(express.static(path.resolve(__dirname, "../client/build")));
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 // Step 2:
 app.get("*", function (request, response) {
-  response.sendFile(path.resolve(__dirname, "../client/build", "index.html"));
+  response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
 });
 
 
