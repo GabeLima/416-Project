@@ -1,4 +1,4 @@
-// ripped from tutorial
+// ripped from socket tutorial
 // with { "type": "module" } in your package.json
 import { createServer } from "http";
 import { io as Client } from "socket.io-client";
@@ -18,9 +18,12 @@ import { assert } from "chai";
 // Vicky (leader): updateGameInfo, notifyFollowers, getImage
 
 // David: create_game, start_game, saveImage
+describe("", () => {
+
+});
 
 // ripped tutorial stuff, might be malware idk
-describe("my awesome project", () => {
+describe("create", () => {
   let io, serverSocket, clientSocket;
 
   before((done) => {
