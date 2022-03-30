@@ -8,9 +8,6 @@ const Images = require("./models/image-model");
 const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
 
-const socketWrapper = require('./socketWrapper.js');
-import {gameEvents, gameRules, gameStatus, images}from "./constants.js";
-
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server, {
@@ -123,7 +120,7 @@ io.on('connection', function (socket) {
         //Map uses set instead of push
         games.set(data.gameID, gameInfo)
         
-        socketWrapper.joinGame(socket, data, gameInfo);
+        joinGame(socket, data, gameInfo);
         
         
     });
@@ -139,7 +136,7 @@ io.on('connection', function (socket) {
                 //Updating the games map with the new gameInfo (new game status)
                 games.set(g.gameID, g);
 
-                socketWrapper.startGame(io, g);
+                startGame(io, g);
                 return;
             }
         }
@@ -163,7 +160,7 @@ io.on('connection', function (socket) {
                 g.players.push(data.email);
                 games.set(g.gameID, g);
 
-                socketWrapper.joinGame(socket, data, g);
+                joinGame(socket, data, g);
                 return;
             }
         }
