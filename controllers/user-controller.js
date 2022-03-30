@@ -509,6 +509,5 @@ module.exports = {
     updateFollowers,
     getUser,
     resetPassword,
-    changePassword,
-    getUser
+    changePassword
 }
