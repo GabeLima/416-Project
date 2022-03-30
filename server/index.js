@@ -309,7 +309,7 @@ io.on('connection', function (socket) {
     socket.on('updateVotes', function(data) {
         const {gameID, email, storyNumber} = data;
     
-        if(!gameID || !email || !storyNumber || !games.containsKey(gameID)) {
+        if(!gameID || !email || !storyNumber || !games.has(gameID)) {
             socket.emit('updateVotes', false);
             console.log("Error in updateVotes, missing paramaters");
             return;
@@ -343,6 +343,7 @@ io.on('connection', function (socket) {
             if(err || !data) {
                 socket.emit('getText', false);
                 console.log("Error in getText " + err);
+                socket.emit('getText', false);
             }
             else {
                 socket.emit('getText', data.text);
