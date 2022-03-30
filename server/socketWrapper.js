@@ -15,8 +15,6 @@ joinGame = (socket, data, g) => {
 }
 
 startGame = (io, g) => {
-    g.gameStatus = gameStatus.PLAYING;
-
     // Tell the users that the game is starting.
     io.to(g.gameID).emit(gameEvents.START_GAME);
 
