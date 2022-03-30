@@ -1,8 +1,42 @@
+const chai = require('chai');
+const gameController = require("../controllers/game-controller");
 
-// Gabe: getGame, 
+chai.should();
 
-// Tim: None
+describe("how the game controller deals with requests", () => {
+  
+    before(() => {
+    });
+  
+    after(() => {
+    });
+  
+   
+    // TODO - IMPLEMENT BELOW
+    // Gabe: getGame 
+    it("gets a game", () => {
 
-// Vicky (leader): createGame
+    });
 
-// David: search, updateGame, deleteGame
+
+    // Tim: None
+
+    // Vicky (leader): createGame
+    it("creates a game", () => {
+
+    });
+
+
+    // David: search, updateGame, deleteGame
+    it("searches for a game", () => {
+
+    });
+
+    it("updates a game", () => {
+
+    });
+
+    it("deletes a game", () => {
+
+    });
+});

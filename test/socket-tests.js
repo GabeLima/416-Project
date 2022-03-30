@@ -11,19 +11,10 @@ import { assert } from "chai";
 // const Client = require("socket.io-client");
 // const assert = require("chai").assert;
 
-// Gabe: Connection, saveGame, saveText, roundEnd
-
-// Tim: Disconnection, joinGame, getAllGames, updateVotes, getText
-
-// Vicky (leader): updateGameInfo, notifyFollowers, getImage
-
-// David: create_game, start_game, saveImage
-describe("", () => {
-
-});
+// TODO - import relevant controllers/files as needed
 
 // ripped tutorial stuff, might be malware idk
-describe("create", () => {
+describe("how the server socket deals with received events", () => {
   let io, serverSocket, clientSocket;
 
   before((done) => {
@@ -44,6 +35,9 @@ describe("create", () => {
     clientSocket.close();
   });
 
+  // THESE TESTS ARE PART OF THE TUTORIAL
+  // USE ONLY FOR REFERRING TO SYNTAX
+  // TODO - DELETE THIS
   it("should work", (done) => {
     clientSocket.on("hello", (arg) => {
       assert.equal(arg, "world");
@@ -61,4 +55,75 @@ describe("create", () => {
       done();
     });
   });
+  // TODO - SEE ABOVE
+
+
+  // TODO - IMPLEMENT BELOW
+  // Gabe: Connection, saveGame, saveText, roundEnd
+  it("opens a connection", (done) => {
+
+  });
+
+  it("saves a game", (done) => {
+
+  });
+
+  it("saves text", (done) => {
+
+  });
+
+  it("ends a round", (done) => {
+
+  });
+
+
+  // Tim: Disconnection, joinGame, getAllGames, updateVotes, getText
+  it("disconnects", (done) => {
+
+  });
+
+  it("joins a game", (done) => {
+
+  });
+
+  it("gets all games", (done) => {
+
+  });
+
+  it("updates votes", (done) => {
+
+  });
+
+  it("gets text", (done) => {
+
+  });
+
+
+  // Vicky (leader): updateGameInfo, notifyFollowers, getImage
+  it("updates game info", (done) => {
+
+  });
+
+  it("notifies followers", (done) => {
+
+  });
+
+  it("gets an image", (done) => {
+
+  });
+
+
+  // David: create_game, start_game, saveImage
+  it("creates a game", (done) => {
+
+  });
+
+  it("starts a game", (done) => {
+
+  });
+
+  it("saves an image", (done) => {
+
+  });
+
 });
