@@ -28,7 +28,8 @@ const router = require('./routes/router')
 app.use('/api', router)
 
 // INITIALIZE OUR DATABASE OBJECT
-const db = require('./db')
+const db = require('./db');
+const { strictEqual } = require('assert');
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 
@@ -390,10 +391,20 @@ io.on('connection', function (socket) {
         for(let i=0; i<g.playerVotes; i++) {
             communityVotes.push([]);
         }
+        // generate a list of imageIDs (gameID + storyNumber + roundNumber)
+        let panels = [];
+        for(let i=0; i<g.numPlayers; i++) {
+            let panel = []
+            for(let j=0; j<g.numRounds; j++) {
+                let imgID =  gameID + i.toString() + j.toString();
+                panel.push(imgID);
+            }
+            panels.push(panel);
+        }
         const gameData = new Games( {
             isComic: true,
             players: g.players,
-            panels: g.panels, // This doesn't exist but how else would this be constructed?
+            panels: panels,
             playerVotes: g.playerVotes,
             communityVotes: communityVotes,
             gameID: g.gameID,
