@@ -3,7 +3,8 @@ const sinon = require("sinon");
 const mongoose = require("mongoose");
 const UserModel = require("../models/user-model");
 const UserController = require("../controllers/user-controller");
-const jwt = require("jsonwebtoken")
+const auth = require('../auth');
+const Cookies =  require('js-cookie');
 
 chai.should();
 let sandbox = sinon.createSandbox();
@@ -162,40 +163,78 @@ describe("how the user controller deals with requests", () => {
     });
 
     // Vicky (leader): getLoggedIn, logoutUser, getUser
-    it("gets whether a user is logged in", () => {
-        // let req = {
-        //     userId : 1,
-        //     cookies : {
-        //         token : "token"
-        //     }
-        // };
+    it("gets whether a user is logged in", (done) => {
+        let req = {
+            userId : 1,
+            cookies : {
+                token : "token"
+            }
+        };
 
-        // sandbox.stub(jwt, 'verify').callsFake(() => {
-        //     return Promise.resolve({success: 'Token is valid'});
-        // });
-        // sandbox.stub(mongoose.Model, "findOne").yields(null);
-        // UserController.getLoggedIn(req, res);
+        sandbox.stub(auth, "verify").yields(null);
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        UserController.getLoggedIn(req, res);
 
-        // //sinon.assert.calledWith(UserModel.findOne, {_id : 1});
-        // sinon.assert.calledWith(res.status, 200);
-        // done();
+        sinon.assert.calledWith(UserModel.findOne, {_id : 1});
+        done();
     });
 
-    it("logs out a user", () => {
-  
+    it("fails gets whether a user is logged in", (done) => {
+        let req = {
+            userId : 1,
+            cookies : {
+                token : "token"
+            }
+        };
+
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        UserController.getLoggedIn(req, res);
+
+        sinon.assert.calledWith(res.status, 401);
+        done();
+    });
+
+    it("logs out a user", (done) => {
+        let req = {
+            cookies : {
+                token : "token"
+            }
+        }
+
+        sandbox.stub(auth, "verify").callsFake((req, res) => {
+            return res.status(200).json({loggedIn: true});
+          });
+        //sandbox.stub(Cookies, "get").yields(null);
+        UserController.logoutUser(req, res);
+
+        sinon.assert.calledWith(res.status, 200);
+        done();
+    });
+
+    it("fail logs out a user, does not pass auth.verify", (done) => {
+        let req = {
+            cookies : {
+                token : "token"
+            }
+        }
+
+        UserController.logoutUser(req, res);
+
+        sinon.assert.calledWith(res.status, 401);
+        done();
     });
 
     it("gets a user", (done) => {
         let req = {
             params : {
-                username : "GorillaMK2"
+                username : "kson2"
             }
         }
 
         sandbox.stub(mongoose.Model, "findOne").yields(null);
         UserController.getUser(req, res);
 
-        sinon.assert.calledWith(UserModel.findOne, {username : "GorillaMK2"});
+        sinon.assert.calledWith(UserModel.findOne, {username : "kson2"});
         //sinon.assert.calledWith(res.status, 200)
         done();
     });
