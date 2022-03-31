@@ -74,22 +74,57 @@ describe("how the server socket deals with received events", () => {
 
 
     // TODO - IMPLEMENT BELOW
-    // Gabe: Connection, saveGame, saveText, roundEnd
-    it("opens a connection", (done) => {
-
-        // TODO - I uh... Don't think we need to do this. It's already part of the before() setup.
-        done();
-    });
+    // Gabe: saveGame, saveText, roundEnd
 
     it("saves a game", async (done) => {
+        serverSocket.on("saveGame", (data) => {
+            data.gameID.should.equal("fakeGameID");
+        });
+        clientSocket.emit("saveGame", {gameID: "fakeGameID"});
         done();
     });
 
     it("saves text", (done) => {
+        serverSocket.on("saveText", (data) => {
+            data.text.should.equal("fakeText");
+            data.textID.should.equal("fakeID");
+        });
+        clientSocket.emit("saveText", {text: "fakeText", textID: "fakeID"});
         done();
     });
 
     it("ends a round", (done) => {
+        const g = {
+            players: ["bob, phil, obama, mckenna, vicky, david, tim, gabe"],
+            currentRound: 0,
+            numRounds: 8
+        }
+        let startingStoryNumber = 3;
+        serverSocket.on("roundEnd", (data) => {
+            data.gameID.should.equal("fakeGameID");
+            data.currentRound.should.equal(g.currentRound);
+            g.currentRound = Math.max(data.currentRound + 1, g.currentRound);
+            if(g.currentRound === g.numRounds){
+                serverSocket.emit(gameEvents.GAME_OVER, g);
+            }
+            else{
+                let newStoryNumber = (data.storyNumber + g.currentRound) % g.players.length;
+                serverSocket.emit(gameEvents.START_ROUND, newStoryNumber);
+            }
+        });
+        clientSocket.on(gameEvents.START_ROUND, (storyNumber) => {
+            storyNumber.should.equal((startingStoryNumber + g.currentRound) % g.players.length);
+            clientSocket.emit("roundEnd", {gameID: "fakeGameID", storyNumber: storyNumber, currentRound: g.currentRound});
+        });
+        clientSocket.on(gameEvents.GAME_OVER, (game) => {
+            game.should.be.an("object");
+            assert.deepEqual({
+                players: ["bob, phil, obama, mckenna, vicky, david, tim, gabe"],
+                currentRound: 8,
+                numRounds: 8
+            }, game);
+        });
+        clientSocket.emit("roundEnd", {gameID: "fakeGameID", storyNumber: startingStoryNumber, currentRound: 0});
         done();
     });
 
