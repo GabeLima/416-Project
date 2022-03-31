@@ -43,7 +43,6 @@ describe("how the user controller deals with requests", () => {
         done();
     });
 
-<<<<<<< HEAD
     it("changes a password unsuccessfully", (done) => {
         let req = {
                 body: {
@@ -61,9 +60,6 @@ describe("how the user controller deals with requests", () => {
 
         done();
     });
-=======
-
->>>>>>> master
     // Vicky (leader): getLoggedIn, logoutUser, getUser
     it("gets whether a user is logged in", () => {
   
