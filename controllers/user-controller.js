@@ -64,7 +64,7 @@ updateUser = async (req, res) => {
     if (!body) {
         return res.status(400).json({
             success: false,
-            error: 'You must provide a body to update',
+            errorMessage: 'You must provide a body to update',
         })
     }
     const { email} = req.body;
@@ -124,21 +124,30 @@ loginUser = async (req, res) => {
         if (!email || !password) {
             return res
                 .status(400)
-                .json({ errorMessage: "Please enter all required fields." });
+                .json({ 
+                    success: false,
+                    errorMessage: "Please enter all required fields." 
+                });
         }
 
         var loggedInUser = await User.findOne({ email: email });
         if(loggedInUser === null){
             return res
             .status(400)
-            .json({ errorMessage: "Couldn't find an account with that email!"});
+            .json({ 
+                success: false,
+                errorMessage: "Couldn't find an account with that email!"
+            });
         }
         
         var result = await compareAsync(password, loggedInUser.passwordHash);
         console.log(result);
         if(!result){
             console.log("Bad password!");
-            return res.status(400).json({ errorMessage: "Bad password!"});
+            return res.status(400).json({ 
+                success: false,
+                errorMessage: "Bad password!"
+            });
         }
         console.log("Login successful!");
         
@@ -183,6 +192,12 @@ loginUser = async (req, res) => {
         }
     }catch(Exception){
         console.log(Exception);
+        return res
+        .status(400)
+        .json({ 
+            success: false,
+            errorMessage: "Error logging in!"
+        });
     }
 }
 
@@ -201,12 +216,16 @@ registerUser = async (req, res) => {
         if (!email || !password || !passwordVerify || !username || !securityQuestion || !securityAnswer) {
             return res
                 .status(400)
-                .json({ errorMessage: "Please enter all required fields." });
+                .json({ 
+                    success: false,
+                    errorMessage: "Please enter all required fields." 
+                });
         }
         if (password.length < 8) {
             return res
                 .status(400)
                 .json({
+                    success: false,
                     errorMessage: "Please enter a password of at least 8 characters."
                 });
         }
@@ -214,6 +233,7 @@ registerUser = async (req, res) => {
             return res
                 .status(400)
                 .json({
+                    success: false,
                     errorMessage: "Please enter the same password twice."
                 })
         }
@@ -268,13 +288,13 @@ updateFollowers = async (req, res) => {
     if(!email){
         return res.status(400).json({
             success: false,
-            error: "A email has to be provided"
+            errorMessage: "A email has to be provided"
         });
     }
     if(!followers){
         return res.status(400).json({
             success: false,
-            error: "A followers payload has to be provided"
+            errorMessage: "A followers payload has to be provided"
         });
     }
 
@@ -318,7 +338,7 @@ getUser = async (req, res) => {
     if (!username) {
         return res.status(400).json({
             success: false,
-            error: 'You must provide a username',
+            errorMessage: 'You must provide a username',
         });
     }
 
@@ -353,14 +373,17 @@ resetPassword = async(req, res) => {
     if (!body) {
         return res.status(400).json({
             success: false,
-            error: 'You must provide a body to update',
+            errorMessage: 'You must provide a body to update',
         });
     }
     const {email, securityAnswer, newPassword, newPasswordVerify} = req.body;        
     if (!email || !securityAnswer || !newPassword || !newPasswordVerify) {
         return res
             .status(400)
-            .json({ errorMessage: "Please enter all required fields." });
+            .json({ 
+                success: false,
+                errorMessage: "Please enter all required fields." 
+            });
     }
 
     // verification
@@ -368,17 +391,24 @@ resetPassword = async(req, res) => {
     if(!loggedInUser) {
         return res
         .status(400)
-        .json({ errorMessage: "Couldn't find an account with that email!"});
+        .json({ 
+            success: false,
+            errorMessage: "Couldn't find an account with that email!"
+        });
     }
     if(securityAnswer !== loggedInUser.securityAnswer) {
         return res
         .status(400)
-        .json({ errorMessage: "Incorrect Answer"});
+        .json({ 
+            success: false,
+            errorMessage: "Incorrect Answer"
+        });
     }
     if (newPassword.length < 8) {
         return res
             .status(400)
             .json({
+                success: false,
                 errorMessage: "Please enter a password of at least 8 characters."
             });
     }
@@ -386,6 +416,7 @@ resetPassword = async(req, res) => {
         return res
             .status(400)
             .json({
+                success: false,
                 errorMessage: "Please enter the same password twice."
             });
     }
@@ -434,14 +465,17 @@ changePassword = async (req, res) => {
     if (!body) {
         return res.status(400).json({
             success: false,
-            error: 'You must provide a body to update',
+            errorMessage: 'You must provide a body to update',
         });
     }
     const {email, password, newPasswordVerify, newPassword} = req.body;
     if (!email || !password || !newPassword || !newPasswordVerify) {
         return res
             .status(400)
-            .json({ errorMessage: "Please enter all required fields." });
+            .json({ 
+                success: false,
+                errorMessage: "Please enter all required fields." 
+            });
     }
 
     // verification
@@ -455,19 +489,26 @@ changePassword = async (req, res) => {
     var result = await compareAsync(password, loggedInUser.passwordHash);
     if(!result){
         console.log("Incorrect Password");
-        return res.status(400).json({ errorMessage: "Incorrect Password"});
+        return res.status(400).json({ 
+            success: false,
+            errorMessage: "Incorrect Password"
+        });
     }
     if (newPassword.length < 8) {
         return res
             .status(400)
             .json({
+                success: false,
                 errorMessage: "Please enter a password of at least 8 characters."
             });
     }
     if(newPassword !== newPasswordVerify) {
         return res
         .status(400)
-        .json({ errorMessage: "Please enter the same password twice."});
+        .json({ 
+            success: false,
+            errorMessage: "Please enter the same password twice."
+        });
     }
 
     // changing password
