@@ -51,7 +51,6 @@ describe("how the user controller deals with requests", () => {
                     newPassword: "newpassword"
                 }
         };
-
         sandbox.stub(mongoose.Model, "findOne").yields(null);
 
         UserController.changePassword(req, res);
@@ -160,10 +159,6 @@ describe("how the user controller deals with requests", () => {
         sinon.assert.calledWith(res.status, 400);
         done();
     });
-
-
-
-
 
     // Vicky (leader): getLoggedIn, logoutUser, getUser
     it("gets whether a user is logged in", () => {
