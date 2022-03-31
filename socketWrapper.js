@@ -1,5 +1,5 @@
 
-function joinGame(socket, data, g){
+joinGame = (socket, data, g) => {
     
     socket.join(g.gameID);
 
@@ -24,7 +24,7 @@ function startGame(io, g){
 }
 
 
-module.export = {
+module.exports = {
     joinGame,
     startGame
 }
