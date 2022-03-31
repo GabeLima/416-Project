@@ -1,3 +1,4 @@
+const {gameEvents, gameRules, gameStatus, gameFailure} = require("./constants");
 
 joinGame = (socket, data, g) => {
     

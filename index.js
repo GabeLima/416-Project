@@ -11,6 +11,7 @@ const Games = require("./models/game-model");
 const Images = require("./models/image-model");
 const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
+const {gameEvents, gameRules, gameStatus, gameFailure} = require("./constants");
 
 dotenv.config();
 const app = express();
@@ -315,12 +316,12 @@ io.on('connection', function (socket) {
             const g = games.get(gameID);
             let panel = g.panels.get(storyNumber);
             while(panel.length < g.roundNumber){
-                panel.push(images.BLANK_IMAGE);
+                panel.push(gameFailure.BLANK_IMAGE_ID);
             }
             imageID = panel[panel.length - 1];
         }
         Images.findOne({imageID: imageID}, (err, data) => {
-            if(err) {
+            if(err ||!data) {
                 console.log("Error in getImage: " + err);
                 socket.emit('getImage', false);
             }
@@ -334,11 +335,19 @@ io.on('connection', function (socket) {
         Returns text from the database
     */
     socket.on('getText', function(data) {
-        const {textID} = data;
-        if(!textID) {
-            console.log("Error in getText, textID not provided");
-            socket.emit('getText', false);
+        // get imgID from gameID and storyNumber
+        const {gameID, storyNumber, textID} = data;
+        if(!textID || !(gameID && storyNumber)){
+            console.log("Error on getText, missing data from the payload: ", data);
             return;
+        }
+        if(gameID && storyNumber){
+            const g = games.get(gameID);
+            let panel = g.panels.get(storyNumber);
+            while(panel.length < g.roundNumber){
+                panel.push(gameFailure.BLANK_TEXT_ID);
+            }
+            textID = panel[panel.length - 1];
         }
         Texts.findOne({textID: textID}, (err, data) => {
             if(err || !data) {
@@ -349,7 +358,7 @@ io.on('connection', function (socket) {
             else {
                 socket.emit('getText', data.text);
             }
-        })
+        });
     });
 
     /*
