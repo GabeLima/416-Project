@@ -160,6 +160,54 @@ describe("how the user controller deals with requests", () => {
         done();
     });
 
+    it("update followers successfully", (done) => {
+        let req = {
+            params:{
+                email: "mckenna@gmail.com"
+            },
+            body: {
+                followers:[""]
+            }
+        };
+
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        UserController.updateFollowers(req, res);
+
+        sinon.assert.calledWith(UserModel.findOne, { email: 'mckenna@gmail.com' });
+        done();
+    });
+
+    it("update followers unsuccessfully returns 400", (done) => {
+        let req = {
+            params:{
+                email: "mckenna@gmail.com"
+            },
+            body: {
+            }
+        };
+
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        UserController.updateFollowers(req, res);
+
+        sinon.assert.calledWith(res.status, 400);
+        done();
+    });
+
+    it("update followers unsuccessfully returns 400", (done) => {
+        let req = {
+            params:{
+            },
+            body: {
+                followers:[""]
+            }
+        };
+
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        UserController.updateFollowers(req, res);
+
+        sinon.assert.calledWith(res.status, 400);
+        done();
+    });
     // Vicky (leader): getLoggedIn, logoutUser, getUser
     it("gets whether a user is logged in", () => {
   
