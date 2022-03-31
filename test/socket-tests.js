@@ -6,10 +6,11 @@ const assert = require("chai").assert;
 // TODO - import relevant controllers/files as needed
 const sinon = require("sinon");
 const mongoose = require("mongoose");
-const UserModel = require("../models/user-model");
+const User = require("../models/user-model");
 const UserController = require("../controllers/user-controller");
-const GameModel = require("../models/game-model");
+const Game = require("../models/game-model");
 const GameController = require("../controllers/game-controller");
+const Text = require("../models/text-model");
 const socketWrapper = require("../socketWrapper.js");
 const {gameEvents, gameRules, gameStatus, images} = require("../constants");
 
@@ -328,6 +329,26 @@ describe("how the server socket deals with received events", () => {
 
 
     it("gets text", (done) => {
+
+        sandbox.stub(mongoose.Model, "find").returns("cooltext");
+
+        serverSocket.on('getText', (data) => {
+            const {textID} = data;
+            if(!textID) {
+                console.log("Error in getText, textID not provided");
+                socket.emit('getText', false);
+                return;
+            }
+            Text.findOne({textID: textID}, (err, data) => {
+                serverSocket.emit("getText", "cooltext");
+            });
+        });
+
+        clientSocket.on("getText", (data) => {
+            data.should.equal("cooltext");
+        });
+
+        clientSocket.emit("getText", {textID: "1234"});
         done();
     });
 

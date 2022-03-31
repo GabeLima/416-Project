@@ -8,4 +8,4 @@ const TextSchema = new Schema(
     }
 );
 
-module.exports = mongoose.model("Tex", TextSchema);
+module.exports = mongoose.model("Text", TextSchema);

@@ -1,25 +1,53 @@
-const chai = require('chai');
 const GameController = require("../controllers/game-controller");
+let GameModel = require("../models/game-model");
+const chai = require('chai');
+const sinon = require("sinon");
+const mongoose = require("mongoose");
 
 chai.should();
+let sandbox = sinon.createSandbox();
 
 describe("how the game controller deals with requests", () => {
   
-    before(() => {
+    let res = {};
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+        res = {
+            json: sandbox.spy(),
+            status: sandbox.stub().returns({end: sandbox.spy()})
+        };
     });
   
-    after(() => {
+    afterEach(() => {
+        sandbox.restore();
     });
   
    
     // TODO - IMPLEMENT BELOW
-    // Gabe: getGame 
-    it("gets a game", () => {
+    // Gabe: None
+    
 
+
+    // Tim: getGame
+    it("gets a game", (done) => {
+
+        let req = {
+            params: {
+                gameID: "fakeID"
+            }
+        };
+
+        let mockFind = (callback) => {
+            callback(null, "THEGAME");
+        };
+
+        sandbox.stub(mongoose.Model, "findOne").returns(mockFind);
+
+        GameController.getGame(req, res);
+        
+        sinon.assert.calledWith(GameModel.findOne, {gameID: "fakeID"});
+        done();
     });
-
-
-    // Tim: None
 
     // Vicky (leader): createGame
     it("creates a game", () => {
