@@ -331,32 +331,6 @@ io.on('connection', function (socket) {
     });
 
     /*
-        Updates the playerVotes field for a game 
-    */
-    socket.on('updateVotes', function(data) {
-        const {gameID, email, storyNumber} = data;
-    
-        if(!gameID || !email || !storyNumber || !games.has(gameID)) {
-            socket.emit('updateVotes', false);
-            console.log("Error in updateVotes, missing paramaters");
-            return;
-        }
-
-        // remove user from votes if already present
-        for(let i=0; i<games.get(gameID).playerVotes.length; i++) {
-            let r = game.get(gameID).playerVotes[i].indexOf(email);
-            if(r > -1) {
-                games.get(gameID).playerVotes[i].splice(r, 1);
-                break;
-            }
-        }
-
-        // add vote
-        games.get(gameID).playerVotes[storyNumber].push(email);
-        socket.emit('updateVotes', true);
-    });
-
-    /*
         Returns text from the database
     */
     socket.on('getText', function(data) {
