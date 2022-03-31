@@ -351,7 +351,6 @@ io.on('connection', function (socket) {
         }
         Texts.findOne({textID: textID}, (err, data) => {
             if(err || !data) {
-                socket.emit('getText', false);
                 console.log("Error in getText " + err);
                 socket.emit('getText', false);
             }
