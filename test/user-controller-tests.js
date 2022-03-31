@@ -59,6 +59,21 @@ describe("how the user controller deals with requests", () => {
 
     // David: resetPassword
     it("resets a password", () => {
-  
+        let req = {
+            body: {
+                email: "test@gmail.com",
+                securityAnswer: "gangnam-style",
+                newPassword: "newpassword",
+                newPasswordVerify: "newpassword"
+            }
+        }
+
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+
+        UserController.resetPassword(req, res);
+
+        sinon.assert.calledWith(UserModel.findOne, { email: 'test@gmail.com' });
+
+        done();
     });
 });

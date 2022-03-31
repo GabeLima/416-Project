@@ -107,14 +107,25 @@ describe("how the server socket deals with received events", () => {
 
     // David: create_game, start_game, saveImage
     it("creates a game", (done) => {
+        // data needs gameID
+        // optionally: numRounds, timePerRound, tags[]
+
+        // emits joinSuccess, true; on success
         done();
     });
 
     it("starts a game", (done) => {
+        // data needs gameID
+
+        // emits StartGame to all users in room on success
+        // emits startFailure on failure
         done();
     });
 
     it("saves an image", (done) => {
+        // data needs image and imageID
+
+        // doesn't emit anything on success or failure
         done();
     });
 
