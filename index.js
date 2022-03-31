@@ -330,6 +330,7 @@ io.on('connection', function (socket) {
     });
 
     /*
+<<<<<<< HEAD
         Updates the playerVotes field for a game 
     */
     socket.on('updateVotes', function(data) {
@@ -356,6 +357,8 @@ io.on('connection', function (socket) {
     });
 
     /*
+=======
+>>>>>>> master
         Returns text from the database
     */
     socket.on('getText', function(data) {

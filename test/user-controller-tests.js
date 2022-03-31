@@ -24,7 +24,11 @@ describe("how the user controller deals with requests", () => {
    
     // TODO - IMPLEMENT BELOW
     // Tim: changePassword
+<<<<<<< HEAD
     it("changes a password successfully", (done) => {
+=======
+    it("changes a password", (done) => {
+>>>>>>> master
         let req = {
                 body: {
                     email: "test@gmail.com",
@@ -43,6 +47,7 @@ describe("how the user controller deals with requests", () => {
         done();
     });
 
+<<<<<<< HEAD
     it("changes a password unsuccessfully", (done) => {
         let req = {
                 body: {
@@ -60,6 +65,9 @@ describe("how the user controller deals with requests", () => {
 
         done();
     });
+=======
+
+>>>>>>> master
     // Vicky (leader): getLoggedIn, logoutUser, getUser
     it("gets whether a user is logged in", () => {
   
