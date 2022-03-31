@@ -147,7 +147,7 @@ io.on('connection', function (socket) {
             tags: tags
         };
         //Map uses set instead of push
-        games.set(data.gameID, gameInfo)
+        games.set(data.gameID, gameInfo);
         
         joinGame(socket, data, gameInfo);
         
@@ -162,8 +162,12 @@ io.on('connection', function (socket) {
             if(g.gameStatus === gameStatus.LOBBY)
             {
                 g.gameStatus = gameStatus.PLAYING;
-                //Updating the games map with the new gameInfo (new game status)
-                games.set(g.gameID, g);
+                //We're going to be tracking the playerPanels throughout the game
+                g.panels = new Map();
+                for(let i = 0; i < g.players.length; g++){
+                    //Fill in every storyNumber with an empty array to represent the story
+                    g.panels.put(i, []);
+                }
 
                 startGame(io, g);
                 return;
@@ -187,7 +191,6 @@ io.on('connection', function (socket) {
             {
                 //Add their data to the game and updating the map
                 g.players.push(data.email);
-                games.set(g.gameID, g);
 
                 joinGame(socket, data, g);
                 return;
@@ -253,8 +256,6 @@ io.on('connection', function (socket) {
             g.tags = data.tags;
         }
 
-        //After all potential updates/checks are done, actually update the info in the map
-        games.set(g.gameID, g);
         console.log(g.gameID + "'s information has been updated.");
     });
 
