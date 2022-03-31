@@ -339,6 +339,7 @@ io.on('connection', function (socket) {
         const {gameID, storyNumber, textID} = data;
         if(!textID || !(gameID && storyNumber)){
             console.log("Error on getText, missing data from the payload: ", data);
+            socket.emit('getText', false);
             return;
         }
         if(gameID && storyNumber){
