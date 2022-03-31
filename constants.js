@@ -24,7 +24,7 @@ const images ={
     BLANK_IMAGE : "0"
 };
 
-module.export = {
+module.exports = {
     gameEvents,
     gameRules,
     gameStatus,

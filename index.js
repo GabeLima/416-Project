@@ -358,18 +358,16 @@ io.on('connection', function (socket) {
         const {gameID} = data
         if(!gameID) {
             console.log("Error in saveGame, gameID not provided");
+            return;
         }
         const g = games.get(gameID);
-        let communityVotes = [];
-        for(let i=0; i<g.playerVotes; i++) {
-            communityVotes.push([]);
-        }
-        const gameData = new Games( {
+ 
+        const gameData = new Game( {
             isComic: true,
             players: g.players,
             panels: g.panels, // This doesn't exist but how else would this be constructed?
             playerVotes: g.playerVotes,
-            communityVotes: communityVotes,
+            communityVotes: [],
             gameID: g.gameID,
             comments: [],
             tags: g.tags,
