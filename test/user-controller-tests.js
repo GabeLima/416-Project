@@ -3,6 +3,7 @@ const sinon = require("sinon");
 const mongoose = require("mongoose");
 const UserModel = require("../models/user-model");
 const UserController = require("../controllers/user-controller");
+const jwt = require("jsonwebtoken")
 
 chai.should();
 let sandbox = sinon.createSandbox();
@@ -162,15 +163,54 @@ describe("how the user controller deals with requests", () => {
 
     // Vicky (leader): getLoggedIn, logoutUser, getUser
     it("gets whether a user is logged in", () => {
-  
+        // let req = {
+        //     userId : 1,
+        //     cookies : {
+        //         token : "token"
+        //     }
+        // };
+
+        // sandbox.stub(jwt, 'verify').callsFake(() => {
+        //     return Promise.resolve({success: 'Token is valid'});
+        // });
+        // sandbox.stub(mongoose.Model, "findOne").yields(null);
+        // UserController.getLoggedIn(req, res);
+
+        // //sinon.assert.calledWith(UserModel.findOne, {_id : 1});
+        // sinon.assert.calledWith(res.status, 200);
+        // done();
     });
 
     it("logs out a user", () => {
   
     });
 
-    it("gets a user", () => {
-  
+    it("gets a user", (done) => {
+        let req = {
+            params : {
+                username : "GorillaMK2"
+            }
+        }
+
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        UserController.getUser(req, res);
+
+        sinon.assert.calledWith(UserModel.findOne, {username : "GorillaMK2"});
+        //sinon.assert.calledWith(res.status, 200)
+        done();
+    });
+
+    it("getUser but username not provided", (done) => {
+        let req = {
+            params : {}
+        };
+        
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        UserController.getUser(req, res);
+
+        sinon.assert.notCalled(UserModel.findOne);
+        sinon.assert.calledWith(res.status, 400)
+        done();
     });
 
     // David: resetPassword
