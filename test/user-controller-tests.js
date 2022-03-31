@@ -24,7 +24,7 @@ describe("how the user controller deals with requests", () => {
    
     // TODO - IMPLEMENT BELOW
     // Tim: changePassword
-    it("changes a password", (done) => {
+    it("changes a password successfully", (done) => {
         let req = {
                 body: {
                     email: "test@gmail.com",
@@ -43,7 +43,23 @@ describe("how the user controller deals with requests", () => {
         done();
     });
 
+    it("changes a password unsuccessfully", (done) => {
+        let req = {
+                body: {
+                    email: "test@gmail.com",
+                    password: "oldpassword",
+                    newPassword: "newpassword"
+                }
+        };
 
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+
+        UserController.changePassword(req, res);
+
+        sinon.assert.calledWith(res.status, 400);
+
+        done();
+    });
     // Vicky (leader): getLoggedIn, logoutUser, getUser
     it("gets whether a user is logged in", () => {
   

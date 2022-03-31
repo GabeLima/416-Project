@@ -1,5 +1,5 @@
 const chai = require('chai');
-const gameController = require("../controllers/game-controller");
+const GameController = require("../controllers/game-controller");
 
 chai.should();
 
