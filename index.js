@@ -365,20 +365,10 @@ io.on('connection', function (socket) {
         for(let i=0; i<g.playerVotes; i++) {
             communityVotes.push([]);
         }
-        // generate a list of imageIDs (gameID + storyNumber + roundNumber)
-        let panels = [];
-        for(let i=0; i<g.numPlayers; i++) {
-            let panel = []
-            for(let j=0; j<g.numRounds; j++) {
-                let imgID =  gameID + i.toString() + j.toString();
-                panel.push(imgID);
-            }
-            panels.push(panel);
-        }
         const gameData = new Games( {
             isComic: true,
             players: g.players,
-            panels: panels,
+            panels: g.panels,
             playerVotes: g.playerVotes,
             communityVotes: communityVotes,
             gameID: g.gameID,
