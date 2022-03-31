@@ -24,11 +24,7 @@ describe("how the user controller deals with requests", () => {
    
     // TODO - IMPLEMENT BELOW
     // Tim: changePassword
-<<<<<<< HEAD
-    it("changes a password successfully", (done) => {
-=======
     it("changes a password", (done) => {
->>>>>>> master
         let req = {
                 body: {
                     email: "test@gmail.com",
