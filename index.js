@@ -227,7 +227,7 @@ io.on('connection', function (socket) {
             //Remove vote if already present
             for(let i = 0; i < g.playerVotes.length; i++)
             {
-                let removedI = g.playerVotes[i].findIndex(data.email);
+                let removedI = g.playerVotes[i].indexOf(data.email);
                 if(removedI > -1)
                 {
                     g.playerVotes[i].splice(removedI, 1);
@@ -308,6 +308,7 @@ io.on('connection', function (socket) {
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber, imageID} = data;
+        let imgID = imageID;
         if(!imageID || !(gameID && storyNumber)){
             console.log("Error on getImage, missing data from the payload: ", data);
             return;
@@ -315,12 +316,12 @@ io.on('connection', function (socket) {
         if(gameID && storyNumber){
             const g = games.get(gameID);
             let panel = g.panels.get(storyNumber);
-            while(panel.length < g.roundNumber){
+            while(panel.length < g.currentRound){
                 panel.push(images.BLANK_IMAGE);
             }
-            imageID = panel[panel.length - 1];
+            imgID = panel[panel.length - 1];
         }
-        Images.findOne({imageID: imageID}, (err, data) => {
+        Images.findOne({imageID: imgID}, (err, data) => {
             if(err) {
                 console.log("Error in getImage: " + err);
                 socket.emit('getImage', false);

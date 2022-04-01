@@ -11,6 +11,7 @@ const UserController = require("../controllers/user-controller");
 const Game = require("../models/game-model");
 const GameController = require("../controllers/game-controller");
 const Text = require("../models/text-model");
+const Images = require("../models/image-model");
 const socketWrapper = require("../socketWrapper.js");
 const {gameEvents, gameRules, gameStatus, images} = require("../constants");
 
@@ -389,15 +390,661 @@ describe("how the server socket deals with received events", () => {
 
 
     // Vicky (leader): updateGameInfo, notifyFollowers, getImage
-    it("updates game info", (done) => {
+    it("updates game info votes", (done) => {
+        serverSocket.once('updateGameInfo', (data) => {
+            let games = new Map();
+            games.set("game1", {
+                gameID : "game1",
+                players : ["creator"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            });
+            if(!data.gameID)
+            {
+                console.log("There is no gameID provided so there is no way to update a game.")
+            }
+
+            let g = games.get(data.gameID);
+
+            if(data.vote != undefined)                   //Player submited a vote
+            {
+                //Remove vote if already present
+                for(let i = 0; i < g.playerVotes.length; i++)
+                {
+                    let removedI = g.playerVotes[i].indexOf(data.email);
+                    if(removedI > -1)
+                    {
+                        g.playerVotes[i].splice(removedI, 1);
+                        break;
+                    }
+                }
+    
+                //Adds the vote to the 
+                g.playerVotes[data.vote].push(data.email);
+            }
+
+            if(data.numRounds != undefined)
+            {
+                g.numRounds = data.numRounds;
+            }
+
+            //Updating the time per round
+            if(data.timePerRound != undefined)
+            {
+                g.timePerRound = data.timePerRound;
+            }
+            
+            //Updating tags
+            if(data.tags != undefined)
+            {
+                g.tags = data.tags;
+            }
+
+            console.log(g.gameID + "'s information has been updated.");
+            //doesn't actually emit but will for the test case
+            serverSocket.emit('updateGameInfo', g);
+        });
+
+        clientSocket.once("updateGameInfo", (g) => {
+            let expected = {
+                gameID : "game1",
+                players : ["creator"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            };
+
+            g.should.eql(expected);
+        });
+
+        clientSocket.emit("updateGameInfo", {gameID : "game1", vote : 0, email : "creator"});
+
+        done();
+    });
+
+    it("updates game info changing the votes", (done) => {
+        serverSocket.once('updateGameInfo', (data) => {
+            let games = new Map();
+            games.set("game2", {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            });
+            if(!data.gameID)
+            {
+                console.log("There is no gameID provided so there is no way to update a game.")
+            }
+
+            let g = games.get(data.gameID);
+
+            if(data.vote != undefined)                   //Player submited a vote
+            {
+                //Remove vote if already present
+                for(let i = 0; i < g.playerVotes.length; i++)
+                {
+                    let removedI = g.playerVotes[i].indexOf(data.email);
+                    if(removedI > -1)
+                    {
+                        g.playerVotes[i].splice(removedI, 1);
+                        break;
+                    }
+                }
+    
+                //Adds the vote to the 
+                g.playerVotes[data.vote].push(data.email);
+            }
+
+            if(data.numRounds != undefined)
+            {
+                g.numRounds = data.numRounds;
+            }
+
+            //Updating the time per round
+            if(data.timePerRound != undefined)
+            {
+                g.timePerRound = data.timePerRound;
+            }
+            
+            //Updating tags
+            if(data.tags != undefined)
+            {
+                g.tags = data.tags;
+            }
+
+            console.log(g.gameID + "'s information has been updated.");
+            //doesn't actually emit but will for the test case
+            serverSocket.emit('updateGameInfo', g);
+        });
+
+        clientSocket.once("updateGameInfo", (g) => {
+            let expected = {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [["creator"], []],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            };
+
+            g.should.eql(expected);
+        });
+
+        clientSocket.emit("updateGameInfo", {gameID : "game2", vote : 0, email : "creator"});
+
+        done();
+    });
+
+    it("updates game info same votes", (done) => {
+        serverSocket.once('updateGameInfo', (data) => {
+            let games = new Map();
+            games.set("game2", {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            });
+            if(!data.gameID)
+            {
+                console.log("There is no gameID provided so there is no way to update a game.")
+            }
+
+            let g = games.get(data.gameID);
+
+            if(data.vote != undefined)                   //Player submited a vote
+            {
+                //Remove vote if already present
+                for(let i = 0; i < g.playerVotes.length; i++)
+                {
+                    let removedI = g.playerVotes[i].indexOf(data.email);
+                    if(removedI > -1)
+                    {
+                        g.playerVotes[i].splice(removedI, 1);
+                        break;
+                    }
+                }
+    
+                //Adds the vote to the 
+                g.playerVotes[data.vote].push(data.email);
+            }
+
+            if(data.numRounds != undefined)
+            {
+                g.numRounds = data.numRounds;
+            }
+
+            //Updating the time per round
+            if(data.timePerRound != undefined)
+            {
+                g.timePerRound = data.timePerRound;
+            }
+            
+            //Updating tags
+            if(data.tags != undefined)
+            {
+                g.tags = data.tags;
+            }
+
+            console.log(g.gameID + "'s information has been updated.");
+            //doesn't actually emit but will for the test case
+            serverSocket.emit('updateGameInfo', g);
+        });
+
+        clientSocket.once("updateGameInfo", (g) => {
+            let expected = {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            };
+
+            g.should.eql(expected);
+        });
+
+        clientSocket.emit("updateGameInfo", {gameID : "game2", vote : 1, email : "creator"});
+
+        done();
+    });
+
+    it("updates game info, update numRounds", (done) => {
+        serverSocket.once('updateGameInfo', (data) => {
+            let games = new Map();
+            games.set("game2", {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            });
+            if(!data.gameID)
+            {
+                console.log("There is no gameID provided so there is no way to update a game.")
+            }
+
+            let g = games.get(data.gameID);
+
+            if(data.vote != undefined)                   //Player submited a vote
+            {
+                //Remove vote if already present
+                for(let i = 0; i < g.playerVotes.length; i++)
+                {
+                    let removedI = g.playerVotes[i].indexOf(data.email);
+                    if(removedI > -1)
+                    {
+                        g.playerVotes[i].splice(removedI, 1);
+                        break;
+                    }
+                }
+    
+                //Adds the vote to the 
+                g.playerVotes[data.vote].push(data.email);
+            }
+
+            if(data.numRounds != undefined)
+            {
+                g.numRounds = data.numRounds;
+            }
+
+            //Updating the time per round
+            if(data.timePerRound != undefined)
+            {
+                g.timePerRound = data.timePerRound;
+            }
+            
+            //Updating tags
+            if(data.tags != undefined)
+            {
+                g.tags = data.tags;
+            }
+
+            console.log(g.gameID + "'s information has been updated.");
+            //doesn't actually emit but will for the test case
+            serverSocket.emit('updateGameInfo', g);
+        });
+
+        clientSocket.once("updateGameInfo", (g) => {
+            let expected = {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 10,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            };
+
+            g.should.eql(expected);
+        });
+
+        clientSocket.emit("updateGameInfo", {gameID : "game2", numRounds : 10, email : "creator"});
+
+        done();
+    });
+
+    it("updates game info, update timePerRound", (done) => {
+        serverSocket.once('updateGameInfo', (data) => {
+            let games = new Map();
+            games.set("game2", {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            });
+            if(!data.gameID)
+            {
+                console.log("There is no gameID provided so there is no way to update a game.")
+            }
+
+            let g = games.get(data.gameID);
+
+            if(data.vote != undefined)                   //Player submited a vote
+            {
+                //Remove vote if already present
+                for(let i = 0; i < g.playerVotes.length; i++)
+                {
+                    let removedI = g.playerVotes[i].indexOf(data.email);
+                    if(removedI > -1)
+                    {
+                        g.playerVotes[i].splice(removedI, 1);
+                        break;
+                    }
+                }
+    
+                //Adds the vote to the 
+                g.playerVotes[data.vote].push(data.email);
+            }
+
+            if(data.numRounds != undefined)
+            {
+                g.numRounds = data.numRounds;
+            }
+
+            //Updating the time per round
+            if(data.timePerRound != undefined)
+            {
+                g.timePerRound = data.timePerRound;
+            }
+            
+            //Updating tags
+            if(data.tags != undefined)
+            {
+                g.tags = data.tags;
+            }
+
+            console.log(g.gameID + "'s information has been updated.");
+            //doesn't actually emit but will for the test case
+            serverSocket.emit('updateGameInfo', g);
+        });
+
+        clientSocket.once("updateGameInfo", (g) => {
+            let expected = {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 120,
+                currentRound : 0,
+                tags : ["comedy"]
+            };
+
+            g.should.eql(expected);
+        });
+
+        clientSocket.emit("updateGameInfo", {gameID : "game2", timePerRound : 120, email : "creator"});
+
+        done();
+    });
+
+    it("updates game info, update tags", (done) => {
+        serverSocket.once('updateGameInfo', (data) => {
+            let games = new Map();
+            games.set("game2", {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            });
+            if(!data.gameID)
+            {
+                console.log("There is no gameID provided so there is no way to update a game.")
+            }
+
+            let g = games.get(data.gameID);
+
+            if(data.vote != undefined)                   //Player submited a vote
+            {
+                //Remove vote if already present
+                for(let i = 0; i < g.playerVotes.length; i++)
+                {
+                    let removedI = g.playerVotes[i].indexOf(data.email);
+                    if(removedI > -1)
+                    {
+                        g.playerVotes[i].splice(removedI, 1);
+                        break;
+                    }
+                }
+    
+                //Adds the vote to the 
+                g.playerVotes[data.vote].push(data.email);
+            }
+
+            if(data.numRounds != undefined)
+            {
+                g.numRounds = data.numRounds;
+            }
+
+            //Updating the time per round
+            if(data.timePerRound != undefined)
+            {
+                g.timePerRound = data.timePerRound;
+            }
+            
+            //Updating tags
+            if(data.tags != undefined)
+            {
+                g.tags = data.tags;
+            }
+
+            console.log(g.gameID + "'s information has been updated.");
+            //doesn't actually emit but will for the test case
+            serverSocket.emit('updateGameInfo', g);
+        });
+
+        clientSocket.once("updateGameInfo", (g) => {
+            let expected = {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["war"]
+            };
+
+            g.should.eql(expected);
+        });
+
+        clientSocket.emit("updateGameInfo", {gameID : "game2", tags : ["war"], email : "creator"});
+
+        done();
+    });
+
+    it("updates game info, update multiple", (done) => {
+        serverSocket.once('updateGameInfo', (data) => {
+            let games = new Map();
+            games.set("game2", {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [[], ["creator"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 0,
+                tags : ["comedy"]
+            });
+            if(!data.gameID)
+            {
+                console.log("There is no gameID provided so there is no way to update a game.")
+            }
+
+            let g = games.get(data.gameID);
+
+            if(data.vote != undefined)                   //Player submited a vote
+            {
+                //Remove vote if already present
+                for(let i = 0; i < g.playerVotes.length; i++)
+                {
+                    let removedI = g.playerVotes[i].indexOf(data.email);
+                    if(removedI > -1)
+                    {
+                        g.playerVotes[i].splice(removedI, 1);
+                        break;
+                    }
+                }
+    
+                //Adds the vote to the 
+                g.playerVotes[data.vote].push(data.email);
+            }
+
+            if(data.numRounds != undefined)
+            {
+                g.numRounds = data.numRounds;
+            }
+
+            //Updating the time per round
+            if(data.timePerRound != undefined)
+            {
+                g.timePerRound = data.timePerRound;
+            }
+            
+            //Updating tags
+            if(data.tags != undefined)
+            {
+                g.tags = data.tags;
+            }
+
+            console.log(g.gameID + "'s information has been updated.");
+            //doesn't actually emit but will for the test case
+            serverSocket.emit('updateGameInfo', g);
+        });
+
+        clientSocket.once("updateGameInfo", (g) => {
+            let expected = {
+                gameID : "game2",
+                players : ["creator", "b"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [["creator"], []],
+                numRounds : 10,
+                timePerRound : 120,
+                currentRound : 0,
+                tags : ["love"]
+            };
+
+            g.should.eql(expected);
+        });
+
+        clientSocket.emit("updateGameInfo", {gameID : "game2", vote: 0, tags: ["love"], numRounds : 10, timePerRound : 120, email : "creator"});
+
         done();
     });
 
     it("notifies followers", (done) => {
+        sandbox.stub(mongoose.Model, 'findOne').callsFake((err, data) => {
+            data = {email : "a", gameID : "game1", followers : ["a"]};
+            const {email, gameID} = data;
+            let clients = [{
+                email : "a",
+                clientId : clientSocket.id
+            }]
+            // reduce the clients list to those who follow this user
+            let followers = data.followers; // list of emails I assume?
+            const online_followers = clients.filter(client => followers.includes(client.email));
+
+            // notify every online follower
+            online_followers.forEach( (follower) => {
+                serverSocket.to(follower.clientId).emit("newGameNotification", email + " has started a game with gameID " + gameID);
+            });
+            serverSocket.emit("notifyFollowers", true);
+        })
+
+        serverSocket.once('notifyFollowers', function(data) {
+            const {email, gameID} = data;
+            User.findOne({email: email});
+        });
+
+        clientSocket.once('notifyFollowers', (success) => {
+            success.should.equal(true);
+        });
+
+        clientSocket.once('newGameNotification', (message) => {
+            let expected = "b has started a game with gameID game1";
+
+            message.should.equal(expected);
+        });
+
+        clientSocket.emit("notifyFollowers", {email : "b", gameID : "game1", followers : ["a"]});
+
         done();
     });
 
     it("gets an image", (done) => {
+        sandbox.stub(mongoose.Model, "findOne").callsFake((err, data) => {
+            socket.emit('getImage', "hi")
+        });
+
+        serverSocket.on('getImage', (data) => {
+            let games = new Map();
+            panels = new Map();
+            panels.set("0", "image 0");
+            games.set("game1", {
+                gameID : "game1",
+                players : ["creator"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [["hi"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 1,
+                tags : ["comedy"],
+                panels :panels
+            });
+
+            const {gameID, storyNumber, imageID} = data;
+            let imgID = imageID;
+            if(!imageID || !(gameID && storyNumber)) {
+                console.log("Error on getImage, missing data from the payload: ", data);
+                serverSocket.emit('getImage', false);
+                return;
+            }
+
+            if(gameID && storyNumber){
+                const g = games.get(gameID);
+                let panel = g.panels.get(storyNumber);
+                while(panel.length < g.currentRound){
+                    panel.push("blank");
+                }
+                imgID = panel[panel.length - 1];
+            }
+
+            Images.findOne({imageID: imgID}, (err, data) => {
+                serverSocket.emit("getImage", imgID);
+            });
+        });
+
+        clientSocket.on("getImage", (data) => {
+            data.should.equal("hi");
+        });
+
+        clientSocket.emit("getImage", {imageID: "hi", gameID : "game1", storyNumber : "0"});
         done();
     });
 
