@@ -11,6 +11,7 @@ const UserController = require("../controllers/user-controller");
 const Game = require("../models/game-model");
 const GameController = require("../controllers/game-controller");
 const Text = require("../models/text-model");
+const Images = require("../models/image-model");
 const socketWrapper = require("../socketWrapper.js");
 const {gameEvents, gameRules, gameStatus, images} = require("../constants");
 
@@ -961,6 +962,54 @@ describe("how the server socket deals with received events", () => {
     });
 
     it("gets an image", (done) => {
+        sandbox.stub(mongoose.Model, "findOne").callsFake((err, data) => {
+            socket.emit('getImage', "hi")
+        });
+
+        serverSocket.on('getImage', (data) => {
+            let games = new Map();
+            panels = new Map();
+            panels.set("0", "image 0");
+            games.set("game1", {
+                gameID : "game1",
+                players : ["creator"],
+                creator : "creator",
+                gameStatus : gameStatus.LOBBY,
+                playerVotes : [["hi"]],
+                numRounds : 2,
+                timePerRound : 30,
+                currentRound : 1,
+                tags : ["comedy"],
+                panels :panels
+            });
+
+            const {gameID, storyNumber, imageID} = data;
+            let imgID = imageID;
+            if(!imageID || !(gameID && storyNumber)) {
+                console.log("Error on getImage, missing data from the payload: ", data);
+                serverSocket.emit('getImage', false);
+                return;
+            }
+
+            if(gameID && storyNumber){
+                const g = games.get(gameID);
+                let panel = g.panels.get(storyNumber);
+                while(panel.length < g.currentRound){
+                    panel.push("blank");
+                }
+                imgID = panel[panel.length - 1];
+            }
+
+            Images.findOne({imageID: imgID}, (err, data) => {
+                serverSocket.emit("getImage", imgID);
+            });
+        });
+
+        clientSocket.on("getImage", (data) => {
+            data.should.equal("hi");
+        });
+
+        clientSocket.emit("getImage", {imageID: "hi", gameID : "game1", storyNumber : "0"});
         done();
     });
 
