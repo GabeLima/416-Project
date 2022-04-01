@@ -204,7 +204,6 @@ describe("how the user controller deals with requests", () => {
         sandbox.stub(auth, "verify").callsFake((req, res) => {
             return res.status(200).json({loggedIn: true});
           });
-        //sandbox.stub(Cookies, "get").yields(null);
         UserController.logoutUser(req, res);
 
         sinon.assert.calledWith(res.status, 200);

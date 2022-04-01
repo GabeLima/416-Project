@@ -50,8 +50,41 @@ describe("how the game controller deals with requests", () => {
     });
 
     // Vicky (leader): createGame
-    it("creates a game", () => {
+    it("successfully creates a game", (done) => {
+        let req = {
+            body : {
+                isComic : true,
+                players : [],
+                panels : [[]],
+                playerVotes : [[]],
+                communityVotes : [[]],
+                gameID : "game1",
+                comments : [],
+                tags : [],
+                creator : "user1"
+            }
+        };
 
+        sandbox.stub(GameModel.prototype, "save").resolves(res.status(201));
+
+        GameController.createGame(req, res);
+
+        //sinon.assert.called(GameModel.save);
+        sinon.assert.calledWith(res.status, 201);
+        done();
+    });
+
+    it("unsuccessful creates a game", (done) => {
+        let req = {
+            body : {}
+        };
+
+        sandbox.stub(GameModel.prototype, "save").rejects(res.status(400));
+
+        GameController.createGame(req, res);
+
+        sinon.assert.calledWith(res.status, 400);
+        done();
     });
 
 
