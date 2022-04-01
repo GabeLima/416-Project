@@ -226,7 +226,7 @@ io.on('connection', function (socket) {
             //Remove vote if already present
             for(let i = 0; i < g.playerVotes.length; i++)
             {
-                let removedI = g.playerVotes[i].findIndex(data.email);
+                let removedI = g.playerVotes[i].indexOf(data.email);
                 if(removedI > -1)
                 {
                     g.playerVotes[i].splice(removedI, 1);
