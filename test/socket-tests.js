@@ -922,6 +922,41 @@ describe("how the server socket deals with received events", () => {
     });
 
     it("notifies followers", (done) => {
+        sandbox.stub(mongoose.Model, 'findOne').callsFake((err, data) => {
+            data = {email : "a", gameID : "game1", followers : ["a"]};
+            const {email, gameID} = data;
+            let clients = [{
+                email : "a",
+                clientId : clientSocket.id
+            }]
+            // reduce the clients list to those who follow this user
+            let followers = data.followers; // list of emails I assume?
+            const online_followers = clients.filter(client => followers.includes(client.email));
+
+            // notify every online follower
+            online_followers.forEach( (follower) => {
+                serverSocket.to(follower.clientId).emit("newGameNotification", email + " has started a game with gameID " + gameID);
+            });
+            serverSocket.emit("notifyFollowers", true);
+        })
+
+        serverSocket.once('notifyFollowers', function(data) {
+            const {email, gameID} = data;
+            User.findOne({email: email});
+        });
+
+        clientSocket.once('notifyFollowers', (success) => {
+            success.should.equal(true);
+        });
+
+        clientSocket.once('newGameNotification', (message) => {
+            let expected = "b has started a game with gameID game1";
+
+            message.should.equal(expected);
+        });
+
+        clientSocket.emit("notifyFollowers", {email : "b", gameID : "game1", followers : ["a"]});
+
         done();
     });
 
