@@ -307,7 +307,8 @@ io.on('connection', function (socket) {
     */
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
-        const {gameID, storyNumber, imageID} = data;
+        const {gameID, storyNumber} = data;
+        let imageID = data.imageID;
         if(!imageID || !(gameID && storyNumber)){
             console.log("Error on getImage, missing data from the payload: ", data);
             return;
@@ -336,7 +337,8 @@ io.on('connection', function (socket) {
     */
     socket.on('getText', function(data) {
         // get imgID from gameID and storyNumber
-        const {gameID, storyNumber, textID} = data;
+        const {gameID, storyNumber} = data;
+        let textID = data.textID;
         if(!textID || !(gameID && storyNumber)){
             console.log("Error on getText, missing data from the payload: ", data);
             socket.emit('getText', false);
