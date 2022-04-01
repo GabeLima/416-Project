@@ -165,9 +165,9 @@ io.on('connection', function (socket) {
                 g.gameStatus = gameStatus.PLAYING;
                 //We're going to be tracking the playerPanels throughout the game
                 g.panels = new Map();
-                for(let i = 0; i < g.players.length; g++){
+                for(let i = 0; i < g.players.length; i++){
                     //Fill in every storyNumber with an empty array to represent the story
-                    g.panels.put(i, []);
+                    g.panels.set(i, []);
                 }
 
                 startGame(io, g);
