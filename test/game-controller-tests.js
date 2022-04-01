@@ -56,15 +56,62 @@ describe("how the game controller deals with requests", () => {
 
 
     // David: search, updateGame, deleteGame
-    it("searches for a game", () => {
+    it("searches for a game successfully", (done) => {
+        let req = {
+            params: {
+                query: "quirky, u:gamer, u:gorillamckilla"
+            }
+        }
+        let mockFind = (callback) => {
+            callback(null, "THEGAME");
+        };
 
+        sandbox.stub(mongoose.Model, "find").returns(mockFind);
+        GameController.search(req, res);
+        sinon.assert.calledWith(GameModel.find, {tags: {'$in': ["quirky"]}, players: {'$all': ["gamer", "gorillamckilla"]}});
+        done();
     });
 
-    it("updates a game", () => {
+    // ripped from gabes updateUser tests
+    it("updates a game successfully", (done) => {
+        const date = new Date();
+        const comment = {
+            username: "user",
+            email: "user@mail.com",
+            content: "This comic is cringe",
+            postDate: date
+        };
+        let req = {
+            params: {
+                gameID: "fakeID",
+            },
+            body: {
+                communityVotes: [],
+                comments: [comment]
+            }
+        }
+        let mockFind = (callback) => {
+            callback(null, "THEGAME");
+        };
 
+        sandbox.stub(mongoose.Model, "findOne").returns(mockFind);
+        GameController.updateGame(req, res);
+        sinon.assert.calledWith(GameModel.findOne, { gameID: 'fakeID' });
+        done();
     });
 
-    it("deletes a game", () => {
+    it("deletes a game successfully", (done) => {
+        let req = {
+            params: {
+                gameID: "fakeID",
+            }
+        };
 
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        sandbox.stub(mongoose.Model, "findOneAndDelete").yields(null);
+        GameController.deleteGame(req, res);
+        sinon.assert.calledWith(GameModel.findOneAndDelete, { gameID: 'fakeID' });
+
+        done();
     });
 });
