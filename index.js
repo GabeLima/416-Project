@@ -29,7 +29,8 @@ const router = require('./routes/router')
 app.use('/api', router)
 
 // INITIALIZE OUR DATABASE OBJECT
-const db = require('./db')
+const db = require('./db');
+const { strictEqual } = require('assert');
 db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 
@@ -165,9 +166,9 @@ io.on('connection', function (socket) {
                 g.gameStatus = gameStatus.PLAYING;
                 //We're going to be tracking the playerPanels throughout the game
                 g.panels = new Map();
-                for(let i = 0; i < g.players.length; g++){
+                for(let i = 0; i < g.players.length; i++){
                     //Fill in every storyNumber with an empty array to represent the story
-                    g.panels.put(i, []);
+                    g.panels.set(i, []);
                 }
 
                 startGame(io, g);
@@ -227,7 +228,7 @@ io.on('connection', function (socket) {
             //Remove vote if already present
             for(let i = 0; i < g.playerVotes.length; i++)
             {
-                let removedI = g.playerVotes[i].findIndex(data.email);
+                let removedI = g.playerVotes[i].indexOf(data.email);
                 if(removedI > -1)
                 {
                     g.playerVotes[i].splice(removedI, 1);
@@ -258,6 +259,7 @@ io.on('connection', function (socket) {
         }
 
         console.log(g.gameID + "'s information has been updated.");
+        io.to(g.gameID).emit('updateGameInfo', g);
     });
 
 
@@ -309,6 +311,7 @@ io.on('connection', function (socket) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber} = data;
         let imageID = data.imageID;
+
         if(!imageID || !(gameID && storyNumber)){
             console.log("Error on getImage, missing data from the payload: ", data);
             return;
@@ -319,7 +322,7 @@ io.on('connection', function (socket) {
             while(panel.length < g.currentRound){
                 panel.push(gameFailure.BLANK_IMAGE_ID);
             }
-            imageID = panel[panel.length - 1];
+            imgID = panel[panel.length - 1];
         }
         Images.findOne({imageID: imageID}, (err, data) => {
             if(err ||!data) {
@@ -377,7 +380,7 @@ io.on('connection', function (socket) {
         const gameData = new Game( {
             isComic: true,
             players: g.players,
-            panels: g.panels, // This doesn't exist but how else would this be constructed?
+            panels: g.panels,
             playerVotes: g.playerVotes,
             communityVotes: [],
             gameID: g.gameID,
