@@ -258,6 +258,7 @@ io.on('connection', function (socket) {
         }
 
         console.log(g.gameID + "'s information has been updated.");
+        io.to(g.gameID).emit('updateGameInfo', g);
     });
 
 
