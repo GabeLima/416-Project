@@ -75,22 +75,57 @@ describe("how the server socket deals with received events", () => {
 
 
     // TODO - IMPLEMENT BELOW
-    // Gabe: Connection, saveGame, saveText, roundEnd
-    it("opens a connection", (done) => {
-
-        // TODO - I uh... Don't think we need to do this. It's already part of the before() setup.
-        done();
-    });
+    // Gabe: saveGame, saveText, roundEnd
 
     it("saves a game", async (done) => {
+        serverSocket.on("saveGame", (data) => {
+            data.gameID.should.equal("fakeGameID");
+        });
+        clientSocket.emit("saveGame", {gameID: "fakeGameID"});
         done();
     });
 
     it("saves text", (done) => {
+        serverSocket.on("saveText", (data) => {
+            data.text.should.equal("fakeText");
+            data.textID.should.equal("fakeID");
+        });
+        clientSocket.emit("saveText", {text: "fakeText", textID: "fakeID"});
         done();
     });
 
     it("ends a round", (done) => {
+        const g = {
+            players: ["bob, phil, obama, mckenna, vicky, david, tim, gabe"],
+            currentRound: 0,
+            numRounds: 8
+        }
+        let startingStoryNumber = 3;
+        serverSocket.on("roundEnd", (data) => {
+            data.gameID.should.equal("fakeGameID");
+            data.currentRound.should.equal(g.currentRound);
+            g.currentRound = Math.max(data.currentRound + 1, g.currentRound);
+            if(g.currentRound === g.numRounds){
+                serverSocket.emit(gameEvents.GAME_OVER, g);
+            }
+            else{
+                let newStoryNumber = (data.storyNumber + g.currentRound) % g.players.length;
+                serverSocket.emit(gameEvents.START_ROUND, newStoryNumber);
+            }
+        });
+        clientSocket.on(gameEvents.START_ROUND, (storyNumber) => {
+            storyNumber.should.equal((startingStoryNumber + g.currentRound) % g.players.length);
+            clientSocket.emit("roundEnd", {gameID: "fakeGameID", storyNumber: storyNumber, currentRound: g.currentRound});
+        });
+        clientSocket.on(gameEvents.GAME_OVER, (game) => {
+            game.should.be.an("object");
+            assert.deepEqual({
+                players: ["bob, phil, obama, mckenna, vicky, david, tim, gabe"],
+                currentRound: 8,
+                numRounds: 8
+            }, game);
+        });
+        clientSocket.emit("roundEnd", {gameID: "fakeGameID", storyNumber: startingStoryNumber, currentRound: 0});
         done();
     });
 
@@ -1016,14 +1051,192 @@ describe("how the server socket deals with received events", () => {
 
     // David: create_game, start_game, saveImage
     it("creates a game", (done) => {
+        // testing init, to be checked later
+        let games = new Map();
+
+        // function being tested (copied)
+        serverSocket.on(gameEvents.CREATE_GAME, (data) => {
+            if(games.has(data.gameID))
+            {
+                // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
+                serverSocket.emit("joinSuccess", false);
+                return;
+            }
+
+            let numRounds, timePerRound;
+
+            // TODO - enforce minimum num rounds and timeperround on client side instead of server side? that sounds like best practice.
+            if (!data.numRounds) {
+                numRounds = gameRules.DEFAULT_NUM_ROUNDS;
+            }
+            else {
+                numRounds = data.numRounds;
+            }
+
+            if (!data.timePerRound) {
+                timePerRound = gameRules.DEFAULT_TIME_PER_ROUND;
+            }
+            else {
+                timePerRound = data.timePerRound;
+            }
+
+            //Checking tags
+            let tags = [];
+            if (data.tags)
+            {
+                tags = data.tags;
+            }
+
+            const gameInfo = {
+                gameID: data.gameID,
+                players: [data.email],
+                creator: data.email,
+                gameStatus: gameStatus.LOBBY,
+                playerVotes: [[]],
+                numRounds: numRounds,
+                timePerRound: timePerRound,
+                currentRound: 0,
+                tags: tags
+            };
+            //Map uses set instead of push
+            games.set(data.gameID, gameInfo);
+            
+            // replaced for 
+            // joinGame(serverSocket, data, gameInfo);
+            serverSocket.emit("joinSuccess", true);
+        });
+
+        // execute the test
+        clientSocket.emit(gameEvents.CREATE_GAME, {
+            gameID: "XYZ",
+            email: "a",
+            numRounds: 5,
+            timePerRound: 10,
+            tags: []
+        });
+
+        // verifying test is correct
+        clientSocket.on("joinSuccess", (data) => {
+            data.should.equal(true);
+            // checking the changed live_game value
+            assert.deepEqual( {
+                gameID: "XYZ",
+                players: ["a"],
+                gameStatus: gameStatus.LOBBY,
+                playerVotes: [[]],
+                creator: "a",
+                numRounds: 5,
+                timePerRound: 10,
+                currentRound: 0,
+                tags: []
+            }, games.get("XYZ"));
+        });
+        
         done();
     });
 
     it("starts a game", (done) => {
+        // testing init, to be used in the function
+        let games = new Map();
+        let panels = new Map();
+        games.set("ABC", {
+            gameID: "ABC",
+            players: ["a"],
+            gameStatus: gameStatus.LOBBY,
+            playerVotes: [["nobody"], [], [], []],
+            creator: "a",
+            numRounds: 5,
+            timePerRound: 10,
+            currentRound: 0,
+            tags: [],
+            panels: panels
+        });
+
+        // function being tested (copied)
+        serverSocket.on(gameEvents.START_GAME, (data) => {
+            if(games.has(data.gameID))
+            {
+                let g = games.get(data.gameID);
+                if(g.gameStatus === gameStatus.LOBBY)
+                {
+                    g.gameStatus = gameStatus.PLAYING;
+                    //We're going to be tracking the playerPanels throughout the game
+                    g.panels = new Map();
+                    for(let i = 0; i < g.players.length; i++){ // changed to i
+                        //Fill in every storyNumber with an empty array to represent the story
+                        g.panels.set(i, []); // change to set
+                    }
+
+                    // startGame(io, g); Not trying to test the timing here
+                    // The emitting line is copied from startGame()
+                    // Tell the users that the game is starting.
+                    serverSocket.emit(gameEvents.START_GAME);
+                    return;
+                }
+            }
+
+            serverSocket.emit("startFailure");
+        });
+
+        // executing the test
+        clientSocket.emit(gameEvents.START_GAME, {
+            gameID: "ABC"
+        });
+
+        // verifying test is corect
+        clientSocket.on(gameEvents.START_GAME, () => {
+            // reaching this is a success, there is no return data
+            let newPanels = new Map();
+            newPanels.set(0, []);
+            assert.deepEqual({
+                gameID: "ABC",
+                players: ["a"],
+                gameStatus: gameStatus.PLAYING,
+                playerVotes: [["nobody"], [], [], []],
+                creator: "a",
+                numRounds: 5,
+                timePerRound: 10,
+                currentRound: 0,
+                tags: [],
+                panels: newPanels
+            }, games.get("ABC"));
+        });
+
         done();
     });
 
     it("saves an image", (done) => {
+        // function to be tested (copied)
+        // I added the emits for testing
+        serverSocket.on('saveImage', (data) => {
+            if(!data.image || !data.imageID)
+            {
+                //console.log("The necessary parameters for saving the image was not provided.");
+                serverSocket.emit('saveImage', false);
+                return;
+            }
+
+            //console.log("Image received");
+            //console.log(data.imageID + " : " + data.image);
+
+            // would normally save here but replaced with emits
+            serverSocket.emit('saveImage', true);
+        });
+
+        // runs the test
+        const asciiBuf = Buffer.alloc(5, 'a', 'ascii');
+        clientSocket.emit('saveImage', {
+            image: asciiBuf,
+            imageID: "fakeID"
+        })
+
+        // doesn't emit anything on success or failure
+        // so I can't verify if the test passed
+        // I added emits for testing
+        clientSocket.on('saveImage', (data) => {
+            data.should.equal(true);
+        })
+
         done();
     });
 
