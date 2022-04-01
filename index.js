@@ -315,7 +315,7 @@ io.on('connection', function (socket) {
         if(gameID && storyNumber){
             const g = games.get(gameID);
             let panel = g.panels.get(storyNumber);
-            while(panel.length < g.roundNumber){
+            while(panel.length < g.currentRound){
                 panel.push(gameFailure.BLANK_IMAGE_ID);
             }
             imageID = panel[panel.length - 1];
@@ -345,7 +345,7 @@ io.on('connection', function (socket) {
         if(gameID && storyNumber){
             const g = games.get(gameID);
             let panel = g.panels.get(storyNumber);
-            while(panel.length < g.roundNumber){
+            while(panel.length < g.currentRound){
                 panel.push(gameFailure.BLANK_TEXT_ID);
             }
             textID = panel[panel.length - 1];
@@ -446,7 +446,7 @@ io.on('connection', function (socket) {
 
     setTimeout(() => {
         //Generate the new story they'll be adding to
-        if(g.roundNumber == g.numRounds){
+        if(g.currentRound == g.numRounds){
             socket.emit(gameEvents.GAME_OVER, g);    
             g.gameStatus = gameStatus.DONE;
         }
