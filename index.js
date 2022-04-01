@@ -166,7 +166,7 @@ io.on('connection', function (socket) {
                 g.panels = new Map();
                 for(let i = 0; i < g.players.length; g++){
                     //Fill in every storyNumber with an empty array to represent the story
-                    g.panels.put(i, []);
+                    g.panels.set(i, []);
                 }
 
                 startGame(io, g);
