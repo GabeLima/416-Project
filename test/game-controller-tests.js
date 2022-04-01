@@ -60,7 +60,7 @@ describe("how the game controller deals with requests", () => {
         // query in req params
         let req = {
             params: {
-                query: "realGameID"
+                query: "quirky"
             }
         }
         // "," seperated paramaters
@@ -71,37 +71,61 @@ describe("how the game controller deals with requests", () => {
         // returns some games
     });
 
-    it("updates a game", () => {
+    // ripped from gabes updateUser tests
+    it("updates a game successfully", () => {
         // communityVotes and comments in body
         // gameID in req params
+        const date = new Date();
+        const comment = {
+            username: "user",
+            email: "user@mail.com",
+            content: "This comic is cringe",
+            postDate: date
+        };
         let req = {
             params: {
-                gameID: "realGameID",
+                gameID: "fakeID",
             },
             body: {
                 communityVotes: [],
-                comments: ["pog", "gers"]
+                comments: [comment]
             }
         }
+
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        GameController.updateGame(req, res);
+        sinon.assert.calledWith(GameModel.findOne, { gameID: 'fakeID' });
+        done();
         // 200 on success
         // game returned
         // success: true
         // msg: "Game updated"
     });
 
+    it("updates a game unsuccessfully", (done) => {
+        let req = {};
+
+        // still works? findOne is called but the error is handled within
+        sandbox.stub(mongoose.Model, "findOne").yields(null);
+        GameController.updateUser(req, res);
+        sinon.assert.notCalled(GameController.findOne);
+        sinon.assert.calledWith(res.status, 400);
+        done();
+    });
+
     it("deletes a game", () => {
         // gameID in req params
         let req = {
             body: {
-                gameID: "realGameID",
+                gameID: "fakeID",
             }
         }
 
         sandbox.stub(mongoose.Model, "findOne").yields(null);
 
-        UserController.resetPassword(req, res);
+        GameController.deleteGame(req, res);
 
-        sinon.assert.calledWith(UserModel.findOne, { email: 'test@gmail.com' });
+        sinon.assert.calledWith(GameModel.findOne, { gameID: 'fakeID' });
 
         done();
         // 404 on failure
