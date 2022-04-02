@@ -24,9 +24,12 @@
   "scripts": {
     "start": "nodemon index.js",
     "heroku-postbuild": "cd client && npm install --only=dev && npm install && npm run build",
-    "test": "nodemon --exec mocha -R min"
+    "test": "nodemon --exec mocha --require mocha-suppress-logs"
   },
   "engines": {
     "node": "14.17.4"
+  },
+  "devDependencies": {
+    "mocha-suppress-logs": "^0.3.1"
   }
 }
