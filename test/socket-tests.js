@@ -13,7 +13,7 @@ const GameController = require("../controllers/game-controller");
 const Text = require("../models/text-model");
 const Images = require("../models/image-model");
 const socketWrapper = require("../socketWrapper.js");
-const {gameEvents, gameRules, gameStatus, images} = require("../constants");
+const {gameEvents, gameRules, gameStatus, gameFailure} = require("../constants");
 
 
 let sandbox = sinon.createSandbox();

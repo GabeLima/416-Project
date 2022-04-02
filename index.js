@@ -11,6 +11,7 @@ const Games = require("./models/game-model");
 const Images = require("./models/image-model");
 const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
+const {gameEvents, gameRules, gameStatus, gameFailure} = require("./constants");
 
 dotenv.config();
 const app = express();
@@ -308,8 +309,9 @@ io.on('connection', function (socket) {
     */
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
-        const {gameID, storyNumber, imageID} = data;
-        let imgID = imageID;
+        const {gameID, storyNumber} = data;
+        let imageID = data.imageID;
+
         if(!imageID || !(gameID && storyNumber)){
             console.log("Error on getImage, missing data from the payload: ", data);
             return;
@@ -318,12 +320,12 @@ io.on('connection', function (socket) {
             const g = games.get(gameID);
             let panel = g.panels.get(storyNumber);
             while(panel.length < g.currentRound){
-                panel.push(images.BLANK_IMAGE);
+                panel.push(gameFailure.BLANK_IMAGE_ID);
             }
             imgID = panel[panel.length - 1];
         }
-        Images.findOne({imageID: imgID}, (err, data) => {
-            if(err) {
+        Images.findOne({imageID: imageID}, (err, data) => {
+            if(err ||!data) {
                 console.log("Error in getImage: " + err);
                 socket.emit('getImage', false);
             }
@@ -337,22 +339,31 @@ io.on('connection', function (socket) {
         Returns text from the database
     */
     socket.on('getText', function(data) {
-        const {textID} = data;
-        if(!textID) {
-            console.log("Error in getText, textID not provided");
+        // get imgID from gameID and storyNumber
+        const {gameID, storyNumber} = data;
+        let textID = data.textID;
+        if(!textID || !(gameID && storyNumber)){
+            console.log("Error on getText, missing data from the payload: ", data);
             socket.emit('getText', false);
             return;
         }
+        if(gameID && storyNumber){
+            const g = games.get(gameID);
+            let panel = g.panels.get(storyNumber);
+            while(panel.length < g.currentRound){
+                panel.push(gameFailure.BLANK_TEXT_ID);
+            }
+            textID = panel[panel.length - 1];
+        }
         Texts.findOne({textID: textID}, (err, data) => {
             if(err || !data) {
-                socket.emit('getText', false);
                 console.log("Error in getText " + err);
                 socket.emit('getText', false);
             }
             else {
                 socket.emit('getText', data.text);
             }
-        })
+        });
     });
 
     /*
@@ -440,7 +451,7 @@ io.on('connection', function (socket) {
 
     setTimeout(() => {
         //Generate the new story they'll be adding to
-        if(g.roundNumber == g.numRounds){
+        if(g.currentRound == g.numRounds){
             socket.emit(gameEvents.GAME_OVER, g);    
             g.gameStatus = gameStatus.DONE;
         }

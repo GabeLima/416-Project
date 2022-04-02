@@ -20,13 +20,14 @@ const gameStatus ={
     DONE: "done" //We finished playing, but users are still voting
 };
 
-const images ={
-    BLANK_IMAGE : "0"
+const gameFailure ={
+    BLANK_IMAGE_ID : "0",
+    BLANK_TEXT_ID: "0"
 };
 
 module.exports = {
     gameEvents,
     gameRules,
     gameStatus,
-    images
+    gameFailure
 }
