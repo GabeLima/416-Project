@@ -23,19 +23,15 @@ const AccountScreen = () => {
     const theme = createTheme({
         palette: {
             primary: {
-              main: '#B298DC',
+              main: '#6A8D92',
             },
             secondary: {
-              main: '#B8D0EB',
-            },
-            background: {
-                paper: '#fff',
-                default: "#ff0000"
-              },
+              main: '#9FB4C7',
+            }
         },
       });
     return (
-        <div id="splash-screen">
+        <div>
             <ThemeProvider theme={theme}>
                 <Container component="main" maxWidth="lg" maxHeight="lg">
                 <CssBaseline />
@@ -79,7 +75,7 @@ const AccountScreen = () => {
                             <TextField margin="normal" required fullWidth id="email" label="Email" name="email" autoComplete="email" autoFocus/>
                             <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
                             <Typography align="center">
-                                <Button  type="submit" variant="contained" sx={{ mt: 3, mb: 2, width:'50%'}}>
+                                <Button  type="submit" variant="contained" color="error" sx={{ mt: 3, mb: 2, width:'50%'}}>
                                     Delete Account
                                 </Button>
                             </Typography>
