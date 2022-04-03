@@ -1,0 +1,44 @@
+:root {
+  /* 
+        FIRST WE'LL DEFINE OUR SWATCHES, i.e. THE COMPLEMENTARY
+        COLORS THAT WE'LL USE TOGETHER IN MULTIPLE PLACES THAT
+        TOGETHER WILL MAKE UP A GIVEN THEME
+    
+        @author McKilla Gorilla
+    */
+  --swatch-foundation: #eeeedd;
+  --swatch-primary: #afaeae;
+  --swatch-complement: #e1e4cb;
+  --swatch-contrast: #111111;
+  --swatch-accent: #669966;
+  --swatch-status: #123456;
+  --my-font-family: "Robaaaoto";
+  --swatch-user: blueviolet;
+  --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
+}
+
+#root {
+  background-color: #ddfafc;
+  font-family: "Lexend Exa";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#app-root {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0%;
+  left: 0%;
+}
+
+/* #splash-screen {
+  background-color: yellow;
+  color: black;
+  font-size: 5vw;
+  vertical-align: center;
+  width: 100%;
+  height: 100%;
+} */
+

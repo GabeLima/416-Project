@@ -1,0 +1,103 @@
+import { useContext } from 'react';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import CssBaseline from '@mui/material/CssBaseline';
+import TextField from '@mui/material/TextField';
+import Link from '@mui/material/Link';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import { createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/private-theming';
+
+const AccountScreen = () => {
+    //const { auth } = useContext(AuthContext);
+    //const { store } = useContext(GlobalStoreContext);
+
+
+    // useEffect(() => {
+    //     store.loadIdNamePairs();
+    // }, []);
+    const theme = createTheme({
+        palette: {
+            primary: {
+              main: '#B298DC',
+            },
+            secondary: {
+              main: '#B8D0EB',
+            },
+            background: {
+                paper: '#fff',
+                default: "#ff0000"
+              },
+        },
+      });
+    return (
+        <div id="splash-screen">
+            <ThemeProvider theme={theme}>
+                <Container component="main" maxWidth="lg" maxHeight="lg">
+                <CssBaseline />
+                <Box
+                sx={{
+                    marginTop: 15,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                }}
+                >
+                    <Box component="form" noValidate sx={{bgcolor:"primary.main", border:2, borderColor:"black", width:'75%'}}>
+                        <Box sx={{pt:10}}>
+                            <Typography align="center" variant="h4"> Change Username?</Typography>
+                        </Box>
+                        <TextField margin="normal" required fullWidth id="username" label="New Username" name="username" autoComplete="username" autoFocus/>
+                        <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
+                        <Typography align="center">
+                                <Button  type="submit" variant="contained" sx={{ mt: 3, mb: 2, width:'50%'}}>
+                                    Change Username
+                                </Button>
+                        </Typography>
+                        <Box sx={{pt:10}}>
+                            <Typography align="center" variant="h4"> Change Password?</Typography>
+                        </Box>
+                        <TextField margin="normal" required fullWidth name="new-password-1" label="New Password" type="password" id="new-password-1" autoComplete="new-password"/>
+                        <TextField margin="normal" required fullWidth name="new-password-2" label="New Password" type="password" id="new-password-2" autoComplete="new-password"/>
+                        <TextField margin="normal" required fullWidth name="password" label="Current Password" type="password" id="password" autoComplete="current-password"/>
+                        <Typography align="center">
+                                <Button  type="submit" variant="contained" sx={{ mt: 3, mb: 2, width:'50%'}}>
+                                    Change Password
+                                </Button>
+                            </Typography>
+                    </Box>
+                    <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", height: '100%'}}>
+                        <Box sx={{pt:10, pb:22}}>
+                            <Typography align="center" variant="h4"> Delete Account?</Typography>
+                        </Box>
+                        <Typography align="center" variant="h6"> {"This action is permanent and CANNOT be undone."}</Typography>
+                        <Box  sx={{pt:24.8}}>
+                            <TextField margin="normal" required fullWidth id="email" label="Email" name="email" autoComplete="email" autoFocus/>
+                            <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
+                            <Typography align="center">
+                                <Button  type="submit" variant="contained" sx={{ mt: 3, mb: 2, width:'50%'}}>
+                                    Delete Account
+                                </Button>
+                            </Typography>
+                        </Box>
+                        
+
+
+                        <Grid container>
+                        <Grid item xs>
+                        </Grid>
+                        </Grid>
+                    </Box>
+                </Box>
+            </Container>
+    </ThemeProvider>
+  </div>
+
+        )
+}
+
+export default AccountScreen;
