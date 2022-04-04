@@ -1,15 +1,7 @@
-import { React, useContext, useEffect, useCallback } from 'react'
+import { React} from 'react'
 import { SocketContext } from "../context/socket";
-import Painterro from "painterro"
-import Paint from "./Paint"
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme } from '@mui/material/styles';
@@ -18,12 +10,10 @@ import TextareaAutosize from '@mui/base/TextareaAutosize';
 
 const StoryGameInProgressScreen = (props) => {
     console.log(SocketContext);
-    const socket = useContext(SocketContext);
-    
-    
-    let saveHandler = (text, done) => {
-        socket.emit("saveText", text);
-    }
+    // const socket = useContext(SocketContext);
+    // let saveHandler = (text, done) => {
+    //     socket.emit("saveText", text);
+    // }
 
     const theme = createTheme({
         palette: {

@@ -18,8 +18,8 @@ const app = express();
 // SETUP THE MIDDLEWARE
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: ["http://localhost:3000"], //LOCAL DEPLOYMENT
-    //origin: ["https://testderit.herokuapp.com/"], HEROKU DEPLOYMENT
+    origin: "http://localhost:3000", //LOCAL DEPLOYMENT
+    //origin: "https://derit.herokuapp.com/", HEROKU DEPLOYMENT
     credentials: true
 }))
 app.use(express.json())
@@ -473,6 +473,6 @@ io.on('connection', function (socket) {
 
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
