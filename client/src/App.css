@@ -32,3 +32,21 @@
   top: 0%;
   left: 0%;
 }
+
+#holder {
+  display: flex;
+}
+
+.pa {
+  position: relative;
+  width: 58vw;
+  height: 60vh;
+}
+
+#painterro {
+  border: 2px solid red;
+}
+
+#p2 {
+  border: 2px solid green;
+}
