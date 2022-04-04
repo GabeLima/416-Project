@@ -1,13 +1,4 @@
 import Paint from "./Paint"
-<<<<<<< HEAD
-import Profile from "./Profile"
-import HeaderBar from "./HeaderBar"
-
-export {
-    Paint,
-    Profile,
-    HeaderBar
-=======
 import HomeScreen from "./HomeScreen"
 import AccountScreen from "./AccountScreen"
 import ComicGameInProgressScreen from "./ComicGameInProgressScreen"
@@ -20,5 +11,4 @@ export {
     AccountScreen,
     ComicGameInProgressScreen,
     StoryGameInProgressScreen
->>>>>>> master
 }
