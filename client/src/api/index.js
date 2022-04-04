@@ -9,12 +9,16 @@ export const getLoggedIn = () => api.get(`/loggedIn/`);
 export const registerUser = (payload) => api.post(`/register/`, payload)
 export const loginUser = (payload) => api.post(`/user/`, payload)
 export const logoutUser = () => api.get(`/logout/`)
+export const getUserByUsername = (username) => api.get(`/user/${username}`)
+export const getUserByEmail = (email) => api.get(`/user/email/${email}`)
 
 const apis = {
     getLoggedIn,
     registerUser,
     loginUser,
-    logoutUser
+    logoutUser, 
+    getUserByUsername,
+    getUserByEmail
 }
 
 export default apis

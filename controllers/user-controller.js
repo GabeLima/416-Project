@@ -360,6 +360,33 @@ getUser = async (req, res) => {
     });
 }
 
+getUserByEmail = async (req, res) => {
+    const email = req.params.email;
+    if (!email) {
+        return res.status(400).json({
+            success: false,
+            errorMessage: 'You must provide an email',
+        });
+    }
+
+    await User.findOne({email: email}, (err, user) => {
+        if (err) {
+            return res.status(404).json({
+                success: false,
+                err,
+                message: "User not found!"
+            });
+        }
+        else if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found!"
+            });
+        }
+        return res.status(200).json({ success: true, user: user});
+    });
+}
+
 /*
     Resets a user's passwordHash in the database.
     Requires a correct answer for that user's security question.
@@ -549,6 +576,7 @@ module.exports = {
     updateUser,
     updateFollowers,
     getUser,
+    getUserByEmail,
     resetPassword,
     changePassword
 }

@@ -10,7 +10,8 @@ export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     REGISTER_USER: "REGISTER_USER",
     LOGIN_USER: "LOGIN_USER",
-    LOGOUT_USER: "LOGOUT_USER"
+    LOGOUT_USER: "LOGOUT_USER",
+    GET_USER: "GET_USER"
 }
 
 function AuthContextProvider(props) {
@@ -54,6 +55,13 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: null,
                     loggedIn: false //Assuming that if the login user reducer is called, we're loggedIn
+                })
+            }
+            case AuthActionType.GET_USER: {
+                console.log("Inside GET USER reducer, loggedIn: ", payload.loggedIn);
+                return setAuth({
+                    user: payload.user,
+                    loggedIn: false
                 })
             }
             default:
@@ -145,6 +153,31 @@ function AuthContextProvider(props) {
             console.log("Exception caught!");
             let errorMsg = Exception.response.data.errorMessage;
             store.setErrorMessage(errorMsg);
+        }
+    }
+
+
+    auth.getUserByEmail = async function(userData, setState, store) {
+        console.log("Inside auth.getUserByEmail with userData: ", userData);
+        try{
+            const response = await api.getUserByEmail(userData.email);
+            console.log("Users gotten from the database: ", response);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.GET_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                
+                setState(response.data.user);
+            }
+            else{
+                store.setErrorMessage("Please enter a valid email")
+            }
+        }catch(Exception){
+            console.log("Exception caught!");
+            store.setErrorMessage("Please enter a valid email")
         }
     }
 

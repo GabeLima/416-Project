@@ -13,7 +13,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { GlobalStoreContext } from '../store'
 import AlertModal from './AlertModal'
 
-export default function RegisterScreen() {
+const RegisterScreen = () =>{
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext)
 
@@ -135,3 +135,4 @@ export default function RegisterScreen() {
             </Container>
     );
 }
+export default RegisterScreen;
