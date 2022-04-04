@@ -15,9 +15,9 @@ const App = () => {
         <BrowserRouter>
             <SocketContext.Provider value={socket}>
                 <Switch>
+                    <Route path="/" exact component={HeaderBar} />
                     <Route path="/profile" exact component={Profile} />
                     <Route path="/paint" exact component={Paint} />
-                    <Route path="/" exact component={HeaderBar} />
                 </Switch>
                 </SocketContext.Provider>
         </BrowserRouter>
