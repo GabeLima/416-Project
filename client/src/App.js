@@ -24,10 +24,10 @@ const App = () => {
             <SocketContext.Provider value={socket}>
                 <Switch>
                     <Route path="/" exact component={Paint} />
-                    <Route path="lobby" exact component={GameLobby} />
-                    <Route path="create" exact component={CreateGame} />
-                    <Route path="search" exact component={SearchResults} />
-                    <Route path="/" exact component={HomeScreen} />
+                    <Route path="/lobby" exact component={GameLobby} />
+                    <Route path="/create" exact component={CreateGame} />
+                    <Route path="/search" exact component={SearchResults} />
+                    //<Route path="/homescreen" exact component={HomeScreen} />
                     <Route path="/account" exact component={AccountScreen} />
                     <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
                     <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
