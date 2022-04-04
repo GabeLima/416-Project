@@ -33,13 +33,24 @@ const LoginScreen = () => {
         }, store);
     };
 
-    const handleUserSubmit = (event) => {
+    const handleEmailSubmit = (event) => {
       event.preventDefault();
       const formData = new FormData(event.currentTarget);
-      auth.getUserByEmail({
+      auth.getUserSecurityQuestion({
           email: formData.get('email'),
       }, setState, store);
   };
+
+  const handleResetPassword = (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    auth.resetPassword({
+      email: state.email,
+      newPassword: formData.get('password'),
+      newPasswordVerify: formData.get('passwordVerify'),
+      securityAnswer: formData.get('securityAnswer')
+  }, setState, store);
+};
 
   
     function normalLogin(){
@@ -82,10 +93,6 @@ const LoginScreen = () => {
                   id="password"
                   autoComplete="current-password"
                 />
-                {/* <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                /> */}
                 <Button
                   type="submit"
                   fullWidth
@@ -96,17 +103,13 @@ const LoginScreen = () => {
                 </Button>
                 <Grid container>
                   <Grid item xs>
-                    {/* <Link href="#" variant="body2">
-                      Forgot password?
-                    </Link> */}
-                  </Grid>
-                  <Grid item>
-                    <Link component="button" variant="body2" onClick={()=>{
+                  <Link component="button" variant="body2" onClick={()=>{
                       setState("enterEmail");
-  
                       }}>
                       {"Forgot password?"}
                     </Link>
+                  </Grid>
+                  <Grid item>
                     <Link href="/register/" variant="body2">
                       {"Don't have an account? Sign Up"}
                     </Link>
@@ -138,7 +141,7 @@ const LoginScreen = () => {
               <Typography component="h1" variant="h5">
                 Enter Account Email
               </Typography>
-              <Box component="form" onSubmit={handleUserSubmit} noValidate sx={{ mt: 1 }}>
+              <Box component="form" onSubmit={handleEmailSubmit} noValidate sx={{ mt: 1 }}>
                 <TextField
                   margin="normal"
                   required
@@ -149,10 +152,6 @@ const LoginScreen = () => {
                   autoComplete="email"
                   autoFocus
                 />
-                {/* <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                /> */}
                 <Button
                   type="submit"
                   fullWidth
@@ -169,7 +168,7 @@ const LoginScreen = () => {
     }
 
 
-    function enterSecurityAnswer(){
+    function resetPassword(){
       return(<ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -184,10 +183,10 @@ const LoginScreen = () => {
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
-            {state.securityQuestion}
+          <Typography alignContent="center" component="h1" variant="h5">
+            {"Your security Question: " + state.securityQuestion}
           </Typography>
-          <Box component="form" onSubmit={handleUserSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleResetPassword} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required
@@ -198,10 +197,25 @@ const LoginScreen = () => {
               autoComplete="securityAnswer"
               autoFocus
             />
-            {/* <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            /> */}
+                <TextField
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="New Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                />
+                <TextField
+                    required
+                    fullWidth
+                    name="passwordVerify"
+                    label="New Password Verify"
+                    type="password"
+                    id="passwordVerify"
+                    autoComplete="new-password"
+                />
             <Button
               type="submit"
               fullWidth
@@ -226,9 +240,8 @@ const LoginScreen = () => {
         return enterEmail();
       }
       else{
-        return enterSecurityAnswer();
+        return resetPassword();
       }
-      
     }
 
 

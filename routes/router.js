@@ -15,10 +15,10 @@ router.put('/game/:email/followers', auth.verify, UserController.updateFollowers
 router.post('/register', UserController.registerUser)
 router.post('/user', UserController.loginUser)
 router.get('/user/:username', UserController.getUser);
-router.get('/user/email/:email', UserController.getUserByEmail);
+router.get('/user/email/:email', UserController.getUserSecurityQuestion);
 router.get('/logout', UserController.logoutUser)
 router.get('/loggedIn', UserController.getLoggedIn)
-router.get('/resetPassword', UserController.resetPassword)
+router.put('/resetPassword', UserController.resetPassword)
 router.get('/changePassword', UserController.changePassword)
 
 module.exports = router

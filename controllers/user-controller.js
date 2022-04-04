@@ -360,7 +360,7 @@ getUser = async (req, res) => {
     });
 }
 
-getUserByEmail = async (req, res) => {
+getUserSecurityQuestion = async (req, res) => {
     const email = req.params.email;
     if (!email) {
         return res.status(400).json({
@@ -383,7 +383,7 @@ getUserByEmail = async (req, res) => {
                 message: "User not found!"
             });
         }
-        return res.status(200).json({ success: true, user: user});
+        return res.status(200).json({ success: true, securityQuestion: user.securityQuestion});
     });
 }
 
@@ -576,7 +576,7 @@ module.exports = {
     updateUser,
     updateFollowers,
     getUser,
-    getUserByEmail,
+    getUserSecurityQuestion,
     resetPassword,
     changePassword
 }

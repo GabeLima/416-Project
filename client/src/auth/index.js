@@ -103,6 +103,8 @@ function AuthContextProvider(props) {
                         user: response.data.user
                     }
                 });
+                history.push("/");
+                //Load the home page here
             }
         }
         catch{
@@ -157,27 +159,34 @@ function AuthContextProvider(props) {
     }
 
 
-    auth.getUserByEmail = async function(userData, setState, store) {
-        console.log("Inside auth.getUserByEmail with userData: ", userData);
+    auth.getUserSecurityQuestion = async function(userData, setState, store) {
+        console.log("Inside auth.getUserSecurityQuestion with userData: ", userData);
         try{
-            const response = await api.getUserByEmail(userData.email);
+            const response = await api.getUserSecurityQuestion(userData.email);
             console.log("Users gotten from the database: ", response);
             if (response.status === 200) {
-                authReducer({
-                    type: AuthActionType.GET_USER,
-                    payload: {
-                        user: response.data.user
-                    }
-                })
-                
-                setState(response.data.user);
-            }
-            else{
-                store.setErrorMessage("Please enter a valid email")
+                setState({securityQuestion: response.data.securityQuestion, email: userData.email});
             }
         }catch(Exception){
             console.log("Exception caught!");
             store.setErrorMessage("Please enter a valid email")
+        }
+    }
+
+
+    auth.resetPassword = async function(userData, setState, store) {
+        console.log("Inside auth.resetPassword with userData: ", userData);
+        try{
+            const response = await api.resetPassword(userData);
+            console.log("Reset password response gotten from the database: ", response);
+            if (response.status === 200) {
+                setState("normalLogin");
+                store.setErrorMessage("Your password has been successfully reset!");
+            }
+        }catch(Exception){
+            console.log("Exception caught!");
+            let errorMsg = Exception.response.data.errorMessage;
+            store.setErrorMessage(errorMsg);
         }
     }
 

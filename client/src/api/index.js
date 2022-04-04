@@ -10,7 +10,8 @@ export const registerUser = (payload) => api.post(`/register/`, payload)
 export const loginUser = (payload) => api.post(`/user/`, payload)
 export const logoutUser = () => api.get(`/logout/`)
 export const getUserByUsername = (username) => api.get(`/user/${username}`)
-export const getUserByEmail = (email) => api.get(`/user/email/${email}`)
+export const getUserSecurityQuestion = (email) => api.get(`/user/email/${email}`)
+export const resetPassword = (payload) => api.put(`/resetPassword/`, payload)
 
 const apis = {
     getLoggedIn,
@@ -18,7 +19,8 @@ const apis = {
     loginUser,
     logoutUser, 
     getUserByUsername,
-    getUserByEmail
+    getUserSecurityQuestion,
+    resetPassword
 }
 
 export default apis
