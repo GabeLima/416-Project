@@ -11,7 +11,6 @@ export const AuthActionType = {
     REGISTER_USER: "REGISTER_USER",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    GET_USER: "GET_USER"
 }
 
 function AuthContextProvider(props) {
@@ -55,13 +54,6 @@ function AuthContextProvider(props) {
                 return setAuth({
                     user: null,
                     loggedIn: false //Assuming that if the login user reducer is called, we're loggedIn
-                })
-            }
-            case AuthActionType.GET_USER: {
-                console.log("Inside GET USER reducer, loggedIn: ", payload.loggedIn);
-                return setAuth({
-                    user: payload.user,
-                    loggedIn: false
                 })
             }
             default:
