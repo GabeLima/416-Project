@@ -1,4 +1,4 @@
-import { React, useContext, useEffect, useCallback, useState } from 'react'
+import { React, useState } from 'react'
 
 import Box from '@mui/material/Box';
 import Slider from '@mui/material/Slider';
@@ -117,8 +117,8 @@ const CreateGame = (props) => {
 
 
 
-    const handleStartGame = (event) => {
-        console.log("start game with parameters:");
+    const handleCreateGame = (event) => {
+        console.log("create game with parameters:");
         let selectedTags_copy = selectedTags.slice();
 
         if (customTags) {
@@ -294,7 +294,7 @@ const CreateGame = (props) => {
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
-                        onClick={handleStartGame}
+                        onClick={handleCreateGame}
                         >
                     Create Game
                 </Button>
