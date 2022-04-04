@@ -208,6 +208,7 @@ const LoginScreen = () => {
                   autoComplete="current-password"
                 />
                 <TextField
+                  margin="normal"
                     required
                     fullWidth
                     name="passwordVerify"
