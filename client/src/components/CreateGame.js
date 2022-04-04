@@ -9,6 +9,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
+import TextField from '@mui/material/TextField';
+
 const CreateGame = (props) => {
 
     const [timePerRound, setTimePerRound] = useState(20);
@@ -17,6 +19,49 @@ const CreateGame = (props) => {
         console.log("New time per round: " + newValue);
     };
     
+    const [numRounds, setNumRounds] = useState(4);
+    const handleNumRoundsChange = (event, newValue) => {
+        setNumRounds(newValue);
+        console.log("New num rounds: " + newValue);
+    };
+
+    const [selectedTags, setSelectedTags] = useState([]);
+    let tagOptions = ["Comedy", "Family-Friendly", "Drama", "Pop Culture", "Anime", "Sports", "Gaming", "Tragedy", "Educational"];
+
+    const handleTagChange = (event) => {
+        let id = event.target.id;
+        let tagIndex = id.substring(id.indexOf("checkbox") + 8);
+        let tag = tagOptions[tagIndex];
+
+        if (event.target.checked) {
+            console.log("User enabled " + tag);
+            // User enabled this tag
+            if (selectedTags.includes(tag)) {
+                // Some fluke, it shouldn't already be in here, just leave it as is.
+                return;
+            }
+
+            setSelectedTags((selectedTags) => [...selectedTags, tag]);
+        }
+        else {
+            // User disabled this tag
+            console.log("User disabled " + tag);
+            let i = selectedTags.indexOf(tag);
+            if (i !== -1) {
+                //selectedTags.splice(i, 1);
+                setSelectedTags((selectedTags) => [
+                    ...selectedTags.filter((item, index) => index !== i)
+                ]);
+            }
+        }
+    }
+
+    const [customTags, setCustomTags] = useState();
+    const handleKeyPress = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        setCustomTags(event.target.value);
+    }
 
     const timeSliderMarks = [
         {
@@ -46,11 +91,7 @@ const CreateGame = (props) => {
 
     ];
 
-    const [numRounds, setNumRounds] = useState(4);
-    const handleNumRoundsChange = (event, newValue) => {
-        setNumRounds(newValue);
-        console.log("New num rounds: " + newValue);
-    };
+    
     const roundSliderMarks = [
         {
             value: 2,
@@ -74,41 +115,32 @@ const CreateGame = (props) => {
         },
     ];
 
-    // TODO - Hardcode this?
-    let tagOptions = ["Comedy", "Family-Friendly", "Drama", "Pop Culture", "Anime", "Sports", "Gaming", "Tragedy", "Educational"];
-    let selectedTags = [];
 
-    const handleTagChange = (event) => {
-        let id = event.target.id;
-        let tagIndex = id.substring(id.indexOf("checkbox") + 8);
-        let tag = tagOptions[tagIndex];
-
-        console.log(selectedTags);
-        if (event.target.checked) {
-            console.log("User enabled " + tag);
-            // User enabled this tag
-            if (selectedTags.includes(tag)) {
-                // Some fluke, it shouldn't already be in here, just leave it as is.
-                return;
-            }
-
-            selectedTags.push(tag);
-        }
-        else {
-            // User disabled this tag
-            console.log("User disabled" + tag);
-            let i = selectedTags.indexOf(tag);
-            if (i !== -1) {
-                selectedTags.splice(i, 1);
-            }
-        }
-        console.log(selectedTags);
-    }
 
     const handleStartGame = (event) => {
-        console.log("start game");
+        console.log("start game with parameters:");
+        let selectedTags_copy = selectedTags.slice();
+
+        if (customTags) {
+            customTags.split(",")
+                .map(i => i.trim())
+                .forEach((elem, i) => {
+                    // prevent dupes
+                    if (!selectedTags_copy.includes(elem)) {
+                        selectedTags_copy.push(elem);
+                    }
+            });
+        }
+
+        console.log(timePerRound);
+        console.log(numRounds);
+        console.log(selectedTags_copy);
+
+        // TODO - hook this up
     }
     
+
+
     return (
         <div>
         <Box alignItems="center" sx={{ display: {
@@ -218,6 +250,33 @@ const CreateGame = (props) => {
                     })
                     }
                 </FormGroup>
+
+                <Box display="flex" justifyContent="center">
+                    <TextField id="standard-basic" label="Custom Tags (Comma Separated)" variant="filled"
+                        fullWidth
+                        sx={{
+                            marginTop:5,
+                            marginLeft:10,
+                            justifyContent: "center",
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                        }}
+
+                        InputLabelProps={{
+                            style: { color: '#493548' },
+                        }}
+
+                        style={{
+                            borderRadius: "10px",
+                            borderStyle: "solid",
+                            borderColor: "#6A6A6A"
+                        }}
+                        onChange={handleKeyPress}
+                    
+                    />
+                </Box>
+                
             </Box>
             
             <Box sx={{height:75}} />
