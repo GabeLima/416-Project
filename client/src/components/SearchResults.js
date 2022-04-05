@@ -201,7 +201,6 @@ const SearchResults = (props) => {
                         </Typography>
 
                         <IconButton
-                            size="large"
                             edge="end"
                             aria-label="Sort Menu"
                             aria-controls={menuId}
@@ -210,7 +209,7 @@ const SearchResults = (props) => {
                             color="default"
                             >
                                 <Badge>
-                                    <SortIcon />
+                                    <SortIcon  sx={{ fontSize: 40 }}/>
                                 </Badge>
                         </IconButton>
 
