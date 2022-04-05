@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
+import api from '../api'
 
 const AuthContext = createContext();
 console.log("create AuthContext: " + AuthContext);
@@ -9,7 +10,7 @@ export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     REGISTER_USER: "REGISTER_USER",
     LOGIN_USER: "LOGIN_USER",
-    LOGOUT_USER: "LOGOUT_USER"
+    LOGOUT_USER: "LOGOUT_USER",
 }
 
 function AuthContextProvider(props) {
@@ -19,9 +20,10 @@ function AuthContextProvider(props) {
     });
     const history = useHistory();
 
+    //On load we check if the user is logged in or not
     useEffect(() => {
         auth.getLoggedIn();
-    }, []);
+    });
 
     const authReducer = (action) => {
         const { type, payload } = action;
@@ -56,6 +58,127 @@ function AuthContextProvider(props) {
             }
             default:
                 return auth;
+        }
+    }
+
+    auth.logoutUser = async function (store) {
+        try{
+            const response = await api.logoutUser();
+            if (response.status === 200) {
+                store.resetLocalSearchtext();
+                store.resetPageViews();
+                authReducer({
+                    type: AuthActionType.GET_LOGGED_IN,
+                    payload: {
+                        loggedIn: response.data.loggedIn,
+                        user: response.data.user
+                    }
+                });
+            }
+        }
+        catch(Exception){
+            console.log("Exception caught!");
+            let errorMsg = "Something went wrong logging you out.";
+            store.setErrorMessage(errorMsg);
+        }
+    }
+
+
+    auth.getLoggedIn = async function () {
+        try{
+            const response = await api.getLoggedIn();
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.GET_LOGGED_IN,
+                    payload: {
+                        loggedIn: response.data.loggedIn,
+                        user: response.data.user
+                    }
+                });
+                history.push("/");
+                //Load the home page here
+            }
+        }
+        catch{
+            console.log("Got an error from auth.getLoggedIn");
+        }
+    }
+
+    auth.registerUser = async function(userData, store) {
+        try{
+            console.log("userData: ", userData);
+            const response = await api.registerUser(userData);      
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.REGISTER_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                history.push("/");
+                //Load the home page here
+            }
+        }
+        catch(Exception){
+            let errorMsg = Exception.response.data.errorMessage;
+            store.setErrorMessage(errorMsg);
+        }
+    }
+
+    auth.loginUser = async function(userData, store) {
+        console.log("Inside auth.loginUser with userData: ", userData);
+        try{
+            const response = await api.loginUser(userData);
+            console.log("Users gotten from the database: ", response);
+            if (response.status === 200) {
+                console.log("Login status (from loginUser reducer: ", response.data.loggedIn);
+                console.log("User data: ", response.data.user);
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        loggedIn: true,
+                        user: response.data.user
+                    }
+                })
+                history.push("/");
+                //Load the home page here
+            }
+        }catch(Exception){
+            console.log("Exception caught!");
+            let errorMsg = Exception.response.data.errorMessage;
+            store.setErrorMessage(errorMsg);
+        }
+    }
+
+
+    auth.getUserSecurityQuestion = async function(userData, setState, store) {
+        console.log("Inside auth.getUserSecurityQuestion with userData: ", userData);
+        try{
+            const response = await api.getUserSecurityQuestion(userData.email);
+            console.log("Users gotten from the database: ", response);
+            if (response.status === 200) {
+                setState({securityQuestion: response.data.securityQuestion, email: userData.email});
+            }
+        }catch(Exception){
+            console.log("Exception caught!");
+            store.setErrorMessage("Please enter a valid email")
+        }
+    }
+
+
+    auth.resetPassword = async function(userData, setState, store) {
+        console.log("Inside auth.resetPassword with userData: ", userData);
+        try{
+            const response = await api.resetPassword(userData);
+            console.log("Reset password response gotten from the database: ", response);
+            if (response.status === 200) {
+                setState("normalLogin");
+                store.setErrorMessage("Your password has been successfully reset!");
+            }
+        }catch(Exception){
+            console.log("Exception caught!");
+            let errorMsg = Exception.response.data.errorMessage;
+            store.setErrorMessage(errorMsg);
         }
     }
 

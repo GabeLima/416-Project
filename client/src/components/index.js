@@ -12,6 +12,10 @@ import AccountScreen from "./AccountScreen"
 import ComicGameInProgressScreen from "./ComicGameInProgressScreen"
 import StoryGameInProgressScreen from "./StoryGameInProgressScreen"
 
+import LoginScreen from "./LoginScreen"
+import RegisterScreen from "./RegisterScreen"
+
+
 export {
     Paint,
     CreateGame,
@@ -20,5 +24,7 @@ export {
     HomeScreen,
     AccountScreen,
     ComicGameInProgressScreen,
-    StoryGameInProgressScreen
+    StoryGameInProgressScreen,
+    LoginScreen,
+    RegisterScreen
 }
