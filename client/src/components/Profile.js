@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from '@material-ui/core/Button'
+import Button from '@mui/material/Button'
 
 // Component for the profile page
 // Displays profile information for a user
@@ -23,6 +23,7 @@ const Profile = (props) => {
     return (
         <div>
             <h1>{user}'s Profile</h1>
+            <Button>{follow_text}</Button>
             <h2>Completed Games</h2>
         </div>
     );

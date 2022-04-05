@@ -6,7 +6,9 @@ import {
     HomeScreen,
     Paint,
     ComicGameInProgressScreen,
-    StoryGameInProgressScreen
+    StoryGameInProgressScreen,
+    HeaderBar,
+    Profile
 } from "./components"
 import { SocketContext, socket} from "./context/socket";
 
@@ -17,9 +19,11 @@ const App = () => {
     return (
         <BrowserRouter>
             <SocketContext.Provider value={socket}>
+                <HeaderBar />
                 <Switch>
                     <Route path="/" exact component={HomeScreen} />
                     <Route path="/account" exact component={AccountScreen} />
+                    <Route path="/profile" exact component={Profile} />
                     <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
                     <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
                     <Route path="/paint" exact component={Paint} />
