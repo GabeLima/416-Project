@@ -36,7 +36,7 @@ const GameLobby = (props) => {
     // TODO : REMOVE ABOVE
 
     const { playerList, creator, numRounds, timePerRound, tags } = propsHardcoded.game; // TODO - update this to just props
-    const currentUser = propsHardcoded.currentUser;
+    const currentUser = propsHardcoded.currentUser; // TODO - maybe we use the global store to get this?
 
     // TODO - When we bring in state/the store, we'll want to determine who the user is that is actually invoking these events.
     const handleLeaveGame = (event) => {
