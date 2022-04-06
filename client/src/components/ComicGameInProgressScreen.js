@@ -1,15 +1,8 @@
-import { React, useContext, useEffect, useCallback } from 'react'
+import { React, useContext, useEffect } from 'react'
 import { SocketContext } from "../context/socket";
 import Painterro from "painterro"
-import Paint from "./Paint"
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme } from '@mui/material/styles';
@@ -60,7 +53,7 @@ const ComicGameInProgressScreen = (props) => {
                         <Typography mb={2} align="center" variant="h4"> Time left: 30S </Typography>
                         <Typography align="center" variant="h4"> Previous Panel </Typography>
                         <Box noValidate sx={{ border:2, borderColor:"black", height:"60vh", width:"40vw"}}>
-                            <img width='100%' height='100%' src="/images/unknown.png" alt='image'></img> 
+                            <img width='100%' height='100%' src="/images/unknown.png" alt='previous panel'></img> 
                         </Box>
                     </Box>
                     <Box>

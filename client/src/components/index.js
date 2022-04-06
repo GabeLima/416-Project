@@ -5,6 +5,8 @@ import ComicGameInProgressScreen from "./ComicGameInProgressScreen"
 import StoryGameInProgressScreen from "./StoryGameInProgressScreen"
 import HeaderBar from "./HeaderBar"
 import Profile from "./Profile"
+import LoginScreen from "./LoginScreen"
+import RegisterScreen from "./RegisterScreen"
 
 export {
     Paint,
@@ -13,5 +15,7 @@ export {
     ComicGameInProgressScreen,
     StoryGameInProgressScreen,
     HeaderBar,
-    Profile
+    Profile,
+    LoginScreen,
+    RegisterScreen
 }

@@ -1,6 +1,7 @@
 import './App.css';
-import { React, useState, useEffect } from 'react'
+import { React } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { AuthContextProvider } from './auth';
 import {
     AccountScreen,
     HomeScreen,
@@ -8,11 +9,14 @@ import {
     ComicGameInProgressScreen,
     StoryGameInProgressScreen,
     HeaderBar,
-    Profile
+    Profile,
+    LoginScreen,
+    RegisterScreen
 } from "./components"
 import { SocketContext, socket} from "./context/socket";
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material/styles';
+import { GlobalStoreContextProvider } from './store';
 import { CssBaseline } from '@mui/material';
 
 
@@ -40,17 +44,23 @@ const App = () => {
         <ThemeProvider theme={default_theme}>
         <CssBaseline />
         <BrowserRouter>
-            <SocketContext.Provider value={socket}>
-                <HeaderBar />
-                <Switch>
-                    <Route path="/" exact component={HomeScreen} />
-                    <Route path="/account" exact component={AccountScreen} />
-                    <Route path="/profile" exact component={Profile} />
-                    <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
-                    <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
-                    <Route path="/paint" exact component={Paint} />
-                </Switch>
-                </SocketContext.Provider>
+            <AuthContextProvider>
+                <GlobalStoreContextProvider>
+                    <SocketContext.Provider value={socket}>
+                        <HeaderBar />
+                        <Switch>
+                            <Route path="/" exact component={HomeScreen} />
+                            <Route path="/account" exact component={AccountScreen} />
+                            <Route path="/profile" exact component={Profile} />
+                            <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
+                            <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
+                            <Route path="/paint" exact component={Paint} />
+                            <Route path="/login/" exact component={LoginScreen} />
+                            <Route path="/register/" exact component={RegisterScreen} />
+                        </Switch>
+                        </SocketContext.Provider>
+                    </GlobalStoreContextProvider>
+            </AuthContextProvider>
         </BrowserRouter>
         </ThemeProvider>
     );
