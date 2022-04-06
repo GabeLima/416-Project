@@ -13,6 +13,7 @@ import {
 import { SocketContext, socket} from "./context/socket";
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
 
 
 const App = () => {
@@ -28,12 +29,16 @@ const App = () => {
             },
             secondary: {
               main: '#9FB4C7',
+            },
+            background: {
+                default: '#EEEFF',
             }
         },
       });
 
     return (
         <ThemeProvider theme={default_theme}>
+        <CssBaseline />
         <BrowserRouter>
             <SocketContext.Provider value={socket}>
                 <HeaderBar />
