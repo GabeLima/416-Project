@@ -2,8 +2,10 @@ import React from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
-import { styled, alpha, createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@mui/private-theming';
+import AddIcon from '@mui/icons-material/Add';
+import HomeIcon from '@mui/icons-material/Home';
+import LoginIcon from '@mui/icons-material/Login';
+import { styled, alpha} from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
 import { 
     AppBar, Box, Toolbar, IconButton, Typography, 
@@ -12,50 +14,59 @@ import {
 } from '@mui/material';
 
 
-const default_theme = createTheme({
-    palette: {
-        primary: {
-          main: '#6A8D92',
-        },
-        secondary: {
-          main: '#9FB4C7',
-        }
-    },
-  });
-
     // Button that has logo and routes to the homepage
     const HomeButton = () => {
         let history = useHistory();
         return (
-        <Button color="inherit" onClick={() => history.push('/')}>
-            Home Button
+        <Button 
+            variant="contained" 
+            color="secondary" 
+            onClick={() => history.push('/')}
+            startIcon={<HomeIcon />}
+            size="large"
+        >
+            DERIT
         </Button>
         );
     };
 
-    const PlayButton = () => {
+    const LoginButton = () => {
         let history = useHistory();
-        return (
-            <ThemeProvider theme={default_theme}>
-                <Button variant ="contained" color="primary">Play</Button>
-            </ThemeProvider>
-        );
-    };
+        return(
+        <>
+        <Button 
+            variant="contained" 
+            color="secondary" 
+            onClick={() => history.push('/login')}
+            startIcon={<LoginIcon />}
+            size="large"
+        >
+        Login
+        </Button>
+        </>
+        )
+    }
 
     // Switch between comic/story site
     const SiteToggle = () => {
-        const [alignment, setAlignment] = React.useState('web');
+        const [alignment, setAlignment] = React.useState('comic');
         const handleChange = (event, newAlignment) => {
             setAlignment(newAlignment);
         };
         return (
-        <ToggleButtonGroup exclusive onChange={handleChange}>
-            <ToggleButton value="comic">Comic</ToggleButton>
-            <ToggleButton value="story">Story</ToggleButton>
+        <ToggleButtonGroup 
+            exclusive 
+            onChange={handleChange}
+            value={alignment}
+            color="secondary"
+        >
+            <ToggleButton color="secondary" value="comic">Comic</ToggleButton>
+            <ToggleButton color="secondary" value="story">Story</ToggleButton>
         </ToggleButtonGroup>
         );
     };
 
+    // TODO route text to search
     const SearchBar = () => {
         // search components from mui documentation
         const Search = styled('div')(({ theme }) => ({
@@ -82,10 +93,11 @@ const default_theme = createTheme({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            color: 'secondary'
         }));
 
         const StyledInputBase = styled(InputBase)(({ theme }) => ({
-            color: 'inherit', '& .MuiInputBase-input': {
+            color: 'secondary', '& .MuiInputBase-input': {
                 padding: theme.spacing(1, 1, 1, 0),
                 // vertical padding + font size from searchIcon
                 paddingLeft: `calc(1em + ${theme.spacing(4)})`,
@@ -130,7 +142,7 @@ const default_theme = createTheme({
         };
 
         return (
-            <Box sx={{ flexGrow: 1 }} flexDirection="column">
+            <>
                 <Tooltip title="Account Settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                         <Avatar alt="Gorilla Mckilla" fontsize="small"/>
@@ -160,6 +172,13 @@ const default_theme = createTheme({
                         </ListItemIcon>
                         Account Settings
                     </MenuItem>
+
+                    <MenuItem onclick={() => handleMenuClick('/create')}>
+                        <ListItemIcon>
+                            <AddIcon fontsize="small"/>
+                        </ListItemIcon>
+                        New Game
+                    </MenuItem>
                     
                     <MenuItem onClick={() => handleMenuClick('/logout')}>
                         <ListItemIcon>
@@ -168,28 +187,35 @@ const default_theme = createTheme({
                         Logout
                     </MenuItem>
                 </Menu>
-
-            </Box>
+            </>
         );
     };
   
-  const HeaderBar = (props) => {
+    // Searching, site toggle, New Game, and logging in/out
+    // aren't to anything yet
+    const HeaderBar = (props) => {
+
+    // this should be changed to reflect the state later
+    let loggedIn = true;
 
     return (
-    <ThemeProvider theme={default_theme}>
-        <Box>
-            <AppBar position="static" color="primary">
-                <Toolbar>
-                    <HomeButton />
-                    <SearchBar/>
-                    <SiteToggle />
-                    <PlayButton />
-                    <AccountDropdown style={{justifyContent: "flex-end"}}/>
-                </Toolbar>
-            </AppBar>
-        </Box>
-    </ThemeProvider>
+    <AppBar position="static" sx={{
+        color: 'primary.main'
+    }}>
+        <Toolbar sx={{
+            justifyContent: "space-between"
+        }}>
+            <Box display='flex' flexGrow={1}>
+                <HomeButton />
+                <SearchBar/>
+            </Box>
+
+            <SiteToggle />
+            {loggedIn ? <AccountDropdown/> : <LoginButton/>}
+        </Toolbar>
+    </AppBar>
+
     );
-  }
+    }
 
 export default HeaderBar;
