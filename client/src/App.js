@@ -11,12 +11,29 @@ import {
     Profile
 } from "./components"
 import { SocketContext, socket} from "./context/socket";
+import { ThemeProvider } from '@emotion/react';
+import { createTheme } from '@mui/material/styles';
 
 
 const App = () => {
     console.log(socket);
     console.log(SocketContext);
+
+    // applies the theme to all components
+    // we can potentialyl add other themes later
+    const default_theme = createTheme({
+        palette: {
+            primary: {
+              main: '#6A8D92',
+            },
+            secondary: {
+              main: '#9FB4C7',
+            }
+        },
+      });
+
     return (
+        <ThemeProvider theme={default_theme}>
         <BrowserRouter>
             <SocketContext.Provider value={socket}>
                 <HeaderBar />
@@ -30,6 +47,7 @@ const App = () => {
                 </Switch>
                 </SocketContext.Provider>
         </BrowserRouter>
+        </ThemeProvider>
     );
 }
 
