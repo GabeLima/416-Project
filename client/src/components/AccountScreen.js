@@ -9,7 +9,17 @@ import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/private-theming';
 
 const AccountScreen = () => {
-    const theme = createTheme({
+    const leftTheme = createTheme({
+        palette: {
+            primary: {
+              main: '#9FB4C7',
+            },
+            secondary: {
+              main: '#6A8D92',
+            }
+        },
+      });
+      const rightTheme = createTheme({
         palette: {
             primary: {
               main: '#6A8D92',
@@ -19,9 +29,9 @@ const AccountScreen = () => {
             }
         },
       });
+      
     return (
         <div>
-            <ThemeProvider theme={theme}>
                 <Container component="main" maxWidth="lg" maxHeight="lg">
                 <CssBaseline />
                 <Box
@@ -32,7 +42,8 @@ const AccountScreen = () => {
                     alignItems: 'center',
                 }}
                 >
-                    <Box component="form" noValidate sx={{bgcolor:"primary.main", border:2, borderColor:"black", width:'75%'}}>
+                    <ThemeProvider theme={leftTheme}>
+                    <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", width:'75%'}}>
                         <Box sx={{pt:10}}>
                             <Typography align="center" variant="h4"> Change Username?</Typography>
                         </Box>
@@ -55,6 +66,8 @@ const AccountScreen = () => {
                                 </Button>
                             </Typography>
                     </Box>
+                    </ThemeProvider>
+                    <ThemeProvider theme={rightTheme}>
                     <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", height: '100%'}}>
                         <Box sx={{pt:10, pb:22}}>
                             <Typography align="center" variant="h4"> Delete Account?</Typography>
@@ -77,9 +90,9 @@ const AccountScreen = () => {
                         </Grid>
                         </Grid>
                     </Box>
+                    </ThemeProvider>
                 </Box>
             </Container>
-    </ThemeProvider>
   </div>
 
         )
