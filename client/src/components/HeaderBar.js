@@ -5,6 +5,10 @@ import Logout from '@mui/icons-material/Logout';
 import AddIcon from '@mui/icons-material/Add';
 import HomeIcon from '@mui/icons-material/Home';
 import LoginIcon from '@mui/icons-material/Login';
+
+import ColorLensIcon from '@mui/icons-material/ColorLens';
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+
 import { styled, alpha} from '@mui/material/styles';
 import { useHistory } from 'react-router-dom';
 import { 
@@ -25,7 +29,7 @@ import {
             startIcon={<HomeIcon />}
             size="large"
         >
-            DERIT
+            <Typography>DERIT</Typography>
         </Button>
         );
     };
@@ -51,17 +55,27 @@ import {
     const SiteToggle = () => {
         const [alignment, setAlignment] = React.useState('comic');
         const handleChange = (event, newAlignment) => {
-            setAlignment(newAlignment);
+            if(newAlignment !== null) {
+                setAlignment(newAlignment);
+            }
         };
         return (
         <ToggleButtonGroup 
             exclusive 
             onChange={handleChange}
             value={alignment}
-            color="secondary"
+            sx = {{
+                px: 2
+            }}
         >
-            <ToggleButton color="secondary" value="comic">Comic</ToggleButton>
-            <ToggleButton color="secondary" value="story">Story</ToggleButton>
+            <ToggleButton color="secondary" value="comic">
+                <ColorLensIcon />
+                <Typography><strong>Comic</strong></Typography>
+            </ToggleButton>
+            <ToggleButton color="secondary" value="story">
+                <AutoStoriesIcon />
+                <Typography><strong>Story</strong></Typography>
+            </ToggleButton>
         </ToggleButtonGroup>
         );
     };
@@ -93,7 +107,7 @@ import {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: 'secondary'
+            color: 'background.main'
         }));
 
         const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -112,7 +126,7 @@ import {
         return (
             <Search>
               <SearchIconWrapper>
-                <SearchIcon />
+                <SearchIcon style={{color: "#EEEFF"}}/>
               </SearchIconWrapper>
               <StyledInputBase
                 placeholder="Search DERIT"
@@ -124,7 +138,7 @@ import {
 
     // Contains menu dropdown and routes for
     // View Profile, Account Settings, Logout
-    // TODO handle the logout route 
+    // TODO handle the logout and newGame route 
     const AccountDropdown = (props) => {
         let history = useHistory();
         const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -192,26 +206,30 @@ import {
     };
   
     // Searching, site toggle, New Game, and logging in/out
-    // aren't to anything yet
+    // aren't connected to actions
     const HeaderBar = (props) => {
 
     // this should be changed to reflect the state later
     let loggedIn = true;
 
     return (
-    <AppBar position="static" sx={{
-        color: 'primary.main'
-    }}>
-        <Toolbar sx={{
-            justifyContent: "space-between"
-        }}>
-            <Box display='flex' flexGrow={1}>
+    <AppBar position="static">
+        <Toolbar>
+            <Box display='flex' flexGrow={1} sx = {{
+
+            }}>
                 <HomeButton />
                 <SearchBar/>
             </Box>
 
-            <SiteToggle />
-            {loggedIn ? <AccountDropdown/> : <LoginButton/>}
+            <Box display='flex' sx={{
+                justifyContent: 'flex-end',
+                padding: 1.5,
+                height: '100%',
+            }}>
+                <SiteToggle />
+                {loggedIn ? <AccountDropdown/> : <LoginButton/>}
+            </Box>
         </Toolbar>
     </AppBar>
 
