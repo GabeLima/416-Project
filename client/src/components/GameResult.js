@@ -10,6 +10,7 @@ const GameResult = () => {
   const [playerWinner, setPlayerWinner] = useState(-1);
   const [commWinner, setCommWinner] = useState(-1);
 
+  //Hard coded example data
   const panels=[
     ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
     ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]

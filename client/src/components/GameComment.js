@@ -13,7 +13,7 @@ const GameComment = ({user, message, postDate}) => {
           {message}
         </Typography>
         <Typography variant="body1" align='right' style={{color:"#4b4e6d"}} pt={1} pb={2} mr={2}>
-          Posted: {postDate.getMonth() + "/" + postDate.getDate() + "/" + postDate.getFullYear()}
+          Posted: {(postDate.getMonth() + 1) + "/" + postDate.getDate() + "/" + postDate.getFullYear()}
         </Typography>
       </Container>
     </Box>
