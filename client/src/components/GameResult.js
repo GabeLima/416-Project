@@ -1,5 +1,4 @@
 import { Avatar, Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
-import SimpleImageSlider from "react-simple-image-slider";
 
 import { color, fontWeight } from '@mui/system';
 import React, { useEffect, useState } from 'react'
@@ -16,14 +15,9 @@ const GameResult = () => {
     ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
   ];
 
-  const playerVotes=[
-    ["player1", "player2"],
-    []
-  ];
-
   const commVotes=[
-    [],
-    ["npc1", "npc2"]
+    ["npc1", "npc2"],
+    []
   ];
 
   const comments=[
@@ -57,18 +51,7 @@ const GameResult = () => {
   useEffect(() => {
     let max = -1;
     let win = -1;
-    for(let i = 0; i < playerVotes.length; i++)
-    {
-      if(playerVotes[i].length > max){
-        max = playerVotes[i].length;
-        win = i;
-      }
-    }
 
-    setPlayerWinner(win);
-
-    max = -1;
-    win = -1;
     for(let i = 0; i < commVotes.length; i++)
     {
       if(commVotes[i].length > max){
@@ -90,7 +73,7 @@ const GameResult = () => {
 
         <>
           {panels.map((story, index) => (
-            <StoryCard content={story} pWinner={playerWinner==index} cWinner={commWinner==index}/>
+            <StoryCard content={story} winner={commWinner==index}/>
           ))}
         </>
       </Box>

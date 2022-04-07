@@ -2,12 +2,13 @@ import React from 'react';
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth'
 import { useContext } from 'react'
-import { Typography } from '@mui/material'
+import { Container, Typography } from '@mui/material'
 import { Box } from '@mui/system';
 import { TextField } from '@mui/material';
 import { ToggleButton } from '@mui/material';
 import { ToggleButtonGroup } from '@mui/material';
 import { Grid } from '@mui/material';
+import LiveGameCard from './LiveGameCard';
 
 // toggles between live and completed games
 const GameToggle = () => {
@@ -49,9 +50,29 @@ const HomeScreen = () => {
     // Story/Comic
     // Completed/Joinable
 
+    //Example data
+    const liveGames = [
+        {
+            players:["tim, gabe, david, vicky"],
+            creator:"tim",
+            gameID : "IYBH",
+            numRounds : 5,
+            timePerRound : 30,
+            tags : ["Anime", "Superpower", "Stickman", "Basic"]
+        },
+        {
+            players:["tim, gabe, david, vicky"],
+            creator:"gabe",
+            gameID : "JYGS",
+            numRounds : 2,
+            timePerRound : 10,
+            tags : []
+        },
+    ];
+
     return (
         <>
-        <Box>
+        <Box className="back" pb={4}>
             <Typography align="center" variant="h1">Games</Typography>
             <Grid 
                 container 
@@ -64,6 +85,12 @@ const HomeScreen = () => {
                     <Typography align="center" variant="h4">Join Game</Typography>
                     <TextField name="game-code" label="Game Code" id="game-code"/>
                 </Box>
+            </Grid>
+
+            <Grid container>
+                {liveGames.map(({creator, gameID, numRounds, timePerRound, tags}) => (
+                    <LiveGameCard creator={creator} gameID={gameID} numRounds={numRounds} timePerRound={timePerRound} tags={tags}/>
+                ))}
             </Grid>
 
 
