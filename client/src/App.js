@@ -3,13 +3,17 @@ import { React } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { AuthContextProvider } from './auth';
 import {
+    Paint,
+    CreateGame,
+    GameLobby,
+    SearchResults,
     AccountScreen,
     HomeScreen,
-    Paint,
     ComicGameInProgressScreen,
     StoryGameInProgressScreen,
     LoginScreen,
     RegisterScreen
+  
 } from "./components"
 import { SocketContext, socket} from "./context/socket";
 import { GlobalStoreContextProvider } from './store';
@@ -32,7 +36,9 @@ const App = () => {
                             <Route path="/paint" exact component={Paint} />
                             <Route path="/login/" exact component={LoginScreen} />
                             <Route path="/register/" exact component={RegisterScreen} />
-
+                            <Route path="/lobby" exact component={GameLobby} />
+                            <Route path="/create" exact component={CreateGame} />
+                            <Route path="/search" exact component={SearchResults} />
                         </Switch>
                         </SocketContext.Provider>
                     </GlobalStoreContextProvider>
