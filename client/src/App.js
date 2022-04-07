@@ -13,6 +13,7 @@ import {
     LoginScreen,
     RegisterScreen
 } from "./components"
+import GameResult from './components/GameResult';
 import { SocketContext, socket} from "./context/socket";
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material/styles';
@@ -57,6 +58,7 @@ const App = () => {
                             <Route path="/paint" exact component={Paint} />
                             <Route path="/login/" exact component={LoginScreen} />
                             <Route path="/register/" exact component={RegisterScreen} />
+                            <Route path="/gameResult/:id" exact component={GameResult}/>
                         </Switch>
                         </SocketContext.Provider>
                     </GlobalStoreContextProvider>
