@@ -56,7 +56,7 @@ const CreateGame = (props) => {
         }
     }
 
-    const [customTags, setCustomTags] = useState();
+    const [customTags, setCustomTags] = useState("");
     const handleKeyPress = (event) => {
         event.stopPropagation();
         event.preventDefault();
@@ -139,7 +139,9 @@ const CreateGame = (props) => {
         // TODO - hook this up
     }
     
-
+    let currentNumTags = selectedTags.length + customTags.split(",").filter((v) => v !== "").length;
+    console.log("current num tags " + currentNumTags);
+    let canCreate = (currentNumTags >= 5 ? false : true);
 
     return (
         <div>
@@ -229,7 +231,7 @@ const CreateGame = (props) => {
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center'}}>
-                    Tags For This Game
+                    Tags For This Game (Max 5 tags!)
                 </Typography>
 
                 <FormGroup 
@@ -243,8 +245,14 @@ const CreateGame = (props) => {
                         }}
                         sc={{bgcolor: "#6A8D92"}}>
                     {tagOptions.map((tag, i) => {
+                        let disabled = (currentNumTags >= 5 ? true : false);
+                        if (selectedTags.includes(tag)) {
+                            // leave the selected tags as clickable or else we get locked out
+                            disabled = false;
+                        }
                         return (
-                            <FormControlLabel labelPlacement="bottom" control={<Checkbox id={"checkbox" + i} onChange={handleTagChange} style={{color: "#493548"}}/>} label={tag} />
+
+                            <FormControlLabel labelPlacement="bottom" control={<Checkbox disabled={disabled} id={"checkbox" + i} onChange={handleTagChange} style={{color: "#493548"}}/>} label={tag} />
                         )
                         
                     })
@@ -295,6 +303,7 @@ const CreateGame = (props) => {
                             fontSize: "18px",
                         }}
                         onClick={handleCreateGame}
+                        disabled={!canCreate}
                         >
                     Create Game
                 </Button>
