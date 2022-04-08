@@ -51,6 +51,15 @@
   border: 2px solid green;
 }
 
+.rsis-container div{
+  background-position: 50%;
+  background-size: contain !important;
+  background-repeat: no-repeat;
+}
+
+.back {
+  background-color: #EEEEFF !important;
+}
 .MuiSlider-thumb{
   color: black;
 }
