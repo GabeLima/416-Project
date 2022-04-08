@@ -153,7 +153,7 @@ const SearchResultsUser = (props) => {
                                         borderWidth: "3px",
                                         borderColor: "#80b192"
                                     }}>
-                                        <Link underline="none" href={"/" + user}>
+                                        <Link underline="none" href={"/profile" }>
                                             <Typography variant="h4"
                                                         noWrap
                                                         component="div"
