@@ -31,12 +31,12 @@ const AccountScreen = () => {
       });
       
     return (
-        <div>
+        <div className='back'>
                 <Container component="main" maxWidth="lg" maxHeight="lg">
                 <CssBaseline />
-                <Box
+                <Box pb={5}
                 sx={{
-                    marginTop: 15,
+                    marginTop: 10,
                     display: 'flex',
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -50,7 +50,7 @@ const AccountScreen = () => {
                         <TextField margin="normal" required fullWidth id="username" label="New Username" name="username" autoComplete="username" autoFocus/>
                         <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
                         <Typography align="center">
-                                <Button  type="submit" variant="contained" sx={{ mt: 3, mb: 2, width:'50%'}}>
+                                <Button  type="submit" variant="contained" sx={{mt: 3, mb: 2, width:'50%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}>
                                     Change Username
                                 </Button>
                         </Typography>
@@ -61,7 +61,7 @@ const AccountScreen = () => {
                         <TextField margin="normal" required fullWidth name="new-password-2" label="New Password" type="password" id="new-password-2" autoComplete="new-password"/>
                         <TextField margin="normal" required fullWidth name="password" label="Current Password" type="password" id="password" autoComplete="current-password"/>
                         <Typography align="center">
-                                <Button  type="submit" variant="contained" sx={{ mt: 3, mb: 2, width:'50%'}}>
+                                <Button  type="submit" variant="contained" sx={{mt: 3, mb: 2, width:'50%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}>
                                     Change Password
                                 </Button>
                             </Typography>
@@ -77,7 +77,7 @@ const AccountScreen = () => {
                             <TextField margin="normal" required fullWidth id="email" label="Email" name="email" autoComplete="email" autoFocus/>
                             <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
                             <Typography align="center">
-                                <Button  type="submit" variant="contained" color="error" sx={{ mt: 3, mb: 2, width:'50%'}}>
+                                <Button  type="submit" variant="contained" color="error" sx={{ mt: 3, mb: 2, width:'50%', fontWeight:"bold"}}>
                                     Delete Account
                                 </Button>
                             </Typography>
