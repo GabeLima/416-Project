@@ -1,8 +1,8 @@
 import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
-    baseURL: 'http://localhost:4000/api' //LOCAL BUILD
-    //baseURL: 'https://derit.herokuapp.com/api', HEROKU DEPLOYMENT 
+    //baseURL: 'http://localhost:4000/api' //LOCAL BUILD
+    baseURL: 'https://derit.herokuapp.com/api'
 
 })
 export const getLoggedIn = () => api.get(`/loggedIn/`);
