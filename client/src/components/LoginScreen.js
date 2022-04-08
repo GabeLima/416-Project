@@ -21,8 +21,6 @@ const LoginScreen = () => {
 
     const [state, setState] = useState("normalLogin");
 
-    const theme = createTheme();
-
 
     const handleLoginSubmit = (event) => {
         event.preventDefault();
@@ -55,7 +53,6 @@ const LoginScreen = () => {
   
     function normalLogin(){
       return (
-        <ThemeProvider theme={theme}>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
               <Box
@@ -97,7 +94,7 @@ const LoginScreen = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}
                 >
                   Sign In
                 </Button>
@@ -118,13 +115,11 @@ const LoginScreen = () => {
               </Box>
             </Box>
             <AlertModal></AlertModal>
-          </Container>
-        </ThemeProvider>)
+          </Container>)
     }
 
     function enterEmail(){
       return (
-        <ThemeProvider theme={theme}>
           <Container component="main" maxWidth="xs">
             <CssBaseline />
               <Box
@@ -156,20 +151,19 @@ const LoginScreen = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2 }}
+                  sx={{ mt: 3, mb: 2, backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}
                 >
                   Continue
                 </Button>
               </Box>
             </Box>
             <AlertModal></AlertModal>
-          </Container>
-        </ThemeProvider>)
+          </Container>)
     }
 
 
     function resetPassword(){
-      return(<ThemeProvider theme={theme}>
+      return(
       <Container component="main" maxWidth="xs">
         <CssBaseline />
           <Box
@@ -221,7 +215,7 @@ const LoginScreen = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}
             >
               Continue
             </Button>
@@ -229,7 +223,7 @@ const LoginScreen = () => {
         </Box>
         <AlertModal></AlertModal>
       </Container>
-    </ThemeProvider>)
+    )
       
     }
 
