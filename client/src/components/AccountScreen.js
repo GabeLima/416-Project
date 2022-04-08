@@ -20,7 +20,7 @@ const AccountScreen = () => {
         },
       });
     return (
-        <div>
+        <div className='back'>
             <ThemeProvider theme={theme}>
                 <Container component="main" maxWidth="lg" maxHeight="lg">
                 <CssBaseline />

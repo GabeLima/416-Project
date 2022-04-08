@@ -15,7 +15,7 @@ const GameResult = () => {
     ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
   ];
 
-  const commVotes=[
+  const communityVotes=[
     ["npc1", "npc2"],
     []
   ];
@@ -52,10 +52,10 @@ const GameResult = () => {
     let max = -1;
     let win = -1;
 
-    for(let i = 0; i < commVotes.length; i++)
+    for(let i = 0; i < communityVotes.length; i++)
     {
-      if(commVotes[i].length > max){
-        max = commVotes[i].length;
+      if(communityVotes[i].length > max){
+        max = communityVotes[i].length;
         win = i;
       }
     }

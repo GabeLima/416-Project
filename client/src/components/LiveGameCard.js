@@ -4,8 +4,8 @@ import React from 'react'
 
 const LiveGameCard = ({creator, gameID, numRounds, timePerRound, tags}) => {
   return (
-    <Grid item m={3}>
-        <Container style={{width:"350px", backgroundColor:"#80B192", borderRadius:"20px"}}>
+    <Grid item m={2}>
+        <Container style={{width:"330px", backgroundColor:"#80B192", borderRadius:"20px"}}>
             <Typography variant="h5" mb={2} pt={1}>
                 {creator}
             </Typography>
