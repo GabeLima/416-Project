@@ -16,7 +16,6 @@ import PublishedGameCard from './PublishedGameCard';
 // toggles between live and completed games
 const GameToggle = ({alignment, setAlignment}) => {
         const handleChange = (event, newAlignment) => {
-            console.log("hi");
             if(newAlignment !== null) {
                 setAlignment(newAlignment);
             }
@@ -92,7 +91,7 @@ const HomeScreen = () => {
 
     const publishedGames = [
         {
-            creator:"gabe",
+            creator:"vicky",
             gameID : "JYGS",
             panels: [
                 ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
