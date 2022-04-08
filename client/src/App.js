@@ -7,6 +7,7 @@ import {
     CreateGame,
     GameLobby,
     SearchResults,
+    SearchResultsUser,
     AccountScreen,
     HomeScreen,
     ComicGameInProgressScreen,
@@ -39,6 +40,7 @@ const App = () => {
                             <Route path="/lobby" exact component={GameLobby} />
                             <Route path="/create" exact component={CreateGame} />
                             <Route path="/search" exact component={SearchResults} />
+                            <Route path="/search_user" exact component={SearchResultsUser} />
                         </Switch>
                         </SocketContext.Provider>
                     </GlobalStoreContextProvider>
