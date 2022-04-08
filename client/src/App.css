@@ -60,3 +60,12 @@
 .back {
   background-color: #EEEEFF !important;
 }
+.MuiSlider-thumb{
+  color: black;
+}
+.MuiSlider-rail{
+  color:#493548;
+}
+.MuiSlider-track{
+  color: #a1e887;
+}

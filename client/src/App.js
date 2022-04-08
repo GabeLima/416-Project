@@ -3,16 +3,20 @@ import { React } from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { AuthContextProvider } from './auth';
 import {
+    Paint,
+    CreateGame,
+    GameLobby,
+    SearchResults,
     AccountScreen,
     HomeScreen,
-    Paint,
     ComicGameInProgressScreen,
     StoryGameInProgressScreen,
     HeaderBar,
     Profile,
     LoginScreen,
     RegisterScreen
-} from "./components"
+  
+} from "./components";
 import GameResult from './components/GameResult';
 import { SocketContext, socket} from "./context/socket";
 import { ThemeProvider } from '@emotion/react';
@@ -59,6 +63,9 @@ const App = () => {
                             <Route path="/login/" exact component={LoginScreen} />
                             <Route path="/register/" exact component={RegisterScreen} />
                             <Route path="/gameResult/:id" exact component={GameResult}/>
+                            <Route path="/lobby" exact component={GameLobby} />
+                            <Route path="/create" exact component={CreateGame} />
+                            <Route path="/search" exact component={SearchResults} />
                         </Switch>
                         </SocketContext.Provider>
                     </GlobalStoreContextProvider>
