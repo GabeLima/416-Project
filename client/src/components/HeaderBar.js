@@ -1,4 +1,5 @@
 import React from 'react';
+import { useContext, useState } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
@@ -139,7 +140,7 @@ import {
     // Contains menu dropdown and routes for
     // View Profile, Account Settings, Logout
     // TODO handle the logout and newGame route 
-    const AccountDropdown = (props) => {
+    const AccountDropdown = ({loggedIn, setLoggedIn}) => {
         let history = useHistory();
         const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -194,7 +195,10 @@ import {
                         New Game
                     </MenuItem>
                     
-                    <MenuItem onClick={() => handleMenuClick('/logout')}>
+                    <MenuItem onClick={() => {
+                        setLoggedIn(false);
+                        handleMenuClick('/login');
+                        }}>
                         <ListItemIcon>
                             <Logout fontsize="small" />
                         </ListItemIcon>
@@ -210,7 +214,7 @@ import {
     const HeaderBar = (props) => {
 
     // this should be changed to reflect the state later
-    let loggedIn = true;
+    const [loggedIn, setLoggedIn] = useState(true);
 
     return (
     <AppBar position="static">
@@ -228,7 +232,7 @@ import {
                 height: '100%',
             }}>
                 <SiteToggle />
-                {loggedIn ? <AccountDropdown/> : <LoginButton/>}
+                {loggedIn ? <AccountDropdown loggedIn={loggedIn} setLoggedIn={setLoggedIn}/> : <LoginButton/>}
             </Box>
         </Toolbar>
     </AppBar>
