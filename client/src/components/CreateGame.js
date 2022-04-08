@@ -11,7 +11,11 @@ import Checkbox from '@mui/material/Checkbox';
 
 import TextField from '@mui/material/TextField';
 
+import { useHistory } from 'react-router-dom';
+
 const CreateGame = (props) => {
+
+    const history = useHistory();
 
     const [timePerRound, setTimePerRound] = useState(20);
     const handleTimerChange = (event, newValue) => {
@@ -137,11 +141,12 @@ const CreateGame = (props) => {
         console.log(selectedTags_copy);
 
         // TODO - hook this up
+        history.push("/lobby");
     }
     
     let currentNumTags = selectedTags.length + customTags.split(",").filter((v) => v !== "").length;
     console.log("current num tags " + currentNumTags);
-    let canCreate = (currentNumTags >= 5 ? false : true);
+    let canCreate = (currentNumTags > 5 ? false : true);
 
     return (
         <div>
@@ -245,7 +250,7 @@ const CreateGame = (props) => {
                         }}
                         sc={{bgcolor: "#6A8D92"}}>
                     {tagOptions.map((tag, i) => {
-                        let disabled = (currentNumTags >= 5 ? true : false);
+                        let disabled = (currentNumTags > 5 ? true : false);
                         if (selectedTags.includes(tag)) {
                             // leave the selected tags as clickable or else we get locked out
                             disabled = false;

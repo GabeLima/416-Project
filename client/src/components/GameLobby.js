@@ -8,6 +8,8 @@ import Button from '@mui/material/Button';
 import LobbyCard from "./LobbyCard";
 import PlayerCard from "./PlayerCard";
 
+import { useHistory } from 'react-router-dom';
+
 //Array of objects of gameInfo
 // const gameInfo = {
 //     gameID: "",
@@ -22,11 +24,12 @@ import PlayerCard from "./PlayerCard";
 // };
 
 const GameLobby = (props) => {
+    const history = useHistory();
     // TODO : REMOVE
     const propsHardcoded = {
-        currentUser: "aoi",
+        currentUser: "hatsuyuki",
         game: {
-            playerList: ["hatsuyuki", "picard", "fuyu", "aoi", "mckenna", "", "", ""],
+            playerList: ["hatsuyuki", "picard", "fuyu", "aoi", "mckenna", "asdsadsa", "asda", "asdsa"],
             creator: "hatsuyuki",
             numRounds: 5,
             timePerRound: 30,
@@ -41,10 +44,12 @@ const GameLobby = (props) => {
     // TODO - When we bring in state/the store, we'll want to determine who the user is that is actually invoking these events.
     const handleLeaveGame = (event) => {
         console.log("User left game");
+        history.push('/')
     }
 
     const handleStartGame = (event) => {
         console.log("User started game");
+        history.push("/CGameInProgress/:id");
     }
 
     const isOwner = (currentUser === creator);
@@ -78,7 +83,7 @@ const GameLobby = (props) => {
                 </Typography>
 
             <Box display="flex" flexDirection="row" alignItems="center" justifyContent="center" gap="10px">
-                <List height="305px" sx={{
+                <List sx={{
                             marginTop:2,
                             marginLeft: "-40%",
                             justifyContent: "center",
@@ -86,7 +91,7 @@ const GameLobby = (props) => {
                             flexDirection: 'column',
                             alignItems: 'center',
                             flexWrap: "wrap",
-                            height:"305px"
+                            height:"325px"
                         }}>
                     {playerList.map((player, i) => {
 
