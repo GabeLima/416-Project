@@ -6,24 +6,95 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Link from '@mui/material/Link';
 
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
-import SortIcon from '@mui/icons-material/Sort';
+import { Grid } from '@mui/material';
+
 
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+
+import PublishedGameCard from "./PublishedGameCard";
 
 const SearchResults = (props) => {
 
     // TODO : REMOVE
     // TODO - Props will only have either userResults OR gameResults
+    const publishedGames = [
+        {
+            creator:"gabe",
+            gameID : "JYGS",
+            panels: [
+                ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
+                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
+            ],
+            communityVotes: [
+                ["npc1", "npc2"],
+                []
+            ],
+            comments: [
+                {
+                  user:"user1",
+                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
+                  postDate:new Date()
+                },
+                {
+                  user:"user2",
+                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
+                  postDate:new Date()
+                },
+                {
+                  user:"user3",
+                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
+                  postDate:new Date()
+                },
+                {
+                  user:"user4",
+                  message:"I hope one day I can see something as beautiful as this again. I can't believe something as amazing as this exists!",
+                  postDate:new Date()
+                },
+                {
+                  user:"user5",
+                  message:"I hope the user above me has a good day",
+                  postDate:new Date()
+                },
+            ],
+            tags : ["Unbelievable", "Pokemon", "Digimon", "War"]
+        },
+        {
+            creator:"david",
+            gameID : "KUGB",
+            panels: [
+                ["/images/mark_oukan_crown7_blue.png", "/images/4.png", "/images/4.png", "/images/4.png"],
+                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
+            ],
+            communityVotes: [
+                [],
+                []
+            ],
+            comments: [
+                {
+                  user:"user1",
+                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
+                  postDate:new Date()
+                },
+                {
+                  user:"user2",
+                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
+                  postDate:new Date()
+                },
+                {
+                  user:"user3",
+                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
+                  postDate:new Date()
+                }
+            ],
+            tags : ["NewPlayer", "Crown"]
+        }
+    ];
     const propsHardcoded = {
-        currentUser: "aoi",
-        //query: "u:mckenna",
-        //userResults: ["McKenna", "McKenna","McKenna","McKenna","McKenna","McKenna","McKenna","McKenna","McKenna","McKenna","McKenna"],
-        query: "Comedy, Family-Friendly",
-        gameResults: ["GAME1", "GAME1", "GAME1", "GAME1",]
+        currentUser: "Aoi",
+        query: "Comedy, Family-Friendly"
     };
+
     // TODO : REMOVE ABOVE
 
     let isUserSearch = true;
@@ -166,102 +237,32 @@ const SearchResults = (props) => {
                         })}
                     </List>
                     
-                    <Box sx= {{ height: 200}}/>
+                    <Box sx= {{ height: 700}}/>
                 </Box>
             </div>
         );
     }
     else {
-        // TODO- @Vicky need content cards
         return (
-                <div>
-                <Box alignItems="center" sx={{ display: {
-                    backgroundColor: "#6A8D92",
-        
-                } }}>
-        
-                    <Typography variant="h2"
-                                noWrap
-                                component="div"
-                                align="center">
-                            {"Search Results For: " + query}
-                    </Typography>
-
-                    
-
-                    <Box display="flex" alignItems="flex-start" justifyContent="center" gap="10px">
-
-                        <Typography variant="h6"
-                                    noWrap
-                                    component="div"
-                                    align="center"
-                                    sx={{marginTop:1}}
-                        >
-                            Sort By
-                        </Typography>
-
-                        <IconButton
-                            edge="end"
-                            aria-label="Sort Menu"
-                            aria-controls={menuId}
-                            aria-haspopup="true"
-                            onClick={handleMenuOpen}
-                            color="default"
-                            >
-                                <Badge>
-                                    <SortIcon  sx={{ fontSize: 40 }}/>
-                                </Badge>
-                        </IconButton>
-
-                        {renderMenu}
-                    </Box>
-                    
-
-                    <List sx={{
-                                marginTop:2,
-                                marginLeft: 85,
-                                justifyContent: "center",
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                overflow: "auto",
-                                maxHeight:"750px",
-                                width: "600px"
-                            }}>
-                        {results.map((game, i) => {
-                            return (
-                                <ListItem
-                                    key={i}
-                                    sx={{ marginTop: '5px',bgcolor: "#4b4e6d", height:"65px", minWidth:"100px", maxWidth:"500px"}}
-                                    style={{
-                                        fontSize: '24pt',
-                                        width: '500%',
-                                        borderRadius: "15px",
-                                        justifyContent: "center",
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        borderRadius: "20px",
-                                        borderStyle: "solid",
-                                        borderWidth: "3px",
-                                        borderColor: "#80b192"
-                                    }}>
-                                        <Link underline="none" href={"/" + game}>
-                                            <Typography variant="h4"
-                                                        noWrap
-                                                        component="div"
-                                                        color={ "#A1E887"}>
-                                                {game}
-                                            </Typography>
-                                        </Link>
-                                </ListItem>
-                            );                    
-                        })}
-                    </List>
-                    
-                    <Box sx= {{ height: 200}}/>
-                </Box>
-            </div>
+            <Box className="back" pb={4}>
+                <Typography align="center" variant="h2">{"Search Results For: " + query}</Typography>
+                <Grid 
+                    container 
+                    direction='row'
+                >
+                    <Grid item xs={10}>
+    
+                        {
+                            <Grid container>
+                                {publishedGames.map(({creator, tags, communityVotes, comments, panels}) => (
+                                    <PublishedGameCard creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+                                ))}
+                            </Grid>
+                        }
+                    </Grid>
+                </Grid>
+    
+            </Box>
         );
     }
 }

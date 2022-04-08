@@ -166,7 +166,7 @@ const SearchResultsUser = (props) => {
                         })}
                     </List>
                     
-                    <Box sx= {{ height: 200}}/>
+                    <Box sx= {{ height: 700}}/>
                 </Box>
             </div>
         );

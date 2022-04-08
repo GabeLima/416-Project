@@ -29,7 +29,7 @@ export default function PlayerCard(props) {
                             noWrap
                             component="div"
                             color={isCurrentUser ? "#A1E887" : "#EEEEFF"}
-                            sx={{fontWeight: isCurrentUser ? "bold" : ""}}
+                            sx={{fontWeight: isCurrentUser ? "bold" : "", maxWidth: "200px"}}
                                 >
                     {username}
                 </Typography>

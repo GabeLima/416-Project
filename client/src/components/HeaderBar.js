@@ -81,8 +81,30 @@ import {
         );
     };
 
+    
+      
     // TODO route text to search
     const SearchBar = () => {
+        let history = useHistory();
+
+        const handleKeyPress = (event) => {
+            if (event.code === "Enter") {
+                event.stopPropagation();
+                event.preventDefault();
+                // Pass off to the search handler.
+                //store.handleSearch(event.target.value); // TODO- this is how we did it in 316 using the store, we'll see if we still need to.
+    
+                // todo - do better checking this is lazy and error prone.
+                if (event.target.value.indexOf(",") === -1 && event.target.value.substring(0, 2) === "u:") {
+                    // singular user search
+                    history.push("/search_user");
+                }
+                else {
+                    history.push("/search");
+                }
+                
+            }
+        }
         // search components from mui documentation
         const Search = styled('div')(({ theme }) => ({
             position: 'relative',
@@ -132,6 +154,7 @@ import {
               <StyledInputBase
                 placeholder="Search DERIT"
                 inputProps={{ 'aria-label': 'search' }}
+                onKeyPress={handleKeyPress}
               />
             </Search>
         );
@@ -153,6 +176,7 @@ import {
             // closes the menu
             setAnchorElUser(null);
             // routes to a new page
+            console.log(pageURL);
             history.push(pageURL);
         };
 
@@ -188,11 +212,11 @@ import {
                         Account Settings
                     </MenuItem>
 
-                    <MenuItem onclick={() => handleMenuClick('/create')}>
+                    <MenuItem onClick={() => handleMenuClick('/create')}>
                         <ListItemIcon>
-                            <AddIcon fontsize="small"/>
+                            <AddIcon fontsize="small" />
                         </ListItemIcon>
-                        New Game
+                        Create Game
                     </MenuItem>
                     
                     <MenuItem onClick={() => {

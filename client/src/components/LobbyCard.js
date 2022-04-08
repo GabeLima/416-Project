@@ -55,7 +55,7 @@ export default function LobbyCard(props) {
   }
 
   return (
-    <Box sx={{ minWidth: 275
+    <Box sx={{ minWidth: 275, maxWidth: 275
     }}>
       <Card variant="outlined"
             style={{
