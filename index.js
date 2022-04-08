@@ -18,8 +18,7 @@ const app = express();
 // SETUP THE MIDDLEWARE
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: "http://localhost:3000", //LOCAL DEPLOYMENT
-    //origin: "https://derit.herokuapp.com/", HEROKU DEPLOYMENT
+    origin: "https://derit.herokuapp.com/",
     credentials: true
 }))
 app.use(express.json())
@@ -36,11 +35,11 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 
 //HEROKU, COMMENT OUT STEP 1 AND 2 IF YOU'RE BUILDING LOCALLY
 // Step 1:
-// app.use(express.static(path.resolve(__dirname, "./client/build")));
+app.use(express.static(path.resolve(__dirname, "./client/build")));
 // // Step 2:
-// app.get("*", function (request, response) {
-//   response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
-// });
+app.get("*", function (request, response) {
+   response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
+ });
 
 const server = http.createServer(app);
 const io = socketio(server, {
