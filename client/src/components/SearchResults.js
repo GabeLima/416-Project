@@ -27,6 +27,7 @@ const SearchResults = (props) => {
     const [isUserSearch, setIsUserSearch] = useState(true);
 
     useEffect(() => {
+        
         let query = store.searchQuery;
         console.log(query);
         if (query.indexOf(",") === -1 && query.indexOf("u:") !== -1) {
@@ -38,7 +39,7 @@ const SearchResults = (props) => {
         }
         setQuery(query);
         search(query);
-    }, []);
+    }, [store.searchQuery]);
 
     const search = async (query) => {
         if (query.indexOf(",") === -1) {
@@ -49,6 +50,7 @@ const SearchResults = (props) => {
                 let res = await api.searchGames(query);
                 if (res.data.success) {
                     let results = res.data.data;
+                    console.log(res.data)
                     console.log("games found");
                     console.log(results);
                     setResults(results);

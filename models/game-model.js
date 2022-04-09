@@ -15,7 +15,6 @@ const GameSchema = new Schema(
         isComic: { type: Boolean, required: true },
         players: { type: [String], required: true },
         panels: { type: [[String]], required: true },
-        playerVotes: { type: [[String]], required: true},
         communityVotes: { type: [[String]], required: true },
         gameID: {type: String, required: true},
         comments: { type: [CommentSchema], required: true },
