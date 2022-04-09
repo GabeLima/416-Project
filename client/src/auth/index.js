@@ -23,7 +23,7 @@ function AuthContextProvider(props) {
     //On load we check if the user is logged in or not
     useEffect(() => {
         auth.getLoggedIn();
-    });
+    }, []);
 
     const authReducer = (action) => {
         const { type, payload } = action;

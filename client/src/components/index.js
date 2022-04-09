@@ -4,7 +4,6 @@ import Paint from "./Paint";
 import CreateGame from "./CreateGame";
 import GameLobby from "./GameLobby";
 import SearchResults from "./SearchResults";
-import SearchResultsUser from "./SearchResultsUser";
 
 // gabe
 import HomeScreen from "./HomeScreen"
@@ -22,7 +21,6 @@ export {
     CreateGame,
     GameLobby,
     SearchResults,
-    SearchResultsUser,
     HomeScreen,
     AccountScreen,
     ComicGameInProgressScreen,

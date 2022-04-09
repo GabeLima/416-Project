@@ -19,6 +19,9 @@ import {
 } from '@mui/material';
 
 
+import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
+
     // Button that has logo and routes to the homepage
     const HomeButton = () => {
         let history = useHistory();
@@ -86,23 +89,15 @@ import {
     // TODO route text to search
     const SearchBar = () => {
         let history = useHistory();
+        const { store } = useContext(GlobalStoreContext);
 
         const handleKeyPress = (event) => {
             if (event.code === "Enter") {
                 event.stopPropagation();
                 event.preventDefault();
                 // Pass off to the search handler.
-                //store.handleSearch(event.target.value); // TODO- this is how we did it in 316 using the store, we'll see if we still need to.
-    
-                // todo - do better checking this is lazy and error prone.
-                if (event.target.value.indexOf(",") === -1 && event.target.value.substring(0, 2) === "u:") {
-                    // singular user search
-                    history.push("/search_user");
-                }
-                else {
-                    history.push("/search");
-                }
-                
+                store.handleSearch(event.target.value);
+
             }
         }
         // search components from mui documentation
@@ -239,6 +234,7 @@ import {
 
     // this should be changed to reflect the state later
     const [loggedIn, setLoggedIn] = useState(true);
+    
 
     return (
     <AppBar position="static">

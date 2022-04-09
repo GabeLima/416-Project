@@ -1,4 +1,4 @@
-import { React, useState } from 'react'
+import { React, useState, useContext, useEffect } from 'react'
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -14,105 +14,90 @@ import Menu from '@mui/material/Menu';
 
 import PublishedGameCard from "./PublishedGameCard";
 
+import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
+import api from '../api'
+
 const SearchResults = (props) => {
+    const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
+    
+    const [results, setResults] = useState([]);
+    const [query, setQuery] = useState("");
+    const [isUserSearch, setIsUserSearch] = useState(true);
 
-    // TODO : REMOVE
-    // TODO - Props will only have either userResults OR gameResults
-    const publishedGames = [
-        {
-            creator:"gabe",
-            gameID : "JYGS",
-            panels: [
-                ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
-                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
-            ],
-            communityVotes: [
-                ["npc1", "npc2"],
-                []
-            ],
-            comments: [
-                {
-                  user:"user1",
-                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user2",
-                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user3",
-                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
-                  postDate:new Date()
-                },
-                {
-                  user:"user4",
-                  message:"I hope one day I can see something as beautiful as this again. I can't believe something as amazing as this exists!",
-                  postDate:new Date()
-                },
-                {
-                  user:"user5",
-                  message:"I hope the user above me has a good day",
-                  postDate:new Date()
-                },
-            ],
-            tags : ["Unbelievable", "Pokemon", "Digimon", "War"]
-        },
-        {
-            creator:"david",
-            gameID : "KUGB",
-            panels: [
-                ["/images/mark_oukan_crown7_blue.png", "/images/4.png", "/images/4.png", "/images/4.png"],
-                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
-            ],
-            communityVotes: [
-                [],
-                []
-            ],
-            comments: [
-                {
-                  user:"user1",
-                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user2",
-                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user3",
-                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
-                  postDate:new Date()
-                }
-            ],
-            tags : ["NewPlayer", "Crown"]
+    useEffect(() => {
+        let query = store.searchQuery;
+        console.log(query);
+        if (query.indexOf(",") === -1 && query.indexOf("u:") !== -1) {
+            // no comma and u: means user search
+            setIsUserSearch(true);
         }
-    ];
-    const propsHardcoded = {
-        currentUser: "Aoi",
-        query: "Comedy, Family-Friendly"
-    };
+        else {
+            setIsUserSearch(false);
+        }
+        setQuery(query);
+        search(query);
+    }, []);
 
-    // TODO : REMOVE ABOVE
-
-    let isUserSearch = true;
-    let results;
-    if (propsHardcoded.userResults) {
-        // user search
-        results = propsHardcoded.userResults;
+    const search = async (query) => {
+        if (query.indexOf(",") === -1) {
+            // check if this is a tag or user query since a length 1 query can be either or.
+    
+            if (query.indexOf("u:") === -1) {
+                // tag means game search.
+                let res = await api.searchGames(query);
+                if (res.data.success) {
+                    let results = res.data.data;
+                    console.log("games found");
+                    console.log(results);
+                    setResults(results);
+                }
+                else {
+                    setResults([]);
+                }
+            }
+            else {
+                // one user search means user search. we need to sanitize and get the username from this.
+                let username = query.split("u:")[1];
+                let res = await api.getUser(username);
+                if (res.data.success) {
+                    let results = res.data.user;
+                    console.log("user found");
+                    console.log(results);
+                    let arr = [results];
+                    setResults(arr);
+                }
+                else {
+                    setResults([]);
+                }
+            }
+        }
+    
+        else {
+            // multi-part game search
+            let res = await api.searchGames(query);
+            if (res.data.success) {
+                if (res.data.success) {
+                    let results = res.data.data;
+                    console.log("games found");
+                    console.log(results);
+                    setResults(results);
+                }
+                else {
+                    setResults(results);
+                }
+            }
+        }
+    
     }
-    else {
-        // game search
-        results = propsHardcoded.gameResults;
-        isUserSearch = false;
-    }
+    
 
-    const currentUser = propsHardcoded.currentUser; // TODO - maybe we use the global store to get this?
-    const query = propsHardcoded.query;
-
-
+    console.log(results);
+    console.log(isUserSearch);
+    let currentUser = auth.user;
+    
+    
     const currentSortType = {
         PUB_NEW: "PUB_NEW",
         PUB_OLD: "PUB_OLD",
@@ -155,31 +140,37 @@ const SearchResults = (props) => {
 
     // TODO - implement highlighted sort option when we implement the store (see AppBar.js)
     const menuId = "sort-menu";
-    const renderMenu = (
-        <Menu
-          anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          id={menuId}
-          keepMounted
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          open={isMenuOpen}
-          onClose={handleMenuClose}
-        >
-          {pubNewOption}
-          {pubOldOption}
-          {moreCommentsOption}
-          {lessCommentsOption}
-        </Menu>
-    );
+    if (isUserSearch) {
+        const renderMenu = "";
+    }
+    else {
+        const renderMenu = (
+            <Menu
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              id={menuId}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={isMenuOpen}
+              onClose={handleMenuClose}
+            >
+              {pubNewOption}
+              {pubOldOption}
+              {moreCommentsOption}
+              {lessCommentsOption}
+            </Menu>
+        );
+    }
+    
 
 
-    // we don't need the cards just return a list of users
+    // we don't need the cards just return the user
     if (isUserSearch) {
         return (
             <div>
@@ -224,12 +215,12 @@ const SearchResults = (props) => {
                                         borderWidth: "3px",
                                         borderColor: "#80b192"
                                     }}>
-                                        <Link underline="none" href={"/" + user}>
+                                        <Link underline="none" href={"/" + user.username}>
                                             <Typography variant="h4"
                                                         noWrap
                                                         component="div"
                                                         color={ "#A1E887"}>
-                                                {user}
+                                                {user.username}
                                             </Typography>
                                         </Link>
                                 </ListItem>
@@ -254,7 +245,7 @@ const SearchResults = (props) => {
     
                         {
                             <Grid container>
-                                {publishedGames.map(({creator, tags, communityVotes, comments, panels}) => (
+                                {results.map(({creator, tags, communityVotes, comments, panels}) => (
                                     <PublishedGameCard creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
                                 ))}
                             </Grid>

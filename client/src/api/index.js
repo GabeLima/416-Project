@@ -13,6 +13,10 @@ export const getUserByUsername = (username) => api.get(`/user/${username}`)
 export const getUserSecurityQuestion = (email) => api.get(`/user/email/${email}`)
 export const resetPassword = (payload) => api.put(`/resetPassword/`, payload)
 
+export const getUser = (username) => api.get(`/user/${username}`);
+export const searchGames = (query) => api.get(`/search/${query}`);
+
+
 const apis = {
     getLoggedIn,
     registerUser,
@@ -20,7 +24,9 @@ const apis = {
     logoutUser, 
     getUserByUsername,
     getUserSecurityQuestion,
-    resetPassword
+    resetPassword,
+    getUser,
+    searchGames
 }
 
 export default apis

@@ -1,4 +1,7 @@
-import { createContext, useState } from 'react'
+import { createContext, useState, useContext } from 'react'
+import { useHistory } from 'react-router-dom'
+import api from '../api'
+import AuthContext from '../auth'
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
 export const GlobalStoreContext = createContext({});
@@ -6,7 +9,8 @@ export const GlobalStoreContext = createContext({});
 // THESE ARE ALL THE TYPES OF UPDATES TO OUR GLOBAL
 // DATA STORE STATE THAT CAN BE PROCESSED
 export const GlobalStoreActionType = {
-    SET_ERROR_MESSAGE: "SET_ERROR_MESSAGE"
+    SET_ERROR_MESSAGE: "SET_ERROR_MESSAGE",
+    SET_SEARCH_QUERY: "SET_SEARCH_QUERY",
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -14,8 +18,15 @@ export const GlobalStoreActionType = {
 function GlobalStoreContextProvider(props) {
     // THESE ARE ALL THE THINGS OUR DATA STORE WILL MANAGE
     const [store, setStore] = useState({
-        errorMessage:null
+        errorMessage:null,
+        searchQuery: ""
     });
+
+    const history = useHistory();
+
+    // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
+    const { auth } = useContext(AuthContext);
+
     const storeReducer = (action) => {
         const { type, payload } = action;
         switch (type) {
@@ -24,19 +35,44 @@ function GlobalStoreContextProvider(props) {
                     errorMessage: payload
                 });
             }
+            case GlobalStoreActionType.SET_SEARCH_QUERY: {
+                return setStore({
+                    ... store,
+                    searchQuery: payload
+                });
+            }
             default:
                 return store;
         }
     }
 
-        //SET THE ERROR MESSAGE SO WE CAN DISPLAY IT IN THE ALERT MODAL
-        store.setErrorMessage = function (errorMsg) {
+    //SET THE ERROR MESSAGE SO WE CAN DISPLAY IT IN THE ALERT MODAL
+    store.setErrorMessage = function (errorMsg) {
+        storeReducer({
+            type: GlobalStoreActionType.SET_ERROR_MESSAGE,
+            payload: errorMsg
+        });
+    }
+    
+    store.handleSearch = function (query) {
+        if (query === "") {
             storeReducer({
-                type: GlobalStoreActionType.SET_ERROR_MESSAGE,
-                payload: errorMsg
+                type: GlobalStoreActionType.SET_SEARCH_QUERY,
+                payload: ""
             });
+            return;
         }
+        console.log("Updating search query " + query);
+        storeReducer({
+            type: GlobalStoreActionType.SET_SEARCH_QUERY,
+            payload: `${query}` // HACK Use template literal to copy the string!!!
+        });
 
+        history.push("/search/");
+
+        
+
+    }
     return (
         <GlobalStoreContext.Provider value={{
             store
