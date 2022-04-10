@@ -94,12 +94,19 @@ const SearchResults = (props) => {
     
     }
     
-
-    console.log(results);
-    console.log(isUserSearch);
     let currentUser = auth.user;
     
+    let isComic = store.isComic;
     
+    let filteredResults = results.filter((game) => {
+        if (game.isComic === isComic) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    });
+
     const currentSortType = {
         PUB_NEW: "PUB_NEW",
         PUB_OLD: "PUB_OLD",
@@ -199,7 +206,7 @@ const SearchResults = (props) => {
                                 maxHeight:"750px",
                                 width: "600px"
                             }}>
-                        {results.map((user, i) => {
+                        {filteredResults.map((user, i) => {
                             return (
                                 <ListItem
                                     key={i}
@@ -247,7 +254,7 @@ const SearchResults = (props) => {
     
                         {
                             <Grid container>
-                                {results.map(({creator, tags, communityVotes, comments, panels}) => (
+                                {filteredResults.map(({creator, tags, communityVotes, comments, panels}) => (
                                     <PublishedGameCard creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
                                 ))}
                             </Grid>
