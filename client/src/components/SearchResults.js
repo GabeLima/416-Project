@@ -5,6 +5,9 @@ import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Link from '@mui/material/Link';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import SortIcon from '@mui/icons-material/Sort';
 
 import { Grid } from '@mui/material';
 
@@ -25,11 +28,11 @@ const SearchResults = (props) => {
     const [results, setResults] = useState([]);
     const [query, setQuery] = useState("");
     const [isUserSearch, setIsUserSearch] = useState(true);
+    const [currentSort, setCurrentSort] = useState(null);
 
     useEffect(() => {
         
         let query = store.searchQuery;
-        console.log(query);
         if (query.indexOf(",") === -1 && query.indexOf("u:") !== -1) {
             // no comma and u: means user search
             setIsUserSearch(true);
@@ -110,8 +113,10 @@ const SearchResults = (props) => {
     const currentSortType = {
         PUB_NEW: "PUB_NEW",
         PUB_OLD: "PUB_OLD",
+        COMMENTS_DESC: "COMMENTS_DESC",
         COMMENTS_ASC: "COMMENTS_ASC",
-        COMMENTS_DESC: "COMMENTS_DESC"
+        VOTES_DESC: "VOTES_DESC",
+        VOTES_ASC: "VOTES_ASC"
     };
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -124,58 +129,185 @@ const SearchResults = (props) => {
 
     const handleMenuClose = (event) => {
         setAnchorEl(null);
+        if (event.target.textContent === currentSort) {
+            setCurrentSort(null);
+            console.log("Cancel sort");
+            return;
+        }
         console.log("Sort By: " + event.target.textContent);
+        console.log(filteredResults);
         switch (event.target.textContent) {
             // Sort accordingly
             case "Publish Date (Newest)":
+                setCurrentSort(currentSortType.PUB_NEW);
+                filteredResults.sort((x, y) => {
+                    let x_date = new Date(x.createdAt);
+                    let y_date = new Date(y.createdAt);
+                    if (x_date < y_date) {
+                        return 1;
+                    }
+                    else if (x_date > y_date) {
+                        return -1;
+                    }
+                    else {
+                        return 0;
+                    }
+                });
                 break;
+
             case "Publish Date (Oldest)":
+                setCurrentSort(currentSortType.PUB_OLD);
+                filteredResults.sort((x, y) => {
+                    let x_date = new Date(x.createdAt);
+                    let y_date = new Date(y.createdAt);
+                    if (x_date < y_date) {
+                        return -1;
+                    }
+                    else if (x_date > y_date) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                });
                 break;
+
             case "Number of Comments (Descending)":
+                setCurrentSort(currentSortType.COMMENTS_DESC);
+                filteredResults.sort((x, y) => {
+                    if (x.comments.length < y.comments.length) {
+                        return 1;
+                    }
+                    else if (x.comments.length > y.comments.length) {
+                        return -1;
+                    }
+                    else {
+                        return 0;
+                    }
+                });
                 break;
+
             case "Number of Comments (Ascending)":
+                setCurrentSort(currentSortType.COMMENTS_DESC);
+                filteredResults.sort((x, y) => {
+                    if (x.comments.length < y.comments.length) {
+                        return -1;
+                    }
+                    else if (x.comments.length > y.comments.length) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                });
+                break;
+
+            case "Number of Votes (Descending)":
+                setCurrentSort(currentSortType.VOTES_DESC);
+                filteredResults.sort((x, y) => {
+                    let x_votes = 0;
+                    let y_votes = 0;
+
+                    x.communityVotes.forEach((arr) => {x_votes += arr.length});
+                    y.communityVotes.forEach((arr) => {y_votes += arr.length});
+
+                    if (x_votes < y_votes) {
+                        return 1;
+                    }
+                    else if (x_votes > y_votes) {
+                        return -1;
+                    }
+                    else {
+                        return 0;
+                    }
+                });
+                break;
+            case "Number of Votes (Ascending)":
+                setCurrentSort(currentSortType.VOTES_ASC);
+                filteredResults.sort((x, y) => {
+                    let x_votes = 0;
+                    let y_votes = 0;
+
+                    x.communityVotes.forEach((arr) => {x_votes += arr.length});
+                    y.communityVotes.forEach((arr) => {y_votes += arr.length});
+
+                    if (x_votes < y_votes) {
+                        return -1;
+                    }
+                    else if (x_votes > y_votes) {
+                        return 1;
+                    }
+                    else {
+                        return 0;
+                    }
+                });
                 break;
             default:
                 console.log("Sort menu closed");
                 break;
         }
+        setResults(filteredResults);
+        console.log(filteredResults);
     };
 
-    const pubNewOption = (<MenuItem onClick={handleMenuClose}>Publish Date (Newest)</MenuItem>);
-    const pubOldOption = (<MenuItem onClick={handleMenuClose}>Publish Date (Oldest)</MenuItem>);
+    let pubNewOption = (<MenuItem onClick={handleMenuClose}>Publish Date (Newest)</MenuItem>);
+    let pubOldOption = (<MenuItem onClick={handleMenuClose}>Publish Date (Oldest)</MenuItem>);
 
-    const moreCommentsOption = (<MenuItem onClick={handleMenuClose}>Number of Comments (Descending)</MenuItem>); // descending
-    const lessCommentsOption = (<MenuItem onClick={handleMenuClose}>Number of Comments (Ascending)</MenuItem>); // ascending
+    let moreCommentsOption = (<MenuItem onClick={handleMenuClose}>Number of Comments (Descending)</MenuItem>); // descending
+    let lessCommentsOption = (<MenuItem onClick={handleMenuClose}>Number of Comments (Ascending)</MenuItem>); // ascending
 
-    // TODO - implement highlighted sort option when we implement the store (see AppBar.js)
+    let moreVotesOption = (<MenuItem onClick={handleMenuClose}>Number of Votes (Descending)</MenuItem>); // descending
+    let lessVotesOption = (<MenuItem onClick={handleMenuClose}>Number of Votes (Ascending)</MenuItem>); // ascending
+
+    switch (currentSort) {
+        case currentSortType.PUB_NEW:
+            pubNewOption = (<MenuItem selected onClick={handleMenuClose}>Publish Date (Newest)</MenuItem>);
+            break;
+        case currentSortType.PUB_OLD:
+            pubOldOption = (<MenuItem selected onClick={handleMenuClose}>Publish Date (Oldest)</MenuItem>);
+            break;
+        case currentSortType.COMMENTS_DESC:
+            moreCommentsOption = (<MenuItem selected onClick={handleMenuClose}>Number of Comments (Descending)</MenuItem>); // descending
+            break;
+        case currentSortType.COMMENTS_ASC:
+            lessCommentsOption = (<MenuItem selected onClick={handleMenuClose}>Number of Comments (Ascending)</MenuItem>); // ascending
+            break;
+        case currentSortType.VOTES_DESC:
+            moreVotesOption = (<MenuItem selected onClick={handleMenuClose}>Number of Votes (Descending)</MenuItem>); // descending
+            break;
+        case currentSortType.VOTES_ASC:
+            lessVotesOption = (<MenuItem selected onClick={handleMenuClose}>Number of Votes (Ascending)</MenuItem>); // ascending
+            break;
+        default:
+            break;
+    }
+
+    
     const menuId = "sort-menu";
-    if (isUserSearch) {
-        const renderMenu = "";
-    }
-    else {
-        const renderMenu = (
-            <Menu
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              id={menuId}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={isMenuOpen}
-              onClose={handleMenuClose}
-            >
-              {pubNewOption}
-              {pubOldOption}
-              {moreCommentsOption}
-              {lessCommentsOption}
-            </Menu>
-        );
-    }
+    const renderMenu = (
+        <Menu
+            anchorEl={anchorEl}
+            anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+            }}
+            id={menuId}
+            keepMounted
+            transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+            }}
+            open={isMenuOpen}
+            onClose={handleMenuClose}
+        >
+            {pubNewOption}
+            {pubOldOption}
+            {moreCommentsOption}
+            {lessCommentsOption}
+            {moreVotesOption}
+            {lessVotesOption}
+        </Menu>
+    );
     
 
 
@@ -246,6 +378,35 @@ const SearchResults = (props) => {
         return (
             <Box className="back" pb={4}>
                 <Typography align="center" variant="h2">{"Search Results For: " + query}</Typography>
+                <Box display="flex" alignItems="flex-start" justifyContent="center">
+                    <Typography
+                        align="center"
+                        variant="h5"
+                        noWrap
+                        component="div"
+                        sx={{ display: { xs: 'none', sm: 'block' }}}
+                        color="black"
+                        marginTop="6px"
+                    >
+                        Sort By:
+                    </Typography>
+
+                    <IconButton
+                    align="center"
+                    size="large"
+                    edge="end"
+                    aria-label="Sort Menu"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleMenuOpen}
+                    color="default"
+                    >
+                        <Badge>
+                            <SortIcon />
+                        </Badge>
+                    </IconButton>
+                    {renderMenu}
+                </Box>
                 <Grid 
                     container 
                     direction='row'
@@ -254,14 +415,14 @@ const SearchResults = (props) => {
     
                         {
                             <Grid container>
-                                {filteredResults.map(({creator, tags, communityVotes, comments, panels}) => (
-                                    <PublishedGameCard creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+                                {filteredResults.map(({creator, tags, communityVotes, comments, panels}, i) => (
+                                    <PublishedGameCard key={i} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
                                 ))}
                             </Grid>
                         }
                     </Grid>
                 </Grid>
-    
+                
             </Box>
         );
     }
