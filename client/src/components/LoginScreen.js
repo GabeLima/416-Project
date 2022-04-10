@@ -78,7 +78,7 @@ const LoginScreen = () => {
                   required
                   fullWidth
                   id="email"
-                  label="Email Address or User Name"
+                  label="Email Address"
                   name="email"
                   autoComplete="email"
                   autoFocus

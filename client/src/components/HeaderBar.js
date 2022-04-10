@@ -1,5 +1,5 @@
 import React from 'react';
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
@@ -11,7 +11,7 @@ import ColorLensIcon from '@mui/icons-material/ColorLens';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
 import { styled, alpha} from '@mui/material/styles';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { 
     AppBar, Box, Toolbar, IconButton, Typography, 
     InputBase, MenuItem, Menu, Tooltip, Avatar, 
@@ -58,9 +58,12 @@ import AuthContext from '../auth'
     // Switch between comic/story site
     const SiteToggle = () => {
         const [alignment, setAlignment] = React.useState('comic');
+        const { store }  = useContext(GlobalStoreContext);
+
         const handleChange = (event, newAlignment) => {
             if(newAlignment !== null) {
                 setAlignment(newAlignment);
+                store.handleChangeMode();
             }
         };
         return (
@@ -86,7 +89,6 @@ import AuthContext from '../auth'
 
     
       
-    // TODO route text to search
     const SearchBar = () => {
         let history = useHistory();
         const { store } = useContext(GlobalStoreContext);
@@ -232,32 +234,38 @@ import AuthContext from '../auth'
     // aren't connected to actions
     const HeaderBar = (props) => {
 
-    // this should be changed to reflect the state later
-    const [loggedIn, setLoggedIn] = useState(true);
-    
+        const { auth } = useContext(AuthContext);
+        const history = useHistory();
 
-    return (
-    <AppBar position="static">
-        <Toolbar>
-            <Box display='flex' flexGrow={1} sx = {{
+        // this should be changed to reflect the state later
+        const [loggedIn, setLoggedIn] = useState(auth.loggedIn);
 
-            }}>
-                <HomeButton />
-                <SearchBar/>
-            </Box>
+        useEffect(() => {
+            setLoggedIn(auth.loggedIn);
+        }, [auth.loggedIn]);
 
-            <Box display='flex' sx={{
-                justifyContent: 'flex-end',
-                padding: 1.5,
-                height: '100%',
-            }}>
-                <SiteToggle />
-                {loggedIn ? <AccountDropdown loggedIn={loggedIn} setLoggedIn={setLoggedIn}/> : <LoginButton/>}
-            </Box>
-        </Toolbar>
-    </AppBar>
+        return (
+        <AppBar position="static">
+            <Toolbar>
+                <Box display='flex' flexGrow={1} sx = {{
 
-    );
+                }}>
+                    <HomeButton />
+                    <SearchBar/>
+                </Box>
+
+                <Box display='flex' sx={{
+                    justifyContent: 'flex-end',
+                    padding: 1.5,
+                    height: '100%',
+                }}>
+                    <SiteToggle />
+                    {loggedIn ? <AccountDropdown loggedIn={loggedIn} setLoggedIn={setLoggedIn}/> : <LoginButton/>}
+                </Box>
+            </Toolbar>
+        </AppBar>
+
+        );
     }
 
 export default HeaderBar;

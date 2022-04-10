@@ -11,6 +11,7 @@ export const GlobalStoreContext = createContext({});
 export const GlobalStoreActionType = {
     SET_ERROR_MESSAGE: "SET_ERROR_MESSAGE",
     SET_SEARCH_QUERY: "SET_SEARCH_QUERY",
+    CHANGE_MODE: "CHANGE_MODE"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -19,7 +20,8 @@ function GlobalStoreContextProvider(props) {
     // THESE ARE ALL THE THINGS OUR DATA STORE WILL MANAGE
     const [store, setStore] = useState({
         errorMessage:null,
-        searchQuery: ""
+        searchQuery: "",
+        isComic: true
     });
 
     const history = useHistory();
@@ -39,6 +41,12 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     ... store,
                     searchQuery: payload
+                });
+            }
+            case GlobalStoreActionType.CHANGE_MODE: {
+                return setStore({
+                    ... store,
+                    isComic: !store.isComic
                 });
             }
             default:
@@ -69,10 +77,17 @@ function GlobalStoreContextProvider(props) {
         });
 
         history.push("/search/");
-
-        
-
     }
+
+    store.handleChangeMode = function () {
+        console.log("Switching to " + (store.isComic ? "story" : "comic"));
+        storeReducer({
+            type: GlobalStoreActionType.CHANGE_MODE
+        });
+
+        history.push("/"); // TODO - Is this a good idea??
+    }
+
     return (
         <GlobalStoreContext.Provider value={{
             store
