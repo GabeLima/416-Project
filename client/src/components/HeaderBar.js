@@ -159,10 +159,11 @@ import AuthContext from '../auth'
 
     // Contains menu dropdown and routes for
     // View Profile, Account Settings, Logout
-    // TODO handle the logout and newGame route 
     const AccountDropdown = ({loggedIn, setLoggedIn}) => {
         let history = useHistory();
         const [anchorElUser, setAnchorElUser] = React.useState(null);
+        const { auth } = useContext(AuthContext);
+        const { store } = useContext(GlobalStoreContext);
 
         const handleOpenUserMenu = (event) => {
             setAnchorElUser(event.currentTarget);
@@ -217,8 +218,8 @@ import AuthContext from '../auth'
                     </MenuItem>
                     
                     <MenuItem onClick={() => {
-                        setLoggedIn(false);
-                        handleMenuClick('/login');
+                        auth.logoutUser(store);
+                        history.push("/");
                         }}>
                         <ListItemIcon>
                             <Logout fontsize="small" />
