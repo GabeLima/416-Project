@@ -14,7 +14,6 @@ export default function PlayerCard(props) {
             style={{
                 fontSize: '24pt',
                 width: '500%',
-                borderRadius: "15px",
                 justifyContent: "center",
                 display: 'flex',
                 flexDirection: 'row',

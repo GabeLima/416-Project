@@ -11,7 +11,7 @@ import ColorLensIcon from '@mui/icons-material/ColorLens';
 import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 
 import { styled, alpha} from '@mui/material/styles';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { 
     AppBar, Box, Toolbar, IconButton, Typography, 
     InputBase, MenuItem, Menu, Tooltip, Avatar, 
@@ -90,7 +90,7 @@ import AuthContext from '../auth'
     
       
     const SearchBar = () => {
-        let history = useHistory();
+
         const { store } = useContext(GlobalStoreContext);
 
         const handleKeyPress = (event) => {
@@ -236,7 +236,6 @@ import AuthContext from '../auth'
     const HeaderBar = (props) => {
 
         const { auth } = useContext(AuthContext);
-        const history = useHistory();
 
         // this should be changed to reflect the state later
         const [loggedIn, setLoggedIn] = useState(auth.loggedIn);
