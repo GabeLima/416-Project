@@ -1,6 +1,5 @@
-import { Avatar, Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
 
-import { color, fontWeight } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import StoryCard from './StoryCard';
 import GameComment from './GameComment';
@@ -62,7 +61,7 @@ const GameResult = () => {
 
     setCommWinner(win);
     console.log(commWinner);
-  });
+  }, [commWinner]);
 
   return (
     <div className='back'>
@@ -73,7 +72,7 @@ const GameResult = () => {
 
         <>
           {panels.map((story, index) => (
-            <StoryCard content={story} winner={commWinner==index}/>
+            <StoryCard content={story} winner={commWinner===index}/>
           ))}
         </>
       </Box>

@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Container, Grid } from '@mui/material';
+import { Avatar,  Button, Grid } from '@mui/material';
 import SimpleImageSlider from "react-simple-image-slider";
 
 import React from 'react'
