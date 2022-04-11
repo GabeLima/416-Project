@@ -219,7 +219,6 @@ import AuthContext from '../auth'
                     
                     <MenuItem onClick={() => {
                         auth.logoutUser(store);
-                        history.push("/");
                         }}>
                         <ListItemIcon>
                             <Logout fontsize="small" />

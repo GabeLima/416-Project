@@ -72,6 +72,7 @@ function AuthContextProvider(props) {
                         user: response.data.user
                     }
                 });
+                history.push("/");
             }
         }
         catch(Exception){
