@@ -7,8 +7,12 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/private-theming';
+import AuthContext from '../auth';
+import api from '../api'
+import { useContext } from 'react';
 
 const AccountScreen = () => {
+    const { auth } = useContext(AuthContext);
     const leftTheme = createTheme({
         palette: {
             primary: {
@@ -29,6 +33,18 @@ const AccountScreen = () => {
             }
         },
       });
+
+    const changeUser = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        await api.updateUser({
+            email : auth.user.email,
+            username : formData.get('username'),
+            password : formData.get('password')
+        }).then(() => {
+            auth.getLoggedIn();
+        });
+    }
       
     return (
         <div className='back'>
@@ -43,7 +59,7 @@ const AccountScreen = () => {
                 }}
                 >
                     <ThemeProvider theme={leftTheme}>
-                    <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", width:'75%'}}>
+                    <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", width:'75%'}} onSubmit={changeUser}>
                         <Box sx={{pt:10}}>
                             <Typography align="center" variant="h4"> Change Username?</Typography>
                         </Box>

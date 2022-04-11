@@ -68,13 +68,32 @@ updateUser = async (req, res) => {
         })
     }
     const { email} = req.body;
-    User.findOne({ email: email }, (err, user) => {
+    User.findOne({ email: email }, async(err, user) => {
         if (err) {
             return res.status(404).json({
                 err,
                 message: 'User not found when trying to update!',
             })
         }
+
+        //Updating username
+        if(req.body.username){
+            // console.log(req.body);
+            //Comfirms password to actually change password
+            let result = await compareAsync(req.body.password, user.passwordHash);
+            console.log(result);
+            if(!result){
+                console.log("Bad password!");
+                return res.status(400).json({ 
+                    success: false,
+                    errorMessage: "Bad password!"
+                });
+            }
+
+            //Only reaches here if it passes password check
+            user.username = req.body.username;
+        }
+
         user
             .save()
             .then(() => {

@@ -16,6 +16,8 @@ export const resetPassword = (payload) => api.put(`/resetPassword/`, payload)
 export const getUser = (username) => api.get(`/user/${username}`);
 export const searchGames = (query) => api.get(`/search/${query}`);
 
+export const updateUser = (payload) => api.put('/user/updateInfo', payload);
+
 
 const apis = {
     getLoggedIn,
@@ -26,7 +28,8 @@ const apis = {
     getUserSecurityQuestion,
     resetPassword,
     getUser,
-    searchGames
+    searchGames,
+    updateUser
 }
 
 export default apis

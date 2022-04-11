@@ -21,4 +21,6 @@ router.get('/loggedIn', UserController.getLoggedIn)
 router.put('/resetPassword', UserController.resetPassword)
 router.get('/changePassword', UserController.changePassword)
 
+router.put('/user/updateInfo', auth.verify, UserController.updateUser);
+
 module.exports = router
