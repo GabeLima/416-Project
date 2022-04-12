@@ -42,11 +42,9 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
   }, [votes]);
 
   useEffect(() => {
-    if(auth){
-      if(auth.user.username === creator){
+      if(auth.user && auth.user.username === creator){
         setIsOwner(true);
       }
-    }
   })
 
   return (
