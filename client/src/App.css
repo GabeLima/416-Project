@@ -58,7 +58,7 @@
 }
 
 .back {
-  background-color: #EEEEFF !important;
+  background-color: #EEEEFF;/* !important;*/
 }
 .MuiSlider-thumb{
   color: black;

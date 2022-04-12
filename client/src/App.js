@@ -19,7 +19,7 @@ import {
 } from "./components";
 import GameResult from './components/GameResult';
 import { SocketContext, socket} from "./context/socket";
-import { ThemeProvider } from '@emotion/react';
+import { ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { GlobalStoreContextProvider } from './store';
 import { CssBaseline } from '@mui/material';
@@ -29,25 +29,7 @@ const App = () => {
     console.log(socket);
     console.log(SocketContext);
 
-    // applies the theme to all components
-    // we can potentialyl add other themes later
-    const default_theme = createTheme({
-        palette: {
-            primary: {
-              main: '#6A8D92',
-            },
-            secondary: {
-              main: '#9FB4C7',
-            },
-            background: {
-                default: '#EEEFF',
-            }
-        },
-      });
-
     return (
-        <ThemeProvider theme={default_theme}>
-        <CssBaseline />
         <BrowserRouter>
             <AuthContextProvider>
                 <GlobalStoreContextProvider>
@@ -71,7 +53,6 @@ const App = () => {
                     </GlobalStoreContextProvider>
             </AuthContextProvider>
         </BrowserRouter>
-        </ThemeProvider>
     );
 }
 

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography';
-import { Grid } from '@mui/material';
+import { CssBaseline, Grid } from '@mui/material';
 import PublishedGameCard from './PublishedGameCard';
+import Box from '@mui/material/Box';
 
 
 // TODO add following functionality
@@ -17,7 +18,7 @@ const FollowButton = ({isFollowing, setIsFollowing}) => {
     return (
         <>
         <Button
-            color="primary"
+            color="secondary"
             variant="contained"
             sx={{
                 px: 5

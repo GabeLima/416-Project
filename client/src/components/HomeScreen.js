@@ -164,7 +164,7 @@ const HomeScreen = () => {
 
     return (
         <>
-        <Box className="back" pb={4}>
+        <Box className="back" pb={4} sx={{bgcolor: 'background.default'}}>
             <Typography align="center" variant="h1">Games</Typography>
             <Grid 
                 container 

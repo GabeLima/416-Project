@@ -150,10 +150,8 @@ const CreateGame = (props) => {
 
     return (
         <div>
-        <Box alignItems="center" sx={{ display: {
-            backgroundColor: "#6A8D92",
-
-        } }}>
+            {/* "#6A8D92" display{backgroundColor:}*/}
+        <Box alignItems="center" sx={{ bgcolor: 'background.default'}}>
 
             <Typography variant="h1"
                         noWrap
@@ -225,20 +223,21 @@ const CreateGame = (props) => {
                     width: 700,
                     marginLeft: "30%"
                     }}>
-                
+                {/*Altered marginLeft to make te text visible on screen*/}
                 <Typography variant="h4"
                         noWrap
                         component="div"
                         sx={{
                             marginTop:10,
-                            marginLeft:10,
+                            marginLeft:6,
                             justifyContent: "center",
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center'}}>
                     Tags For This Game (Max 5 tags!)
                 </Typography>
-
+                        
+                {/*sc={{bgcolor: "6A8D92"}}*/}
                 <FormGroup 
                         sx={{
                             marginTop:5,
@@ -248,7 +247,7 @@ const CreateGame = (props) => {
                             flexDirection: 'row',
                             alignItems: 'center'
                         }}
-                        sc={{bgcolor: "#6A8D92"}}>
+                        sc={{bgcolor: "secondary"}}>
                     {tagOptions.map((tag, i) => {
                         let disabled = (currentNumTags > 5 ? true : false);
                         if (selectedTags.includes(tag)) {
@@ -256,14 +255,21 @@ const CreateGame = (props) => {
                             disabled = false;
                         }
                         return (
-
-                            <FormControlLabel labelPlacement="bottom" control={<Checkbox disabled={disabled} id={"checkbox" + i} onChange={handleTagChange} style={{color: "#493548"}}/>} label={tag} />
+                            <>
+                            {/* style={{color: "#493548"}}*/}
+                            <FormControlLabel labelPlacement="bottom" control={<Checkbox disabled={disabled} id={"checkbox" + i} onChange={handleTagChange} color='secondary'/>} label={tag} />
+                            </>
                         )
                         
                     })
                     }
                 </FormGroup>
 
+                {/*
+                InputLabelProps={{
+                            style: { color: '#493548' },
+                        }}
+                */}
                 <Box display="flex" justifyContent="center">
                     <TextField id="standard-basic" label="Custom Tags (Comma Separated)" variant="filled"
                         fullWidth
@@ -275,11 +281,7 @@ const CreateGame = (props) => {
                             flexDirection: 'row',
                             alignItems: 'center',
                         }}
-
-                        InputLabelProps={{
-                            style: { color: '#493548' },
-                        }}
-
+                        color='secondary'
                         style={{
                             borderRadius: "10px",
                             borderStyle: "solid",
@@ -299,14 +301,14 @@ const CreateGame = (props) => {
                     marginLeft: "45%"
                     }}>
             
-
+                {/* backgroundColor: "#4b4e6d", */}
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: "#4b4e6d",
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
+                        color='secondary'
                         onClick={handleCreateGame}
                         disabled={!canCreate}
                         >

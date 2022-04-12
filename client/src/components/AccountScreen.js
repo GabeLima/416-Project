@@ -7,8 +7,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/private-theming';
+import { useTheme } from '@mui/material/styles';
 
 const AccountScreen = () => {
+    /*
     const leftTheme = createTheme({
         palette: {
             primary: {
@@ -29,11 +31,27 @@ const AccountScreen = () => {
             }
         },
       });
+      */
+      /*
+    const changePassword = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        await api.changePassword({
+            email : auth.user.email,
+            password : formData.get('password'),
+            newPassword : formData.get('newPassword'),
+            newPasswordVerify : formData.get('newPasswordVerify')
+        }).then(() => {
+            auth.getLoggedIn();
+        });
+    } */
       
+    //let theme = useTheme();
+
     return (
         <div className='back'>
                 <Container component="main" maxWidth="lg" maxHeight="lg">
-                <CssBaseline />
+                {/*<CssBaseline />*/}
                 <Box pb={5}
                 sx={{
                     marginTop: 10,
@@ -42,15 +60,15 @@ const AccountScreen = () => {
                     alignItems: 'center',
                 }}
                 >
-                    <ThemeProvider theme={leftTheme}>
-                    <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", width:'75%'}}>
+                    {/*<ThemeProvider theme={leftTheme}>}*/}
+                    <Box component="form" noValidate sx={{bgcolor: 'primary.main', border:2, borderColor:"black", width:'75%'}}>
                         <Box sx={{pt:10}}>
                             <Typography align="center" variant="h4"> Change Username?</Typography>
                         </Box>
                         <TextField margin="normal" required fullWidth id="username" label="New Username" name="username" autoComplete="username" autoFocus/>
                         <TextField margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password"/>
                         <Typography align="center">
-                                <Button  type="submit" variant="contained" sx={{mt: 3, mb: 2, width:'50%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}>
+                                <Button type="submit" variant="contained" sx={{mt: 3, mb: 2, width:'50%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}>
                                     Change Username
                                 </Button>
                         </Typography>
@@ -66,8 +84,10 @@ const AccountScreen = () => {
                                 </Button>
                             </Typography>
                     </Box>
-                    </ThemeProvider>
+                    {/*</ThemeProvider>
+                      
                     <ThemeProvider theme={rightTheme}>
+                */}
                     <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", height: '100%'}}>
                         <Box sx={{pt:10, pb:22}}>
                             <Typography align="center" variant="h4"> Delete Account?</Typography>
@@ -90,7 +110,7 @@ const AccountScreen = () => {
                         </Grid>
                         </Grid>
                     </Box>
-                    </ThemeProvider>
+                    {/*</ThemeProvider*/}
                 </Box>
             </Container>
   </div>
