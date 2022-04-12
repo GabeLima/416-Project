@@ -94,6 +94,11 @@ updateUser = async (req, res) => {
             user.username = req.body.username;
         }
 
+        //Update Following
+        if(req.body.following){
+            user.following = req.body.following;
+        }
+
         user
             .save()
             .then(() => {
@@ -310,7 +315,7 @@ registerUser = async (req, res) => {
 
 
 updateFollowers = async (req, res) => {
-    const email = req.params.email
+    const email = req.body.email
     const followers = req.body.followers
 
     if(!email){
@@ -369,6 +374,8 @@ getUser = async (req, res) => {
             errorMessage: 'You must provide a username',
         });
     }
+
+    console.log("reached");
 
     await User.findOne({username: username}, (err, user) => {
         if (err) {

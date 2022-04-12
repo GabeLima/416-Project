@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useParams } from "react-router-dom";
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography';
 import { Grid } from '@mui/material';
 import PublishedGameCard from './PublishedGameCard';
 
+import AuthContext from '../auth';
+import api from '../api'
+import { useContext, useEffect } from 'react';
+
 
 // TODO add following functionality
-const FollowButton = ({isFollowing, setIsFollowing}) => {
+const FollowButton = ({isFollowing, setIsFollowing, userInfo, auth}) => {
     let follow_text = "";
     if(isFollowing) {
         follow_text = "Unfollow";
@@ -22,7 +27,51 @@ const FollowButton = ({isFollowing, setIsFollowing}) => {
             sx={{
                 px: 5
             }}
-            onClick={()=>{
+            onClick={async()=>{
+                //not following will turn into following
+                if(!isFollowing){
+                    if(userInfo){
+                        //update followers
+                        userInfo.followers.push(auth.user.email);
+                        await api.updateFollowers({
+                            email : userInfo.email,
+                            followers : userInfo.followers
+                        });
+
+                        //Update following
+                        auth.user.following.push(userInfo.email);
+                        await api.updateUser({
+                            email : auth.user.email,
+                            following : auth.user.following
+                        }).then(() => {
+                            auth.getLoggedIn();
+                        });
+                    }
+                }
+                else{                       //Unfollowing so remove from list
+                    //update followers
+                    let removedI = userInfo.followers.indexOf(auth.user.email);
+                    if(removedI > -1){
+                        userInfo.followers.splice(removedI, 1);
+                        await api.updateFollowers({
+                            email : userInfo.email,
+                            followers : userInfo.followers
+                        });
+                    }
+
+                    //update Following
+                    removedI = auth.user.following.indexOf(userInfo.email);
+                    if(removedI > -1){
+                        auth.user.following.splice(removedI, 1);
+                        await api.updateUser({
+                            email : auth.user.email,
+                            following : auth.user.following
+                        }).then(() => {
+                            //Only updating auth cause there is no need to update userInfo that only renders upon visiting the page
+                            auth.getLoggedIn();
+                        });
+                    }
+                }
                 setIsFollowing(!isFollowing);
             }}
         >{follow_text}</Button>
@@ -37,16 +86,52 @@ const FollowButton = ({isFollowing, setIsFollowing}) => {
 // Follow/Unfollow user button
 // (follow button only appears if the viewer is not the user)
 const Profile = (props) => {
-    // viwer is who is viewing the profile
-    // user is whose profile is being displayed
-    //const {viewer, user} = props;
-    let user = "McKilla Gorilla";
-
-    // if the viewer is following the user
+    const { auth } = useContext(AuthContext);
+    const params = useParams();
     const [isFollowing, setIsFollowing] = useState(false);
+    const [userInfo, setUserInfo] = useState();
+    //If viewer is owner
+    const [isOwner, setIsOwner] = useState(false);
 
-    // if the viewer is the user
-    let isOwner = false;
+    let user = params.username;
+    const [rendered, setRendered] = useState(false);
+
+
+    // viwer is who is viewing the profile
+    
+    useEffect(() => {
+        // user is whose profile is being displayed
+        //const {viewer, user} = props;
+        if(!rendered){
+            const callGetUser = async() => {
+                return await api.getUser(user).then((response) => {
+                    return response.data.user;
+                }).then((userI) => {
+                    console.log(userI);
+                    setUserInfo(userI);
+                });
+            }
+            callGetUser();
+            setRendered(true);
+        }
+    }, [rendered, userInfo, user, setIsFollowing]);
+
+
+    useEffect(() => {
+        if(userInfo && auth.user){
+            console.log(userInfo);
+            console.log(auth);
+            //Checks if the user has followed the profile yet
+            if(userInfo.followers.indexOf(auth.user.email) > -1){
+                setIsFollowing(true);
+            }
+
+            //Checks if the viewer of page is owner of page
+            if(auth.user.email === userInfo.email){
+                setIsOwner(true);
+            }
+        }
+    }, [setIsFollowing, setIsOwner, userInfo, auth])
 
     // implement a list of cards of completed games
     const publishedGames = [
@@ -147,12 +232,12 @@ const Profile = (props) => {
             px: 4
         }}
     >
-        {isOwner ? null : <FollowButton isFollowing={isFollowing} setIsFollowing={setIsFollowing}/>}
+        {isOwner ? null : <FollowButton isFollowing={isFollowing} setIsFollowing={setIsFollowing} userInfo={userInfo} auth={auth}/>}
     </Grid>
 
         
     <Typography variant="h3">Completed Games</Typography>
-    <Grid container>
+    <Grid container className='back'>
         {publishedGames.map(({creator, tags, communityVotes, comments, panels}) => (
             <PublishedGameCard creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
         ))}

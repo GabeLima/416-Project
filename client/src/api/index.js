@@ -17,6 +17,7 @@ export const getUser = (username) => api.get(`/user/${username}`);
 export const searchGames = (query) => api.get(`/search/${query}`);
 
 export const updateUser = (payload) => api.put('/user/updateInfo', payload);
+export const updateFollowers = (payload) => api.put('/user/followers', payload);
 
 
 const apis = {
@@ -29,7 +30,8 @@ const apis = {
     resetPassword,
     getUser,
     searchGames,
-    updateUser
+    updateUser,
+    updateFollowers
 }
 
 export default apis
