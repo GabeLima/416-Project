@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import { Grid } from '@mui/material';
 import PublishedGameCard from './PublishedGameCard';
 

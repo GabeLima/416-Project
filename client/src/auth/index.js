@@ -23,7 +23,7 @@ function AuthContextProvider(props) {
     //On load we check if the user is logged in or not
     useEffect(() => {
         auth.getLoggedIn();
-    });
+    }, []);
 
     const authReducer = (action) => {
         const { type, payload } = action;
@@ -65,8 +65,6 @@ function AuthContextProvider(props) {
         try{
             const response = await api.logoutUser();
             if (response.status === 200) {
-                store.resetLocalSearchtext();
-                store.resetPageViews();
                 authReducer({
                     type: AuthActionType.GET_LOGGED_IN,
                     payload: {
@@ -74,6 +72,7 @@ function AuthContextProvider(props) {
                         user: response.data.user
                     }
                 });
+                history.push("/");
             }
         }
         catch(Exception){

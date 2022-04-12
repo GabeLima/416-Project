@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, Typography } from '@mui/material';
+import { Button, Container, Grid, Typography } from '@mui/material';
 import Tags from "./Tags"
 import SimpleImageSlider from "react-simple-image-slider";
 import React, { useEffect, useState } from 'react'
@@ -19,7 +19,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
 
        setNumVotes(count);
        setNumComments(comments.length);
-   })
+   }, [comments.length, votes]);
 
    useEffect(() => {
     let max = -1;
@@ -35,7 +35,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
 
     setCommWinner(win);
     // console.log(commWinner);
-  });
+  }, [votes]);
 
   return (
     <Grid item m={2}>
@@ -63,8 +63,8 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
             </Typography>
 
             <Grid container spacing={1} pb={2} sx={{overflow:"auto"}}>
-                {tags.map((tag) => (
-                    <Tags tag={tag}/>
+                {tags.map((tag, i) => (
+                    <Tags key={i} tag={tag}/>
                 ))}
             </Grid>
         </Container>

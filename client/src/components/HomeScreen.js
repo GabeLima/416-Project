@@ -1,8 +1,8 @@
 import React from 'react';
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth'
-import { useContext, useState } from 'react'
-import { Container, Typography } from '@mui/material'
+import { useState } from 'react'
+import { Typography } from '@mui/material'
 import { Box } from '@mui/system';
 import { TextField } from '@mui/material';
 import { ToggleButton } from '@mui/material';
@@ -171,18 +171,18 @@ const HomeScreen = () => {
                 direction='row'
             >
                 <Grid item xs={10}>
-                    {alignment == "live" ? 
+                    {alignment === "live" ? 
                         <Grid container>
-                            {liveGames.map(({creator, gameID, numRounds, timePerRound, tags}) => (
-                                <LiveGameCard creator={creator} gameID={gameID} numRounds={numRounds} timePerRound={timePerRound} tags={tags}/>
+                            {liveGames.map(({creator, gameID, numRounds, timePerRound, tags}, i) => (
+                                <LiveGameCard key={i} creator={creator} gameID={gameID} numRounds={numRounds} timePerRound={timePerRound} tags={tags}/>
                             ))}
                         </Grid> : ''
                     }
 
-                    {alignment == "completed" ? 
+                    {alignment === "completed" ? 
                         <Grid container>
-                            {publishedGames.map(({creator, tags, communityVotes, comments, panels}) => (
-                                <PublishedGameCard creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+                            {publishedGames.map(({creator, tags, communityVotes, comments, panels}, i) => (
+                                <PublishedGameCard key={i} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
                             ))}
                         </Grid> : ''
                     }
