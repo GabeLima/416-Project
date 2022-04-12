@@ -12,10 +12,21 @@ import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 
 import { useHistory } from 'react-router-dom';
+import { unstable_getThemeValue } from '@mui/system';
+import AuthContext from '../auth';
+import { useContext } from 'react';
+import { GlobalStoreContext } from '../store'
 
 const CreateGame = (props) => {
 
     const history = useHistory();
+    const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
+    if(!auth.loggedIn){
+        console.log("Redirecting user back to home page as they're not logged in!");
+        store.setErrorMessage("You must be logged in to create a game!");
+        history.push("/");
+    }
 
     const [timePerRound, setTimePerRound] = useState(20);
     const handleTimerChange = (event, newValue) => {

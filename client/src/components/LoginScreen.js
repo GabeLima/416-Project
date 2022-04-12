@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GlobalStoreContext } from '../store'
 import Container from '@mui/material/Container';
-import AlertModal from './AlertModal'
 import { useState } from 'react'
 
 const LoginScreen = () => {
@@ -114,7 +113,6 @@ const LoginScreen = () => {
                 </Grid>
               </Box>
             </Box>
-            <AlertModal></AlertModal>
           </Container>)
     }
 
@@ -157,7 +155,6 @@ const LoginScreen = () => {
                 </Button>
               </Box>
             </Box>
-            <AlertModal></AlertModal>
           </Container>)
     }
 
@@ -221,7 +218,6 @@ const LoginScreen = () => {
             </Button>
           </Box>
         </Box>
-        <AlertModal></AlertModal>
       </Container>
     )
       

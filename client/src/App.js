@@ -23,6 +23,7 @@ import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material/styles';
 import { GlobalStoreContextProvider } from './store';
 import { CssBaseline } from '@mui/material';
+import AlertModal from './components/AlertModal';
 
 
 const App = () => {
@@ -67,6 +68,7 @@ const App = () => {
                             <Route path="/create" exact component={CreateGame} />
                             <Route path="/search" exact component={SearchResults} />
                         </Switch>
+                        <AlertModal></AlertModal>
                         </SocketContext.Provider>
                     </GlobalStoreContextProvider>
             </AuthContextProvider>

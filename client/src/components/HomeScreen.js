@@ -13,7 +13,7 @@ import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router-dom';
-
+import { useContext } from 'react';
 
 // toggles between live and completed games
 const GameToggle = ({alignment, setAlignment}) => {
@@ -55,7 +55,7 @@ const HomeScreen = () => {
         history.push(pageURL);
     };
 
-    //const { auth } = useContext(AuthContext);
+    const { auth } = useContext(AuthContext);
     //const { store } = useContext(GlobalStoreContext);
 
 
@@ -210,7 +210,7 @@ const HomeScreen = () => {
                             <GameToggle alignment={alignment} setAlignment={setAlignment} />
                             <Typography align="center" variant="h4" sx={{mt: 3, width:'100%'}}>Join Game</Typography>
                             <TextField name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
-                            <Button variant="contained" sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={() => handleClick('/create')}>
+                            <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={() => handleClick('/create')}>
                                 Create Game
                             </Button>
                         </Box>
