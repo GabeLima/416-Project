@@ -196,7 +196,7 @@ import AuthContext from '../auth'
                   transformOrigin={{ horizontal: 'left', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'left', vertical: 'Bottom' }}
                 >
-                    <MenuItem onClick={() => handleMenuClick('/profile')}>
+                    <MenuItem onClick={() => handleMenuClick(`/profile/${auth.user.username}`)}>
                         <ListItemIcon>
                             <Avatar sx={{ height: '25px', width: '25px' }}/>
                         </ListItemIcon>
