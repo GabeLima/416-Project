@@ -101,14 +101,21 @@ const SearchResults = (props) => {
     
     let isComic = store.isComic;
     
-    let filteredResults = results.filter((game) => {
-        if (game.isComic === isComic) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    });
+    let filteredResults;
+    if (!isUserSearch) {
+        filteredResults = results.filter((game) => {
+            if (game.isComic === isComic) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
+    }
+    else {
+        filteredResults = results;
+    }
+    
 
     const currentSortType = {
         PUB_NEW: "PUB_NEW",
