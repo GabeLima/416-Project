@@ -16,17 +16,22 @@ import { unstable_getThemeValue } from '@mui/system';
 import AuthContext from '../auth';
 import { useContext } from 'react';
 import { GlobalStoreContext } from '../store'
+import GlobalGameContext from '../game';
+const crypto = require("crypto");
 
 const CreateGame = (props) => {
 
     const history = useHistory();
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
-    if(!auth.loggedIn){
-        console.log("Redirecting user back to home page as they're not logged in!");
-        store.setErrorMessage("You must be logged in to create a game!");
-        history.push("/");
-    }
+    const { game } = useContext(GlobalGameContext);
+    //This doesnt work ATM for browser redirection, as getLoggedIn gets called after the component renders, and we aren't logged in :(
+    // if(!auth.loggedIn === true){
+    //     console.log("Redirecting user back to home page as they're not logged in!");
+    //     store.setErrorMessage("You must be logged in to create a game!");
+    //     history.push("/");
+    // }
+
 
     const [timePerRound, setTimePerRound] = useState(20);
     const handleTimerChange = (event, newValue) => {
@@ -152,7 +157,12 @@ const CreateGame = (props) => {
         console.log(selectedTags_copy);
 
         // TODO - hook this up
-        history.push("/lobby");
+        //Generate an id to create the game with
+        const gameID = crypto.randomBytes(3).toString("hex");
+
+        console.log(gameID);
+        game.createGame({gameID:gameID, numRounds:numRounds, timePerRound:timePerRound, email: auth.user.email, username: auth.user.username});
+        //history.push("/lobby");
     }
     
     let currentNumTags = selectedTags.length + customTags.split(",").filter((v) => v !== "").length;
