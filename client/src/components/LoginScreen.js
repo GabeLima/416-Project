@@ -242,7 +242,9 @@ const LoginScreen = () => {
 
 
     return (
-      render()
+      <div className='back'>
+        {render()}
+      </div>
     );
 }
 
