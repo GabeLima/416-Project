@@ -136,7 +136,7 @@ const Profile = (props) => {
     // implement a list of cards of completed games
     const publishedGames = [
         {
-            creator:"McKilla Gorilla",
+            creator:"vicchan",
             gameID : "JYGS",
             panels: [
                 ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
@@ -176,7 +176,7 @@ const Profile = (props) => {
             tags : ["Unbelievable", "Pokemon", "Digimon", "War"]
         },
         {
-            creator:"McKilla Gorilla",
+            creator:"victor",
             gameID : "KUGB",
             panels: [
                 ["/images/mark_oukan_crown7_blue.png", "/images/4.png", "/images/4.png", "/images/4.png"],
