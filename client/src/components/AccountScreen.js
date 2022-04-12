@@ -45,6 +45,17 @@ const AccountScreen = () => {
             auth.getLoggedIn();
         });
     }
+
+    const deleteUser = async (event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        await api.removeUser({
+            email : formData.get('email'),
+            password : formData.get('password')
+        }).then(() => {
+            auth.logoutUser();
+        });
+    }
       
     return (
         <div className='back'>
@@ -84,7 +95,7 @@ const AccountScreen = () => {
                     </Box>
                     </ThemeProvider>
                     <ThemeProvider theme={rightTheme}>
-                    <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", height: '100%'}}>
+                    <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", height: '100%'}} onSubmit={deleteUser}>
                         <Box sx={{pt:10, pb:22}}>
                             <Typography align="center" variant="h4"> Delete Account?</Typography>
                         </Box>

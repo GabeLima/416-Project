@@ -18,6 +18,7 @@ export const searchGames = (query) => api.get(`/search/${query}`);
 
 export const updateUser = (payload) => api.put('/user/updateInfo', payload);
 export const updateFollowers = (payload) => api.put('/user/followers', payload);
+export const removeUser = (payload) => api.delete(`/user/delete/${payload.email}/${payload.password}`);
 
 
 const apis = {
@@ -31,7 +32,8 @@ const apis = {
     getUser,
     searchGames,
     updateUser,
-    updateFollowers
+    updateFollowers,
+    removeUser
 }
 
 export default apis

@@ -79,7 +79,7 @@ updateUser = async (req, res) => {
         //Updating username
         if(req.body.username){
             // console.log(req.body);
-            //Comfirms password to actually change password
+            //Comfirms password to actually change username
             let result = await compareAsync(req.body.password, user.passwordHash);
             console.log(result);
             if(!result){
@@ -395,6 +395,44 @@ getUser = async (req, res) => {
     });
 }
 
+removeUser = async(req, res)=>{
+    const {email, password} = req.params;
+
+    console.log(req.params);
+
+    User.findOne({email:email}, async(err, user)=>{
+        if (err) {
+            return res.status(404).json({
+                success: false,
+                err,
+                message: "Wrong email1"
+            });
+        }
+        else if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Wrong email2"
+            });
+        }
+
+        //Comfirms password to actually change password
+        let result = await compareAsync(password, user.passwordHash);
+        console.log(result);
+        if(!result){
+            console.log("Bad password!");
+            return res.status(400).json({ 
+                success: false,
+                errorMessage: "Bad password!"
+            });
+        }
+
+        User.findOneAndDelete({email:email}, () => {
+            return res.status(200).json({ success: true })
+        }).catch(err => console.log(err))
+
+    })
+}
+
 getUserSecurityQuestion = async (req, res) => {
     const email = req.params.email;
     if (!email) {
@@ -613,5 +651,6 @@ module.exports = {
     getUser,
     getUserSecurityQuestion,
     resetPassword,
-    changePassword
+    changePassword,
+    removeUser
 }
