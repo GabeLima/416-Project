@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { createContext, useState, useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 import AuthContext from '../auth'
@@ -24,7 +25,6 @@ function GlobalGameContextProvider(props) {
         gameID: "fakeID",
         players: [],
         gameStatus: "",
-        playerVotes: [[]],
         creator: "",
         numRounds: 0,
         timePerRound: 0,
@@ -34,6 +34,7 @@ function GlobalGameContextProvider(props) {
 
     //SETUP THE CLIENT SOCKET
     const socket = useContext(SocketContext);
+    console.log("First socket: ", socket);
     const history = useHistory();
     const { store } = useContext(GlobalStoreContext);
 
@@ -59,19 +60,16 @@ function GlobalGameContextProvider(props) {
 
     game.createGame = function (data) {
         // const {gameID, numRounds, timePerRound, email, username} = data;
-
-        //We can't call this reducer here because it causes re-rendering. Any workarounds?
-
-        // storeReducer({
-        //     type: GlobalGameActionType.CREATE_GAME,
-        //     payload: data
-        // });
+        storeReducer({
+            type: GlobalGameActionType.CREATE_GAME,
+            payload: data
+        });
         //TODO - change this to the enums we use in the backend
         socket.emit("CreateGame", data);
     }
 
-    //ATM we can't access auth from inside socket functions... is there a fix?
-    socket.once("joinSuccess", (data) => {
+    const joinSuccess = (data) =>{
+        console.log(data);
         const {value, gameID, email, username} = data;
         //If joinSuccess is a success (bad naming), we switch to the lobby page
         if(value===true){
@@ -90,9 +88,13 @@ function GlobalGameContextProvider(props) {
             store.setErrorMessage("There was an error joining the game!");
 
         }
-    });
+    }
 
-    return (
+    useEffect(() => {
+        socket.once("joinSuccess", joinSuccess);
+    }, []);
+  
+      return(
         <GlobalGameContext.Provider value={{
             game
         }}>
