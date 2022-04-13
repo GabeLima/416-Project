@@ -1,5 +1,4 @@
 import { React} from 'react'
-import { SocketContext } from "../context/socket";
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,7 +8,6 @@ import { ThemeProvider } from '@mui/private-theming';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 
 const StoryGameInProgressScreen = (props) => {
-    console.log(SocketContext);
     // const socket = useContext(SocketContext);
     // let saveHandler = (text, done) => {
     //     socket.emit("saveText", text);

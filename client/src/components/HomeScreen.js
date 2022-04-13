@@ -12,8 +12,11 @@ import Tags from "./Tags"
 import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
 import { CssBaseline } from '@material-ui/core';
-import { Button } from '@mui/material';
-
+import Button from '@mui/material/Button';
+import { useHistory } from 'react-router-dom';
+import { useContext, useEffect } from 'react';
+import { SocketContext } from "../context/socket";
+import GlobalGameContext from "../game";
 
 // toggles between live and completed games
 const GameToggle = ({alignment, setAlignment}) => {
@@ -27,8 +30,10 @@ const GameToggle = ({alignment, setAlignment}) => {
             exclusive 
             onChange={handleChange}
             value={alignment}
+            fullWidth
             sx = {{
-                px: 2
+                px: 2,
+                mb: 2, 
             }}
         >
             <ToggleButton color="secondary" value="completed">
@@ -41,9 +46,21 @@ const GameToggle = ({alignment, setAlignment}) => {
         );
 };
 
+
+
 const HomeScreen = () => {
     const [alignment, setAlignment] = useState('completed');
-    //const { auth } = useContext(AuthContext);
+
+    let history = useHistory();
+
+    const handleClick = (pageURL) => {
+        console.log(pageURL);
+        history.push(pageURL);
+    };
+
+    const { auth } = useContext(AuthContext);
+    const socket = useContext(SocketContext);
+    const { game } = useContext(GlobalGameContext);
     //const { store } = useContext(GlobalStoreContext);
 
 
@@ -54,6 +71,25 @@ const HomeScreen = () => {
     // obtain a list of cards based on what is being asked
     // Story/Comic
     // Completed/Joinable
+
+    useEffect(() => {
+        if (socket && auth.loggedIn && auth.user) {
+            
+            socket.emit("storeClientInfo", {email: auth.user.email});
+        }
+    }, [auth.loggedIn]);
+
+    const handleKeyPress = (event) => {
+        if (event.code === "Enter") {
+            event.stopPropagation();
+            event.preventDefault();
+            // Pass off to the search handler.
+            let gameID = event.target.value;
+            console.log("Attempting to join game with ID " + gameID);
+            game.joinGame({gameID: gameID, username: auth.user.username});
+        }
+    }
+
 
     //Example data
     const liveGames = [
@@ -194,10 +230,13 @@ const HomeScreen = () => {
                 <Grid item xs={2}>
                     <Grid container justifyContent="right" pr={2}>
                         <Box>
-                            <Typography align="center" variant="h4">Filter Games</Typography>
-                            <GameToggle alignment={alignment} setAlignment={setAlignment}/>
-                            <Typography align="center" variant="h4">Join Game</Typography>
-                            <TextField name="game-code" label="Game Code" id="game-code" color='secondary'/>
+                            <Typography align="center" variant="h4" sx={{mt: 3, mb: 2, width:'100%'}}>Filter Games</Typography>
+                            <GameToggle alignment={alignment} setAlignment={setAlignment} />
+                            <Typography align="center" variant="h4" sx={{mt: 3, width:'100%'}}>Join Game</Typography>
+                            <TextField color='secondary' disabled={!auth.loggedIn} onKeyPress={handleKeyPress} name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
+                            <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={() => handleClick('/create')}>
+                                Create Game
+                            </Button>
                         </Box>
                     </Grid>
                 </Grid>
