@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react'
 import StoryCard from './StoryCard';
 import GameComment from './GameComment';
 
+// Page viewed after clicking on a completed game card
+
 const GameResult = () => {
   const [playerWinner, setPlayerWinner] = useState(-1);
   const [commWinner, setCommWinner] = useState(-1);

@@ -11,6 +11,8 @@ import { Grid } from '@mui/material';
 import Tags from "./Tags"
 import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
+import { CssBaseline } from '@material-ui/core';
+import { Button } from '@mui/material';
 
 
 // toggles between live and completed games
@@ -164,7 +166,7 @@ const HomeScreen = () => {
 
     return (
         <>
-        <Box className="back" pb={4} sx={{bgcolor: 'background.default'}}>
+        <Box className="back" pb={4} sx={{bgcolor: "background.main"}}>
             <Typography align="center" variant="h1">Games</Typography>
             <Grid 
                 container 
@@ -195,12 +197,19 @@ const HomeScreen = () => {
                             <Typography align="center" variant="h4">Filter Games</Typography>
                             <GameToggle alignment={alignment} setAlignment={setAlignment}/>
                             <Typography align="center" variant="h4">Join Game</Typography>
-                            <TextField name="game-code" label="Game Code" id="game-code"/>
+                            <TextField name="game-code" label="Game Code" id="game-code" color='secondary'/>
                         </Box>
                     </Grid>
                 </Grid>
             </Grid>
 
+            {/* 
+            This is a hack curtesy of whoever created GameLobby
+            It just creates a big box so that the background color
+            fills the whole screen
+            
+            <Box sx= {{ height: 400}}/>
+            */}
         </Box>
         </>
     )

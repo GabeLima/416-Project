@@ -56,10 +56,10 @@ const GameLobby = (props) => {
 
     return (
         <div>
-        <Box alignItems="center" sx={{ display: {
-            backgroundColor: "#6A8D92",
-
-        } }}>
+            {/*            display: {
+                backgroundColor: "#6A8D92",
+            }  */}
+        <Box alignItems="center" sx={{ bgcolor: 'background.default' }}>
 
             <Typography variant="h1"
                         noWrap
@@ -127,7 +127,12 @@ const GameLobby = (props) => {
                 </Button>
             </Box>
 
-            <Box sx= {{ height: 200}}/>
+            {/* 
+                Hacky solution to fill the entire screen with the
+                outer box background color
+                            <Box sx= {{ height: 200}}/>
+
+            */}
         </Box>
         </div>
     );
