@@ -1,40 +1,17 @@
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@mui/private-theming';
 import AuthContext from '../auth';
 import api from '../api'
 import { useContext } from 'react';
+// import CssBaseline from '@mui/material/CssBaseline';
 
 const AccountScreen = () => {
     const { auth } = useContext(AuthContext);
-    const leftTheme = createTheme({
-        palette: {
-            primary: {
-              main: '#9FB4C7',
-            },
-            secondary: {
-              main: '#6A8D92',
-            }
-        },
-      });
-      const rightTheme = createTheme({
-        palette: {
-            primary: {
-              main: '#6A8D92',
-            },
-            secondary: {
-              main: '#9FB4C7',
-            }
-        },
-      });
 
-      /*
     const changePassword = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -46,7 +23,7 @@ const AccountScreen = () => {
         }).then(() => {
             auth.getLoggedIn();
         });
-    } */
+    } 
 
     const changeUser = async (event) => {
         event.preventDefault();
@@ -71,8 +48,6 @@ const AccountScreen = () => {
         });
     }
       
-    //let theme = useTheme();
-
     return (
         <div className='back'>
                 <Container component="main" maxWidth="lg" maxHeight="lg">

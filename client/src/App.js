@@ -19,10 +19,8 @@ import {
 } from "./components";
 import GameResult from './components/GameResult';
 import { SocketContext, socket} from "./context/socket";
-import { ThemeProvider } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
 import { GlobalStoreContextProvider } from './store';
-import { CssBaseline } from '@mui/material';
+// import { CssBaseline } from '@mui/material';
 
 
 const App = () => {
