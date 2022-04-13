@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import AuthContext from '../auth'
 import { SocketContext } from "../context/socket";
 import { GlobalStoreContext } from '../store'
-import {gameEvents} from "./constants"
+import {gameEvents, gameStatus} from "./constants"
 
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
@@ -16,8 +16,10 @@ export const GlobalGameActionType = {
     CREATE_GAME: "CREATE_GAME",
     START_ROUND: "START_ROUND",
     SET_PREVIOUS_PANEL: "SET_PREVIOUS_PANEL",
+    UPDATE_GAME_STATUS: "UPDATE_GAME_STATUS",
     RESET_GAME_INFO: "RESET_GAME_INFO",
     PLAYER_LIST_UPDATE: "PLAYER_LIST_UPDATE"
+
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -32,7 +34,7 @@ function GlobalGameContextProvider(props) {
         gameStatus: "",
         creator: "",
         numRounds: 0,
-        timePerRound: 0,
+        timePerRound: 30,
         currentRound: 0,
         tags: [],
         storyNumber: 0,
@@ -76,7 +78,14 @@ function GlobalGameContextProvider(props) {
                 return setGame({
                     ...game,
                     storyNumber:payload.storyNumber,
-                    currentRound: payload.currentRound
+                    currentRound: payload.currentRound,
+                    gameStatus: gameStatus.PLAYING
+                });
+            }
+            case GlobalGameActionType.UPDATE_GAME_STATUS: {
+                return setGame({
+                    ...game,
+                    gameStatus: payload
                 });
             }
             case GlobalGameActionType.SET_PREVIOUS_PANEL: {
@@ -136,6 +145,16 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+
+    game.savePanel = function (data){
+        const ID = "" + game.gameID + game.storyNumber + game.currentRound;
+        if(store.isComic === true){
+            socket.emit("saveImage", {image: data, imageID: ID});
+        }
+        else{
+            socket.emit("saveText", {text: data, textID: ID});
+        }
+
     // if the creator left, we need to promote the next person in line. if players left are 0, we just delete the game.
     game.playerLeftLobby = (data) => {
         const { username } = data;
@@ -163,6 +182,7 @@ function GlobalGameContextProvider(props) {
             type: GlobalGameActionType.LOAD_LOBBY,
             payload: gameInfo
         });
+
     }
 
 
@@ -194,6 +214,14 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+
+    const roundEnd = () =>{
+        //This will eventually lead to game.savePanel being called
+        storeReducer({
+            type: GlobalGameActionType.UPDATE_GAME_STATUS,
+            payload: gameStatus.ROUND_END
+        });
+
     const joiningGame = (data) => {
         const { username, gameInfo } = data;
         console.log("New player joined:" + username);
@@ -217,6 +245,7 @@ function GlobalGameContextProvider(props) {
         else{
             socket.emit("saveText", {text: text, textID: ID});
         }
+
         //Tell the server the round ended, and start the self-looping again
         socket.emit("roundEnd", {gameID: game.gameID, storyNumber: game.storyNumber, currentRound: game.currentRound});
     }
