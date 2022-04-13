@@ -36,14 +36,18 @@ const ComicGameInProgressScreen = (props) => {
     }
 
     useEffect(() => {
+        decreaseTimer();
+    });
+
+    useEffect(() => {
         window.ptro = Painterro({
         id: 'painterro',
         defaultTool: "brush",
         hiddenTools: ["crop", "resize", "save", "open", "zoomin", "zoomout", "select", "settings", "pixelize", "close"],
         saveHandler: saveHandler
         }).show();
-        decreaseTimer();
-       });
+    }, []);
+
 
     const theme = createTheme({
         palette: {
