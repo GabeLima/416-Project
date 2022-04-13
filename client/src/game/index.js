@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom'
 import AuthContext from '../auth'
 import { SocketContext } from "../context/socket";
 import { GlobalStoreContext } from '../store'
-import {gameEvents} from "./constants"
+import {gameEvents, gameStatus} from "./constants"
 
 
 // THIS IS THE CONTEXT WE'LL USE TO SHARE OUR STORE
@@ -16,6 +16,7 @@ export const GlobalGameActionType = {
     CREATE_GAME: "CREATE_GAME",
     START_ROUND: "START_ROUND",
     SET_PREVIOUS_PANEL: "SET_PREVIOUS_PANEL",
+    UPDATE_GAME_STATUS: "UPDATE_GAME_STATUS",
     RESET_GAME_INFO: "RESET_GAME_INFO"
 }
 
@@ -63,7 +64,14 @@ function GlobalGameContextProvider(props) {
                 return setGame({
                     ...game,
                     storyNumber:payload.storyNumber,
-                    currentRound: payload.currentRound
+                    currentRound: payload.currentRound,
+                    gameStatus: gameStatus.PLAYING
+                });
+            }
+            case GlobalGameActionType.UPDATE_GAME_STATUS: {
+                return setGame({
+                    ...game,
+                    gameStatus: payload
                 });
             }
             case GlobalGameActionType.SET_PREVIOUS_PANEL: {
@@ -113,6 +121,18 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+
+    game.savePanel = function (data){
+        const ID = "" + game.gameID + game.storyNumber + game.currentRound;
+        if(store.isComic === true){
+            socket.emit("saveImage", {image: data, imageID: ID});
+        }
+        else{
+            socket.emit("saveText", {text: data, textID: ID});
+        }
+    }
+
+
     const joinSuccess = (data) =>{
         console.log(data);
         const {value, gameID, email, username} = data;
@@ -135,15 +155,12 @@ function GlobalGameContextProvider(props) {
         }
     }
 
-    const roundEnd = (data) =>{
-        const {image, text} = data;
-        const ID = "" + game.gameID + game.storyNumber + game.currentRound;
-        if(store.isComic === true){
-            socket.emit("saveImage", {image: image, imageID: ID});
-        }
-        else{
-            socket.emit("saveText", {text: text, textID: ID});
-        }
+    const roundEnd = () =>{
+        //This will eventually lead to game.savePanel being called
+        storeReducer({
+            type: GlobalGameActionType.UPDATE_GAME_STATUS,
+            payload: gameStatus.ROUND_END
+        });
         //Tell the server the round ended, and start the self-looping again
         socket.emit("roundEnd", {gameID: game.gameID, storyNumber: game.storyNumber, currentRound: game.currentRound});
     }
