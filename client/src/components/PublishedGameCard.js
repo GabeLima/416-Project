@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { Button, Container, Grid, Typography } from '@mui/material';
-=======
 import { Button, Container, Grid, Typography, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
->>>>>>> master
 import Tags from "./Tags"
 import SimpleImageSlider from "react-simple-image-slider";
 import React, { useEffect, useState, useContext } from 'react'
