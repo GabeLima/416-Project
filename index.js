@@ -318,7 +318,7 @@ io.on('connect', function (socket) {
         const {gameID, storyNumber} = data;
         let imageID = data.imageID;
 
-        if(!imageID || !(gameID && storyNumber)){
+        if(!imageID && !(gameID && storyNumber)){
             console.log("Error on getImage, missing data from the payload: ", data);
             return;
         }
@@ -348,7 +348,7 @@ io.on('connect', function (socket) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber} = data;
         let textID = data.textID;
-        if(!textID || !(gameID && storyNumber)){
+        if(!textID && !(gameID && storyNumber)){
             console.log("Error on getText, missing data from the payload: ", data);
             socket.emit('getText', false);
             return;
@@ -382,22 +382,26 @@ io.on('connect', function (socket) {
             return;
         }
         const g = games.get(gameID);
- 
-        const gameData = new Game( {
-            isComic: true,
-            players: g.players,
-            panels: g.panels,
-            playerVotes: g.playerVotes,
-            communityVotes: [],
-            gameID: g.gameID,
-            comments: [],
-            tags: g.tags,
-            creator: g.creator
-        });
-        const savedGame = await gameData.save().then(() => {
-            games.delete(gameID);
-            console.log(savedGame.gameID + " was successfully saved");
-        });
+        //Every client is going to be calling this.
+        if(g){
+            const gameData = new Game( {
+                isComic: true,
+                players: g.players,
+                panels: g.panels,
+                playerVotes: g.playerVotes,
+                communityVotes: [],
+                gameID: g.gameID,
+                comments: [],
+                tags: g.tags,
+                creator: g.creator
+            });
+            const savedGame = await gameData.save().then(() => {
+                games.delete(gameID);
+                console.log(savedGame.gameID + " was successfully saved");
+                //Push the players to seeing the published game
+                io.to(gameID).emit("loadGamePage");
+            });
+        }
     });
 
     /*
