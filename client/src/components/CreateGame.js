@@ -156,13 +156,11 @@ const CreateGame = (props) => {
         console.log(numRounds);
         console.log(selectedTags_copy);
 
-        // TODO - hook this up
         //Generate an id to create the game with
         const gameID = crypto.randomBytes(3).toString("hex");
 
         console.log(gameID);
         game.createGame({gameID:gameID, numRounds:numRounds, timePerRound:timePerRound, email: auth.user.email, username: auth.user.username});
-        //history.push("/lobby");
     }
     
     let currentNumTags = selectedTags.length + customTags.split(",").filter((v) => v !== "").length;
