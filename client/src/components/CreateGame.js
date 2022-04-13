@@ -160,7 +160,7 @@ const CreateGame = (props) => {
         const gameID = crypto.randomBytes(3).toString("hex");
 
         console.log(gameID);
-        game.createGame({gameID:gameID, numRounds:numRounds, timePerRound:timePerRound, email: auth.user.email, username: auth.user.username});
+        game.createGame({gameID:gameID, numRounds:numRounds, timePerRound:timePerRound, tags: selectedTags_copy, email: auth.user.email, username: auth.user.username});
     }
     
     let currentNumTags = selectedTags.length + customTags.split(",").filter((v) => v !== "").length;
@@ -276,7 +276,7 @@ const CreateGame = (props) => {
                         }
                         return (
 
-                            <FormControlLabel labelPlacement="bottom" control={<Checkbox disabled={disabled} id={"checkbox" + i} onChange={handleTagChange} style={{color: "#493548"}}/>} label={tag} />
+                            <FormControlLabel key={i} labelPlacement="bottom" control={<Checkbox disabled={disabled} id={"checkbox" + i} onChange={handleTagChange} style={{color: "#493548"}}/>} label={tag} />
                         )
                         
                     })

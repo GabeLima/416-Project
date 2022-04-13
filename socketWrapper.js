@@ -5,7 +5,7 @@ joinGame = (socket, data, g) => {
     socket.join(g.gameID);
 
     //Tell other users that a new player is joining
-    socket.to(g.gameID).emit(gameEvents.JOINING_GAME, data.username);
+    socket.to(g.gameID).emit(gameEvents.JOINING_GAME, {username: data.username, gameInfo: g});
     return;
 }
 
