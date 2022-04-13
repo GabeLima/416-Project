@@ -182,7 +182,7 @@ import AuthContext from '../auth'
             <>
                 <Tooltip title="Account Settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar alt="Gorilla Mckilla" fontsize="small"/>
+                        <Avatar alt="Gorilla Mckilla" fontSize="small"/>
                     </IconButton>
                 </Tooltip>
 
@@ -196,7 +196,7 @@ import AuthContext from '../auth'
                   transformOrigin={{ horizontal: 'left', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'left', vertical: 'Bottom' }}
                 >
-                    <MenuItem onClick={() => handleMenuClick('/profile')}>
+                    <MenuItem onClick={() => handleMenuClick(`/profile/${auth.user.username}`)}>
                         <ListItemIcon>
                             <Avatar sx={{ height: '25px', width: '25px' }}/>
                         </ListItemIcon>
@@ -205,14 +205,14 @@ import AuthContext from '../auth'
                     
                     <MenuItem onClick={() => handleMenuClick('/account')}>
                         <ListItemIcon>
-                            <Settings fontsize="small" />
+                            <Settings fontSize="small" />
                         </ListItemIcon>
                         Account Settings
                     </MenuItem>
 
                     <MenuItem onClick={() => handleMenuClick('/create')}>
                         <ListItemIcon>
-                            <AddIcon fontsize="small" />
+                            <AddIcon fontSize="small" />
                         </ListItemIcon>
                         Create Game
                     </MenuItem>
@@ -221,7 +221,7 @@ import AuthContext from '../auth'
                         auth.logoutUser(store);
                         }}>
                         <ListItemIcon>
-                            <Logout fontsize="small" />
+                            <Logout fontSize="small" />
                         </ListItemIcon>
                         Logout
                     </MenuItem>

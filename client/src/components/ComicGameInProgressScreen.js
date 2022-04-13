@@ -1,5 +1,4 @@
 import { React, useContext, useEffect } from 'react'
-import { SocketContext } from "../context/socket";
 import Painterro from "painterro"
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -9,12 +8,10 @@ import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/private-theming';
 
 const ComicGameInProgressScreen = (props) => {
-    console.log(SocketContext);
-    const socket = useContext(SocketContext);
     
     
     let saveHandler = (image, done) => {
-        socket.emit("saveImage", image.asBlob());
+        //socket.emit("saveImage", image.asBlob());
     }
 
     useEffect(() => {

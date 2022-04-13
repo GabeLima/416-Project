@@ -11,7 +11,9 @@ import { Grid } from '@mui/material';
 import Tags from "./Tags"
 import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
-
+import Button from '@mui/material/Button';
+import { useHistory } from 'react-router-dom';
+import { useContext } from 'react';
 
 // toggles between live and completed games
 const GameToggle = ({alignment, setAlignment}) => {
@@ -25,8 +27,10 @@ const GameToggle = ({alignment, setAlignment}) => {
             exclusive 
             onChange={handleChange}
             value={alignment}
+            fullWidth
             sx = {{
-                px: 2
+                px: 2,
+                mb: 2, 
             }}
         >
             <ToggleButton color="secondary" value="completed">
@@ -39,9 +43,19 @@ const GameToggle = ({alignment, setAlignment}) => {
         );
 };
 
+
+
 const HomeScreen = () => {
     const [alignment, setAlignment] = useState('completed');
-    //const { auth } = useContext(AuthContext);
+
+    let history = useHistory();
+
+    const handleClick = (pageURL) => {
+        console.log(pageURL);
+        history.push(pageURL);
+    };
+
+    const { auth } = useContext(AuthContext);
     //const { store } = useContext(GlobalStoreContext);
 
 
@@ -192,10 +206,13 @@ const HomeScreen = () => {
                 <Grid item xs={2}>
                     <Grid container justifyContent="right" pr={2}>
                         <Box>
-                            <Typography align="center" variant="h4">Filter Games</Typography>
-                            <GameToggle alignment={alignment} setAlignment={setAlignment}/>
-                            <Typography align="center" variant="h4">Join Game</Typography>
-                            <TextField name="game-code" label="Game Code" id="game-code"/>
+                            <Typography align="center" variant="h4" sx={{mt: 3, mb: 2, width:'100%'}}>Filter Games</Typography>
+                            <GameToggle alignment={alignment} setAlignment={setAlignment} />
+                            <Typography align="center" variant="h4" sx={{mt: 3, width:'100%'}}>Join Game</Typography>
+                            <TextField name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
+                            <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={() => handleClick('/create')}>
+                                Create Game
+                            </Button>
                         </Box>
                     </Grid>
                 </Grid>

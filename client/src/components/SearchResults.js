@@ -115,7 +115,6 @@ const SearchResults = (props) => {
     else {
         filteredResults = results;
     }
-    
 
     const currentSortType = {
         PUB_NEW: "PUB_NEW",
@@ -362,7 +361,7 @@ const SearchResults = (props) => {
                                         borderWidth: "3px",
                                         borderColor: "#80b192"
                                     }}>
-                                        <Link underline="none" href={"/" + user.username}>
+                                        <Link underline="none" href={"/profile/" + user.username}>
                                             <Typography variant="h4"
                                                         noWrap
                                                         component="div"

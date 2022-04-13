@@ -12,6 +12,7 @@ const Images = require("./models/image-model");
 const Texts = require("./models/text-model");
 const Users = require("./models/user-model.js");
 const {gameEvents, gameRules, gameStatus, gameFailure} = require("./constants");
+const {joinGame, startGame} = require("./socketWrapper");
 
 dotenv.config();
 const app = express();
@@ -74,7 +75,7 @@ var games = new Map();
 
 
 
-io.on('connection', function (socket) {
+io.on('connect', function (socket) {
     console.log("a user CONNECTED.");
 
     socket.on('storeClientInfo', function (data) {
@@ -106,12 +107,13 @@ io.on('connection', function (socket) {
         When we create a game we'll have to create proper game session in our games variable. Their display will also
         switch to the game lobby.
     */
-    socket.on(gameEvents.CREATE_GAME, (data) => {
+    socket.once(gameEvents.CREATE_GAME, (data) => {
+        console.log("Inside create game!");
         if(games.has(data.gameID))
         {
             // We couldn't properly make the room due to the ID being in use or the user already being registered as in another game.
             console.log("User " + data.email + " tried to make a room with ID " + data.gameID + " unsuccessfully.");
-            socket.emit("joinSuccess", false);
+            socket.emit("joinSuccess", {value:false});
             return;
         }
 
@@ -141,7 +143,7 @@ io.on('connection', function (socket) {
 
         const gameInfo = {
             gameID: data.gameID,
-            players: [data.email],
+            players: [],
             creator: data.email,
             gameStatus: gameStatus.LOBBY,
             playerVotes: [[]],
@@ -152,8 +154,10 @@ io.on('connection', function (socket) {
         };
         //Map uses set instead of push
         games.set(data.gameID, gameInfo);
-        
+        console.log("Creating the game worked! Telling user to join game");
         joinGame(socket, data, gameInfo);
+        //Tell the user joining they can switch to the game-lobby
+        socket.emit("joinSuccess", {value:true, gameID:data.gameID, username:data.username, email:data.email});
         
         
     });
@@ -187,7 +191,7 @@ io.on('connection', function (socket) {
         When a player joins a game, they'll notify other players in that game they're joining,
         and their display will switch to the game lobby.
     */
-    socket.on('joinGame', function (data) {
+    socket.once('joinGame', function (data) {
         if(games.has(data.gameID))
         {
             let g = games.get(data.gameID)
@@ -195,14 +199,14 @@ io.on('connection', function (socket) {
             {
                 //Add their data to the game and updating the map
                 g.players.push(data.email);
-
+                console.log("The user with email:" + data.email + " joined the game:" + data.gameID);
                 joinGame(socket, data, g);
                 return;
             }
         }
 
         //Joining the game failed
-        socket.emit("joinSuccess", false);
+        socket.emit("joinSuccess", {value:false});
         console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
     });
 
@@ -314,7 +318,7 @@ io.on('connection', function (socket) {
         const {gameID, storyNumber} = data;
         let imageID = data.imageID;
 
-        if(!imageID || !(gameID && storyNumber)){
+        if(!imageID && !(gameID && storyNumber)){
             console.log("Error on getImage, missing data from the payload: ", data);
             return;
         }
@@ -344,7 +348,7 @@ io.on('connection', function (socket) {
         // get imgID from gameID and storyNumber
         const {gameID, storyNumber} = data;
         let textID = data.textID;
-        if(!textID || !(gameID && storyNumber)){
+        if(!textID && !(gameID && storyNumber)){
             console.log("Error on getText, missing data from the payload: ", data);
             socket.emit('getText', false);
             return;
@@ -378,22 +382,26 @@ io.on('connection', function (socket) {
             return;
         }
         const g = games.get(gameID);
- 
-        const gameData = new Game( {
-            isComic: true,
-            players: g.players,
-            panels: g.panels,
-            playerVotes: g.playerVotes,
-            communityVotes: [],
-            gameID: g.gameID,
-            comments: [],
-            tags: g.tags,
-            creator: g.creator
-        });
-        const savedGame = await gameData.save().then(() => {
-            games.delete(gameID);
-            console.log(savedGame.gameID + " was successfully saved");
-        });
+        //Every client is going to be calling this.
+        if(g){
+            const gameData = new Game( {
+                isComic: true,
+                players: g.players,
+                panels: g.panels,
+                playerVotes: g.playerVotes,
+                communityVotes: [],
+                gameID: g.gameID,
+                comments: [],
+                tags: g.tags,
+                creator: g.creator
+            });
+            const savedGame = await gameData.save().then(() => {
+                games.delete(gameID);
+                console.log(savedGame.gameID + " was successfully saved");
+                //Push the players to seeing the published game
+                io.to(gameID).emit("loadGamePage");
+            });
+        }
     });
 
     /*
