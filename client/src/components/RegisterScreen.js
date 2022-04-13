@@ -11,7 +11,6 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { GlobalStoreContext } from '../store'
-import AlertModal from './AlertModal'
 
 const RegisterScreen = () =>{
     const { auth } = useContext(AuthContext);
@@ -131,7 +130,6 @@ const RegisterScreen = () =>{
                             </Grid>
                         </Box>
                     </Box>
-                    <AlertModal></AlertModal>
                 </Container>
             </div>
     );

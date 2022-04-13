@@ -22,7 +22,9 @@ import { SocketContext, socket} from "./context/socket";
 import { ThemeProvider } from '@emotion/react';
 import { createTheme } from '@mui/material/styles';
 import { GlobalStoreContextProvider } from './store';
+import { GlobalGameContextProvider } from './game';
 import { CssBaseline } from '@mui/material';
+import AlertModal from './components/AlertModal';
 
 
 const App = () => {
@@ -52,21 +54,24 @@ const App = () => {
             <AuthContextProvider>
                 <GlobalStoreContextProvider>
                     <SocketContext.Provider value={socket}>
-                        <HeaderBar />
-                        <Switch>
-                            <Route path="/" exact component={HomeScreen} />
-                            <Route path="/account" exact component={AccountScreen} />
-                            <Route path="/profile/:username" exact component={Profile} />
-                            <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
-                            <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
-                            <Route path="/paint" exact component={Paint} />
-                            <Route path="/login/" exact component={LoginScreen} />
-                            <Route path="/register/" exact component={RegisterScreen} />
-                            <Route path="/gameResult/:id" exact component={GameResult}/>
-                            <Route path="/lobby" exact component={GameLobby} />
-                            <Route path="/create" exact component={CreateGame} />
-                            <Route path="/search" exact component={SearchResults} />
-                        </Switch>
+                        <GlobalGameContextProvider>
+                            <HeaderBar />
+                            <Switch>
+                                <Route path="/" exact component={HomeScreen} />
+                                <Route path="/account" exact component={AccountScreen} />
+                                <Route path="/profile/:username" exact component={Profile} />
+                                <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
+                                <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
+                                <Route path="/paint" exact component={Paint} />
+                                <Route path="/login/" exact component={LoginScreen} />
+                                <Route path="/register/" exact component={RegisterScreen} />
+                                <Route path="/gameResult/:id" exact component={GameResult}/>
+                                <Route path="/lobby" exact component={GameLobby} />
+                                <Route path="/create" exact component={CreateGame} />
+                                <Route path="/search" exact component={SearchResults} />
+                            </Switch>
+                            <AlertModal></AlertModal>
+                        </GlobalGameContextProvider>
                         </SocketContext.Provider>
                     </GlobalStoreContextProvider>
             </AuthContextProvider>
