@@ -43,7 +43,7 @@ function GlobalGameContextProvider(props) {
 
     //SETUP THE CLIENT SOCKET
     const socket = useContext(SocketContext);
-    console.log("First socket: ", socket);
+    //console.log("First socket: ", socket);
     const history = useHistory();
     const { store } = useContext(GlobalStoreContext);
 
@@ -64,6 +64,7 @@ function GlobalGameContextProvider(props) {
                 });
             }
             case GlobalGameActionType.LOAD_LOBBY: {
+                console.log("LOAD LOBBY CALLED WITH PAYLOAD: ", payload);
                 return setGame({
                     ...game,
                     gameID: payload.gameID,
@@ -104,7 +105,7 @@ function GlobalGameContextProvider(props) {
                 //SET THIS TO WHATEVER THE INITIAL STATE IS
                 // We do this to not carry over state to other games.
                 return setGame({
-                    gameID: "fakeID",
+                    gameID: "fakeID2",
                     players: [],
                     gameStatus: "",
                     creator: "",
@@ -169,6 +170,12 @@ function GlobalGameContextProvider(props) {
         socket.emit("playerLeftLobby", {gameID: game.gameID, username: username});
         
     }
+
+    game.startGame = () =>{
+        console.log("User started game");
+        socket.emit(gameEvents.START_GAME, {gameID: game.gameID})
+    }
+
 
     const playerLeftLobby = (data) => {
         // TODO - add a notification or smth?
@@ -275,6 +282,12 @@ function GlobalGameContextProvider(props) {
             type: GlobalGameActionType.RESET_GAME_INFO
         });
     }
+    
+    const startGame = () =>{
+        console.log("Game we're pushing to: " + game.gameID);
+        history.push("/CGameInProgress/:" + game.gameID);
+    }
+
 
 
     useEffect(() => {
@@ -287,6 +300,7 @@ function GlobalGameContextProvider(props) {
         socket.once("loadGamePage", loadGamePage);
         socket.on(gameEvents.JOINING_GAME, joiningGame);
         socket.on("playerLeftLobby", playerLeftLobby);
+        socket.once(gameEvents.START_GAME, startGame);
     }, []);
   
       return(

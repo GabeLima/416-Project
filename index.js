@@ -465,7 +465,7 @@ io.on('connect', function (socket) {
         }
 
         console.log("Image received");
-        console.log(data.imageID + " : " + data.image);
+        //console.log(data.imageID + " : " + data.image);
 
         const imageData = new Images({
             image: data.image,
@@ -488,7 +488,7 @@ io.on('connect', function (socket) {
         }
 
         console.log("Text received");
-        console.log(data.textID + " : " + data.text);
+        //console.log(data.textID + " : " + data.text);
 
         const textData = new Texts({
             text : data.text,
