@@ -7,7 +7,7 @@ import Container from '@mui/material/Container';
 import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/private-theming';
 import GlobalGameContext from '../game';
-import {gameEvents, gameStatus} from "../game/constants"
+import {gameEvents, gameStatus, gameFailure} from "../game/constants"
 
 const ComicGameInProgressScreen = (props) => {
     
@@ -30,6 +30,9 @@ const ComicGameInProgressScreen = (props) => {
     if(game.gameStatus === gameStatus.ROUND_END){
         //Tell painteroo to save
         window.ptro.save();
+        setTimeout(() => {
+            game.setPreviousPanel();
+        }, 500);
     }
 
     useEffect(() => {
@@ -69,7 +72,7 @@ const ComicGameInProgressScreen = (props) => {
                         <Typography mb={2} align="center" variant="h4"> Time left: {timePerRound}S </Typography>
                         <Typography align="center" variant="h4"> Previous Panel </Typography>
                         <Box noValidate sx={{ border:2, borderColor:"black", height:"60vh", width:"40vw", backgroundColor:"white"}}>
-                            {game.previousPanel === "" ?
+                            {game.previousPanel === "" || game.previousPanel === gameFailure.BLANK_IMAGE_ID ?
                             <div></div>
                             :
                             <img width='100%' height='100%' src={game.previousPanel}></img> 
