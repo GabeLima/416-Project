@@ -229,6 +229,7 @@ function GlobalGameContextProvider(props) {
 
     const roundEnd = () =>{
         //This will eventually lead to game.savePanel being called
+
         storeReducer({
             type: GlobalGameActionType.UPDATE_GAME_STATUS,
             payload: gameStatus.ROUND_END
@@ -303,10 +304,10 @@ function GlobalGameContextProvider(props) {
         socket.once("getText", setPreviousPanel);
         socket.once(gameEvents.GAME_OVER, gameOver);
         socket.once("loadGamePage", loadGamePage);
-        socket.on(gameEvents.JOINING_GAME, joiningGame);
-        socket.on("playerLeftLobby", playerLeftLobby);
+        socket.once(gameEvents.JOINING_GAME, joiningGame);
+        socket.once("playerLeftLobby", playerLeftLobby);
         socket.once(gameEvents.START_GAME, startGame);
-    }, []);
+    }, [game]);
   
       return(
         <GlobalGameContext.Provider value={{
