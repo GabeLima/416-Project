@@ -16,7 +16,8 @@ export const GlobalGameActionType = {
     CREATE_GAME: "CREATE_GAME",
     START_ROUND: "START_ROUND",
     SET_PREVIOUS_PANEL: "SET_PREVIOUS_PANEL",
-    RESET_GAME_INFO: "RESET_GAME_INFO"
+    RESET_GAME_INFO: "RESET_GAME_INFO",
+    PLAYER_LIST_UPDATE: "PLAYER_LIST_UPDATE"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -56,8 +57,20 @@ function GlobalGameContextProvider(props) {
                     gameID: payload.gameID,
                     numRounds: payload.numRounds,
                     timePerRound: payload.timePerRound, 
-                    creator: payload.username
+                    creator: payload.username,
+                    tags: payload.tags
                 });
+            }
+            case GlobalGameActionType.LOAD_LOBBY: {
+                return setGame({
+                    ...game,
+                    gameID: payload.gameID,
+                    players:payload.players,
+                    creator: payload.creator,
+                    numRounds: payload.numRounds,
+                    timePerRound: payload.timePerRound,
+                    tags: payload.tags
+                })
             }
             case GlobalGameActionType.START_ROUND: {
                 return setGame({
@@ -70,6 +83,12 @@ function GlobalGameContextProvider(props) {
                 return setGame({
                     ...game,
                     previousPanel:payload
+                });
+            }
+            case GlobalGameActionType.PLAYER_LIST_UPDATE: {
+                return setGame({
+                    ...game,
+                    players: payload
                 });
             }
             case GlobalGameActionType.RESET_GAME_INFO: {
@@ -102,6 +121,10 @@ function GlobalGameContextProvider(props) {
         socket.emit(gameEvents.CREATE_GAME, data);
     }
 
+    game.joinGame = (data) => {
+        socket.emit("joinGame", {gameID: data.gameID, email: data.email, username: data.username});
+    }
+
     game.setPreviousPanel = function (){
         if(game.currentRound > 0){
             if(store.isComic === true){
@@ -113,20 +136,56 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+    // if the creator left, we need to promote the next person in line. if players left are 0, we just delete the game.
+    game.playerLeftLobby = (data) => {
+        const { username } = data;
+        console.log(username + " left game");
+
+        if (game.players.length === 1) {
+            // we would have no one left, just delete the game.
+            socket.emit("deleteEmptyLobby", {gameID: game.gameID});
+            return;
+        }
+        socket.emit("playerLeftLobby", {gameID: game.gameID, username: username});
+        
+    }
+
+    const playerLeftLobby = (data) => {
+        // TODO - add a notification or smth?
+        const { gameInfo } = data;
+
+        if (gameInfo.creator !== game.creator) {
+            console.log(gameInfo.creator + " was promoted to room owner/leader.");
+        }
+        
+        console.log(gameInfo);
+        storeReducer({
+            type: GlobalGameActionType.LOAD_LOBBY,
+            payload: gameInfo
+        });
+    }
+
+
     const joinSuccess = (data) =>{
         console.log(data);
-        const {value, gameID, email, username} = data;
+        const {value, gameID, username} = data;
         //If joinSuccess is a success (bad naming), we switch to the lobby page
         if(value===true){
             console.log("Received a joinSuccess! Switching to the game lobby");
-            //Add ourselves to the player list
-            game.players.push(username);
+            console.log(data);
+            storeReducer({
+                type: GlobalGameActionType.LOAD_LOBBY,
+                payload: data.gameInfo
+            });
+
             //Tell the other user's we're joining
             //We cant do game.gameID here because the reducer is too slow.
-            socket.emit("joinGame", {gameID: gameID, username:username, email:email});
+            socket.emit("joinGame", {gameID: gameID, username:username});
             //Switch to the lobby of the game 
             history.push("lobby");
+
             //TODO - call updateGameInfo here and pass in the stuff from createGame
+
         }
         else{
             console.log("Received a false joinSuccess. Staying in createGame.");
@@ -134,6 +193,20 @@ function GlobalGameContextProvider(props) {
 
         }
     }
+
+    const joiningGame = (data) => {
+        const { username, gameInfo } = data;
+        console.log("New player joined:" + username);
+        console.log(game);
+        console.log(gameInfo);
+
+        storeReducer({
+            type: GlobalGameActionType.LOAD_LOBBY,
+            payload: gameInfo
+        });
+    }
+
+    
 
     const roundEnd = (data) =>{
         const {image, text} = data;
@@ -190,14 +263,15 @@ function GlobalGameContextProvider(props) {
 
 
     useEffect(() => {
-        socket.once("joinSuccess", joinSuccess);
+        socket.on("joinSuccess", joinSuccess);
         socket.once(gameEvents.ROUND_END, roundEnd);
         socket.once(gameEvents.START_ROUND, startRound);
         socket.once("getImage", setPreviousPanel);
         socket.once("getText", setPreviousPanel);
         socket.once(gameEvents.GAME_OVER, gameOver);
         socket.once("loadGamePage", loadGamePage);
-
+        socket.on(gameEvents.JOINING_GAME, joiningGame);
+        socket.on("playerLeftLobby", playerLeftLobby);
     }, []);
   
       return(
