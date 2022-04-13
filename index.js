@@ -79,11 +79,37 @@ io.on('connect', function (socket) {
     console.log("a user CONNECTED.");
 
     socket.on('storeClientInfo', function (data) {
+
+        
+        // edge case: the user re-uses the same socket connection but logs out and logs in.
+        // We'll end up adding a new entry for their socket ID, so we need to account for that.
+        for (let i = 0; i < clients.length; i++) {
+            if (socket.id === clients[i].clientId) {
+                if (data.email === clients[i].email) {
+                    // logged back into same account, do nothing
+                    console.log("User reused socket & account, not updating client info");
+                    return;
+                }
+                else {
+                    // logged into DIFFERENT account, change entry.
+                    console.log("User reused socket with DIFFERENT email, updaying client info");
+                    clients[i].email = data.email;
+                    return;
+                }
+            }
+        }
+
+        console.log('storing new client info');
+        console.log(data);
+        console.log(socket.id);
+
         const clientInfo = {
             email: data.email,
             clientId: socket.id,
         };
         clients.push(clientInfo);
+        console.log("Client list:");
+        console.log(clients);
     });
 
     /*
@@ -119,20 +145,11 @@ io.on('connect', function (socket) {
 
         let numRounds, timePerRound;
 
-        // TODO - enforce minimum num rounds and timeperround on client side instead of server side? that sounds like best practice.
-        if (!data.numRounds) {
-            numRounds = gameRules.DEFAULT_NUM_ROUNDS;
-        }
-        else {
-            numRounds = data.numRounds;
-        }
+        numRounds = data.numRounds;
 
-        if (!data.timePerRound) {
-            timePerRound = gameRules.DEFAULT_TIME_PER_ROUND;
-        }
-        else {
-            timePerRound = data.timePerRound;
-        }
+
+        timePerRound = data.timePerRound;
+
 
         //Checking tags
         let tags = [];
@@ -143,8 +160,8 @@ io.on('connect', function (socket) {
 
         const gameInfo = {
             gameID: data.gameID,
-            players: [],
-            creator: data.email,
+            players: [data.username],
+            creator: data.username,
             gameStatus: gameStatus.LOBBY,
             playerVotes: [[]],
             numRounds: numRounds,
@@ -155,9 +172,10 @@ io.on('connect', function (socket) {
         //Map uses set instead of push
         games.set(data.gameID, gameInfo);
         console.log("Creating the game worked! Telling user to join game");
+        console.log(gameInfo);
         joinGame(socket, data, gameInfo);
         //Tell the user joining they can switch to the game-lobby
-        socket.emit("joinSuccess", {value:true, gameID:data.gameID, username:data.username, email:data.email});
+        socket.emit("joinSuccess", {value:true, gameID:data.gameID, username:data.username, email:data.email, gameInfo: gameInfo});
         
         
     });
@@ -191,23 +209,56 @@ io.on('connect', function (socket) {
         When a player joins a game, they'll notify other players in that game they're joining,
         and their display will switch to the game lobby.
     */
-    socket.once('joinGame', function (data) {
+    socket.on('joinGame', function (data) {
         if(games.has(data.gameID))
         {
-            let g = games.get(data.gameID)
+            let g = games.get(data.gameID);
+            if (g.players.includes(data.username)) {
+                return;
+            }
             if(g.gameStatus === gameStatus.LOBBY && g.players.length < gameRules.PLAYER_LIMIT)
             {
                 //Add their data to the game and updating the map
-                g.players.push(data.email);
-                console.log("The user with email:" + data.email + " joined the game:" + data.gameID);
+                g.players.push(data.username);
+                console.log("The user with username:" + data.username + " joined the game:" + data.gameID);
                 joinGame(socket, data, g);
+                //Tell the user joining they can switch to the game-lobby
+                socket.emit("joinSuccess", {value:true, gameID:data.gameID, username:data.username, gameInfo: g});
+                console.log("Telling user they can join the game lobby!");
+                console.log(g);
                 return;
             }
         }
 
         //Joining the game failed
         socket.emit("joinSuccess", {value:false});
-        console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
+        console.log("The user with username:" + data.username + " failed to join the game:" + data.gameID);
+    });
+
+    socket.on("playerLeftLobby", (data) => {
+        const { gameID, username } = data;
+        if (games.has(gameID)) {
+            let game = games.get(gameID);
+            console.log("Removing " + username + " from game lobby");
+            game.players.splice(game.players.indexOf(username), 1);
+
+            if (game.creator === username) {
+                // promote next person in line
+                game.creator = game.players[0];
+            }
+            //Tell other users that the player list changed. we can ignore the socket that sent this event since the dude's gone anyways.
+            socket.to(game.gameID).emit("playerLeftLobby", { gameInfo: game});
+            console.log(game);
+            console.log(games);
+        }
+    });
+    
+    socket.on("deleteEmptyLobby", (data) => {
+        const gameID = data.gameID;
+        if (games.has(gameID)) {
+            console.log("Deleting game " + gameID);
+            games.delete(gameID);
+        }
     });
 
     /*
@@ -234,7 +285,7 @@ io.on('connect', function (socket) {
             //Remove vote if already present
             for(let i = 0; i < g.playerVotes.length; i++)
             {
-                let removedI = g.playerVotes[i].indexOf(data.email);
+                let removedI = g.playerVotes[i].indexOf(data.username);
                 if(removedI > -1)
                 {
                     g.playerVotes[i].splice(removedI, 1);
@@ -243,7 +294,7 @@ io.on('connect', function (socket) {
             }
 
             //Adds the vote to the 
-            g.playerVotes[data.vote].push(data.email);
+            g.playerVotes[data.vote].push(data.username);
         }
 
         //Updating number of rounds
@@ -268,12 +319,10 @@ io.on('connect', function (socket) {
         io.to(g.gameID).emit('updateGameInfo', g);
     });
 
-
     /*
         Returns the list of games that can be joined.
     */
     socket.on('getAllGames', function (data) {
-        console.log("The user with email:" + data.email + " failed to join the game:" + data.gameID);
         //let lobbyGames = games.filter(game => game.gameStatus === gameStatus.LOBBY)
         let lobbyGames = [];
         for (let gInfo of games.values()){
