@@ -154,6 +154,7 @@ function GlobalGameContextProvider(props) {
         else{
             socket.emit("saveText", {text: data, textID: ID});
         }
+    }
 
     // if the creator left, we need to promote the next person in line. if players left are 0, we just delete the game.
     game.playerLeftLobby = (data) => {
@@ -221,6 +222,7 @@ function GlobalGameContextProvider(props) {
             type: GlobalGameActionType.UPDATE_GAME_STATUS,
             payload: gameStatus.ROUND_END
         });
+    }
 
     const joiningGame = (data) => {
         const { username, gameInfo } = data;
@@ -232,22 +234,6 @@ function GlobalGameContextProvider(props) {
             type: GlobalGameActionType.LOAD_LOBBY,
             payload: gameInfo
         });
-    }
-
-    
-
-    const roundEnd = (data) =>{
-        const {image, text} = data;
-        const ID = "" + game.gameID + game.storyNumber + game.currentRound;
-        if(store.isComic === true){
-            socket.emit("saveImage", {image: image, imageID: ID});
-        }
-        else{
-            socket.emit("saveText", {text: text, textID: ID});
-        }
-
-        //Tell the server the round ended, and start the self-looping again
-        socket.emit("roundEnd", {gameID: game.gameID, storyNumber: game.storyNumber, currentRound: game.currentRound});
     }
 
     const startRound = (newStoryNumber) =>{
