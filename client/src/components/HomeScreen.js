@@ -13,7 +13,8 @@ import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
+import { SocketContext } from "../context/socket";
 
 // toggles between live and completed games
 const GameToggle = ({alignment, setAlignment}) => {
@@ -56,6 +57,7 @@ const HomeScreen = () => {
     };
 
     const { auth } = useContext(AuthContext);
+    const socket = useContext(SocketContext);
     //const { store } = useContext(GlobalStoreContext);
 
 
@@ -66,6 +68,12 @@ const HomeScreen = () => {
     // obtain a list of cards based on what is being asked
     // Story/Comic
     // Completed/Joinable
+
+    useEffect(() => {
+        if (socket && auth.loggedIn && auth.user) {
+            socket.emit("storeClientInfo", {email: auth.user.email});
+        }
+    }, [auth.loggedIn]);
 
     //Example data
     const liveGames = [

@@ -79,11 +79,37 @@ io.on('connect', function (socket) {
     console.log("a user CONNECTED.");
 
     socket.on('storeClientInfo', function (data) {
+
+        
+        // edge case: the user re-uses the same socket connection but logs out and logs in.
+        // We'll end up adding a new entry for their socket ID, so we need to account for that.
+        for (let i = 0; i < clients.length; i++) {
+            if (socket.id === clients[i].clientId) {
+                if (data.email === clients[i].email) {
+                    // logged back into same account, do nothing
+                    console.log("User reused socket & account, not updating client info");
+                    return;
+                }
+                else {
+                    // logged into DIFFERENT account, change entry.
+                    console.log("User reused socket with DIFFERENT email, updaying client info");
+                    clients[i].email = data.email;
+                    return;
+                }
+            }
+        }
+
+        console.log('storing new client info');
+        console.log(data);
+        console.log(socket.id);
+
         const clientInfo = {
             email: data.email,
             clientId: socket.id,
         };
         clients.push(clientInfo);
+        console.log("Client list:");
+        console.log(clients);
     });
 
     /*
