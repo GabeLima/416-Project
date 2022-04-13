@@ -122,6 +122,10 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+    useEffect(() => {
+        console.log(game, '- Has changed')
+    },[game]) // <-- here put the parameter to listen
+
     game.createGame = function (data) {
         // const {gameID, numRounds, timePerRound, email, username} = data;
         storeReducer({
