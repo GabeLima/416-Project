@@ -31,7 +31,7 @@ function GlobalGameContextProvider(props) {
         gameStatus: "",
         creator: "",
         numRounds: 0,
-        timePerRound: 0,
+        timePerRound: 30,
         currentRound: 0,
         tags: [],
         storyNumber: 0,
