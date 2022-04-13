@@ -180,7 +180,9 @@ function GlobalGameContextProvider(props) {
     }
 
     const loadGamePage = () =>{
+        //Push the player to seeing the published game
         history.push("/gameResult/" + game.gameID);
+        //Reset the game state client side
         storeReducer({
             type: GlobalGameActionType.RESET_GAME_INFO
         });
