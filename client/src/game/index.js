@@ -172,7 +172,7 @@ function GlobalGameContextProvider(props) {
     }
 
     game.startGame = () =>{
-        console.log("User started game");
+        console.log(game.gameID);
         socket.emit(gameEvents.START_GAME, {gameID: game.gameID})
     }
 
@@ -283,9 +283,10 @@ function GlobalGameContextProvider(props) {
         });
     }
     
-    const startGame = () =>{
-        console.log("Game we're pushing to: " + game.gameID);
-        history.push("/CGameInProgress/:" + game.gameID);
+    const startGame = (data) =>{
+        const { gameInfo } = data;
+        console.log("Game we're pushing to: " + gameInfo.gameID);
+        history.push("/CGameInProgress/:" + gameInfo.gameID);
     }
 
 

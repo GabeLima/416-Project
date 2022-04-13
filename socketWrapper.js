@@ -11,7 +11,7 @@ joinGame = (socket, data, g) => {
 
 function startGame(io, g){
     // Tell the users that the game is starting.
-    io.to(g.gameID).emit(gameEvents.START_GAME);
+    io.to(g.gameID).emit(gameEvents.START_GAME, {gameInfo: g});
 
     // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
     setTimeout(() => {
