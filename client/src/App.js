@@ -38,7 +38,7 @@ const App = () => {
                         <Switch>
                             <Route path="/" exact component={HomeScreen} />
                             <Route path="/account" exact component={AccountScreen} />
-                            <Route path="/profile" exact component={Profile} />
+                            <Route path="/profile/:username" exact component={Profile} />
                             <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
                             <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
                             <Route path="/paint" exact component={Paint} />

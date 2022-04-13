@@ -1,13 +1,17 @@
-import { Button, Container, Grid, Typography } from '@mui/material';
+import { Button, Container, Grid, Typography, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Tags from "./Tags"
 import SimpleImageSlider from "react-simple-image-slider";
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useHistory } from 'react-router-dom';
+import AuthContext from '../auth';
 
 const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
+   const { auth } = useContext(AuthContext);
    const [numVotes, setNumVotes] = useState(0);
    const [numComments, setNumComments] = useState(0);
    const [commWinner, setCommWinner] = useState(-1);
+   const [isOwner, setIsOwner] = useState(false);
    let history = useHistory();
 
    useEffect(()=> {
@@ -37,14 +41,25 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
     // console.log(commWinner);
   }, [votes]);
 
+  useEffect(() => {
+      if(auth.user && auth.user.username === creator){
+        setIsOwner(true);
+      }
+  })
+
   return (
     <Grid item m={2}>
         <Container style={{width:"330px", backgroundColor:"#80B192", borderRadius:"20px"}}>
             <Grid container>
               <Grid item xs={9}>
-                <Typography variant="h5" mb={2} pt={1}>
+                {isOwner ? 
+                  <IconButton color='error' aria-label="delete" mb={2} pt={1}>
+                    <DeleteIcon />
+                  </IconButton> : 
+                  <Typography variant="h5" mb={2} pt={1}>
                   {creator}
                 </Typography>
+                }
               </Grid>
               <Grid item pt={1}>
                 <Button 
