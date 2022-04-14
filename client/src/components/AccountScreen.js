@@ -7,7 +7,6 @@ import Container from '@mui/material/Container';
 import AuthContext from '../auth';
 import api from '../api'
 import { useContext } from 'react';
-// import CssBaseline from '@mui/material/CssBaseline';
 
 const AccountScreen = () => {
     const { auth } = useContext(AuthContext);

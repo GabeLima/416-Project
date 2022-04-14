@@ -39,7 +39,7 @@ const GameLobby = (props) => {
     let timePerRound = game.timePerRound;
     let tags = game.tags;
     let gameID = game.gameID;
-    const currentUser = 'david';//= auth.user.username;
+    const currentUser = auth.user.username;
 
 
     const handleLeaveGame = (event) => {

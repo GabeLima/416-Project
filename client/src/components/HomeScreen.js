@@ -201,7 +201,7 @@ const HomeScreen = () => {
 
     return (
         <>
-        <Box className="back" pb={4} sx={{bgcolor: "background.main"}}>
+        <Box className="back" pb={4}>
             <Typography align="center" variant="h1">Games</Typography>
             <Grid 
                 container 
@@ -242,7 +242,7 @@ const HomeScreen = () => {
             </Grid>
 
             {/* 
-            This is a hack curtesy of whoever created GameLobby
+            Hacky solution from whoever created GameLobby
             It just creates a big box so that the background color
             fills the whole screen
             

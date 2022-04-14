@@ -33,7 +33,6 @@ const apis = {
     resetPassword,
     getUser,
     searchGames,
-    changePassword,
     updateUser,
     updateFollowers,
     removeUser,

@@ -43,7 +43,7 @@ const original_theme = createTheme({
           main: original_secondary,
         },
         background: {
-          default: blue_white,
+          default: blue_white, // changes the background of every page
         },
     },
     lobby: {
