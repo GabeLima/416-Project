@@ -194,6 +194,8 @@ io.on('connect', function (socket) {
                     //Fill in every storyNumber with an empty array to represent the story
                     g.panels.set(i, []);
                 }
+                console.log("Game after adding panels: ", g);
+                console.log(games.get(data.gameID));
 
                 startGame(io, g);
                 return;
@@ -362,32 +364,40 @@ io.on('connect', function (socket) {
     /*
         Returns an image from the database
     */
-    socket.on('getImage', function(data) {
+    socket.once('getImage', function(data) {
         // get imgID from gameID and storyNumber
-        const {gameID, storyNumber} = data;
-        let imageID = data.imageID;
-
-        if(!imageID && !(gameID && storyNumber)){
-            console.log("Error on getImage, missing data from the payload: ", data);
-            return;
+        try{
+            
+            const {gameID, storyNumber} = data;
+            let imageID = data.imageID;
+            console.log("Inside getImage!", data);
+            if(gameID !== undefined && storyNumber!== undefined){
+                const g = games.get(gameID);
+                if(g){
+                    let panel = g.panels.get(storyNumber);
+                    while(panel.length < g.currentRound){
+                        panel.push(gameFailure.BLANK_IMAGE_ID);
+                    }
+                    imageID = panel[panel.length - 1];
+                }
+            }
+            else if(imageID === undefined || imageID === null){
+                console.log("Error on getImage, missing data from the payload: ", data);
+                return;
+            }
+            Images.findOne({imageID: imageID}, (err, data) => {
+                if(err ||!data) {
+                    console.log("Error in getImage: " + err);
+                    socket.emit('getImage', false);
+                }
+                else {
+                    socket.emit('getImage', data.image);
+                }
+            });
         }
-        if(gameID && storyNumber){
-            const g = games.get(gameID);
-            let panel = g.panels.get(storyNumber);
-            while(panel.length < g.currentRound){
-                panel.push(gameFailure.BLANK_IMAGE_ID);
-            }
-            imgID = panel[panel.length - 1];
+        catch{
+            console.log("Exception in getImage");
         }
-        Images.findOne({imageID: imageID}, (err, data) => {
-            if(err ||!data) {
-                console.log("Error in getImage: " + err);
-                socket.emit('getImage', false);
-            }
-            else {
-                socket.emit('getImage', data.image);
-            }
-        });
     });
 
     /*
@@ -404,11 +414,13 @@ io.on('connect', function (socket) {
         }
         if(gameID && storyNumber){
             const g = games.get(gameID);
-            let panel = g.panels.get(storyNumber);
-            while(panel.length < g.currentRound){
-                panel.push(gameFailure.BLANK_TEXT_ID);
+            if(g){
+                let panel = g.panels.get(storyNumber);
+                while(panel.length < g.currentRound){
+                    panel.push(gameFailure.BLANK_TEXT_ID);
+                }
+                textID = panel[panel.length - 1];
             }
-            textID = panel[panel.length - 1];
         }
         Texts.findOne({textID: textID}, (err, data) => {
             if(err || !data) {

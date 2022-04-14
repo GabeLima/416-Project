@@ -80,7 +80,7 @@ function GlobalGameContextProvider(props) {
                     ...game,
                     storyNumber:payload.storyNumber,
                     currentRound: payload.currentRound,
-                    gameStatus: gameStatus.PLAYING
+                    gameStatus: gameStatus.START_ROUND
                 });
             }
             case GlobalGameActionType.UPDATE_GAME_STATUS: {
@@ -92,7 +92,8 @@ function GlobalGameContextProvider(props) {
             case GlobalGameActionType.SET_PREVIOUS_PANEL: {
                 return setGame({
                     ...game,
-                    previousPanel:payload
+                    previousPanel:payload,
+                    gameStatus: gameStatus.PLAYING
                 });
             }
             case GlobalGameActionType.PLAYER_LIST_UPDATE: {
@@ -140,7 +141,7 @@ function GlobalGameContextProvider(props) {
     }
 
     game.setPreviousPanel = function (){
-        if(game.currentRound > 0){
+        if(game.currentRound > 0 && game.storyNumber && game.gameID !== "fakeID"){
             if(store.isComic === true){
                 socket.emit("getImage", {gameID: game.gameID, storyNumber: game.storyNumber});
             }
@@ -226,14 +227,31 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+    const startRound = (newStoryNumber) =>{
+        console.log("Inside startRound!");
+        if(newStoryNumber){
+            storeReducer({
+                type: GlobalGameActionType.START_ROUND,
+                payload: {storyNumber: newStoryNumber, currentRound: game.currentRound + 1}
+            });
+        }
+    }
 
     const roundEnd = () =>{
         //This will eventually lead to game.savePanel being called
-
-        storeReducer({
-            type: GlobalGameActionType.UPDATE_GAME_STATUS,
-            payload: gameStatus.ROUND_END
-        });
+        if(game.currentRound === 0){
+            let newStoryNumber = (game.storyNumber + game.currentRound) % game.players.length;
+            storeReducer({
+                type: GlobalGameActionType.START_ROUND,
+                payload: {storyNumber: newStoryNumber, currentRound: game.currentRound + 1}
+            });
+        }
+        else{
+            storeReducer({
+                type: GlobalGameActionType.UPDATE_GAME_STATUS,
+                payload: gameStatus.ROUND_END
+            });
+        }
     }
 
     const joiningGame = (data) => {
@@ -246,15 +264,6 @@ function GlobalGameContextProvider(props) {
             type: GlobalGameActionType.LOAD_LOBBY,
             payload: gameInfo
         });
-    }
-
-    const startRound = (newStoryNumber) =>{
-        if(newStoryNumber){
-            storeReducer({
-                type: GlobalGameActionType.START_ROUND,
-                payload: {storyNumber: newStoryNumber, currentRound: game.currentRound + 1}
-            });
-        }
     }
 
     const setPreviousPanel = (data) =>{

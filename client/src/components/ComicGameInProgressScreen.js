@@ -27,11 +27,13 @@ const ComicGameInProgressScreen = (props) => {
         game.savePanel(image.asDataURL());
     }
 
-    if(game.gameStatus === gameStatus.ROUND_END){
+    if(game.gameStatus === gameStatus.START_ROUND){
         //Tell painteroo to save
         window.ptro.save();
         setTimeout(() => {
+            console.log("Calling setPreviousPanel");
             game.setPreviousPanel();
+            window.ptro.clear();
         }, 500);
     }
 
@@ -62,7 +64,7 @@ const ComicGameInProgressScreen = (props) => {
     return (
         <div>
             <ThemeProvider theme={theme}>
-                <Container component="main" maxWidth="false" maxHeight="lg">
+                <Container component="main" maxWidth="false">
                 <CssBaseline />
                 <Box
                 sx={{
