@@ -57,6 +57,7 @@ const io = socketio(server, {
 var clients =[];
 //Array of objects of gameInfo
 // const gameInfo = {
+//     isComic: true
 //     gameID: "",
 //     players: [],
 //     gameStatus: gameStatus.STATUS,
@@ -159,6 +160,7 @@ io.on('connect', function (socket) {
         }
 
         const gameInfo = {
+            isComic: data.isComic,
             gameID: data.gameID,
             players: [data.username],
             creator: data.username,
@@ -446,8 +448,8 @@ io.on('connect', function (socket) {
         const g = games.get(gameID);
         //Every client is going to be calling this.
         if(g){
-            const gameData = new Game( {
-                isComic: true,
+            const gameData = new Games( {
+                isComic: g.isComic,
                 players: g.players,
                 panels: g.panels,
                 playerVotes: g.playerVotes,
@@ -459,7 +461,7 @@ io.on('connect', function (socket) {
             });
             const savedGame = await gameData.save().then(() => {
                 games.delete(gameID);
-                console.log(savedGame.gameID + " was successfully saved");
+                console.log("Game: " + savedGame.gameID + " was successfully saved");
                 //Push the players to seeing the published game
                 io.to(gameID).emit("loadGamePage");
             });
