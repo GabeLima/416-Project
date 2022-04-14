@@ -1,5 +1,5 @@
 import React from 'react';
-import { useContext, useState } from 'react'
+import { useContext, useState, useEffect } from 'react'
 import SearchIcon from '@mui/icons-material/Search';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
@@ -18,6 +18,9 @@ import {
     Button,ToggleButton, ToggleButtonGroup, ListItemIcon,
 } from '@mui/material';
 
+
+import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
 
     // Button that has logo and routes to the homepage
     const HomeButton = () => {
@@ -55,9 +58,12 @@ import {
     // Switch between comic/story site
     const SiteToggle = () => {
         const [alignment, setAlignment] = React.useState('comic');
+        const { store }  = useContext(GlobalStoreContext);
+
         const handleChange = (event, newAlignment) => {
             if(newAlignment !== null) {
                 setAlignment(newAlignment);
+                store.handleChangeMode();
             }
         };
         return (
@@ -83,26 +89,17 @@ import {
 
     
       
-    // TODO route text to search
     const SearchBar = () => {
-        let history = useHistory();
+
+        const { store } = useContext(GlobalStoreContext);
 
         const handleKeyPress = (event) => {
             if (event.code === "Enter") {
                 event.stopPropagation();
                 event.preventDefault();
                 // Pass off to the search handler.
-                //store.handleSearch(event.target.value); // TODO- this is how we did it in 316 using the store, we'll see if we still need to.
-    
-                // todo - do better checking this is lazy and error prone.
-                if (event.target.value.indexOf(",") === -1 && event.target.value.substring(0, 2) === "u:") {
-                    // singular user search
-                    history.push("/search_user");
-                }
-                else {
-                    history.push("/search");
-                }
-                
+                store.handleSearch(event.target.value);
+
             }
         }
         // search components from mui documentation
@@ -162,10 +159,11 @@ import {
 
     // Contains menu dropdown and routes for
     // View Profile, Account Settings, Logout
-    // TODO handle the logout and newGame route 
     const AccountDropdown = ({loggedIn, setLoggedIn}) => {
         let history = useHistory();
         const [anchorElUser, setAnchorElUser] = React.useState(null);
+        const { auth } = useContext(AuthContext);
+        const { store } = useContext(GlobalStoreContext);
 
         const handleOpenUserMenu = (event) => {
             setAnchorElUser(event.currentTarget);
@@ -184,7 +182,7 @@ import {
             <>
                 <Tooltip title="Account Settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar alt="Gorilla Mckilla" fontsize="small"/>
+                        <Avatar alt="Gorilla Mckilla" fontSize="small"/>
                     </IconButton>
                 </Tooltip>
 
@@ -198,7 +196,7 @@ import {
                   transformOrigin={{ horizontal: 'left', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'left', vertical: 'Bottom' }}
                 >
-                    <MenuItem onClick={() => handleMenuClick('/profile')}>
+                    <MenuItem onClick={() => handleMenuClick(`/profile/${auth.user.username}`)}>
                         <ListItemIcon>
                             <Avatar sx={{ height: '25px', width: '25px' }}/>
                         </ListItemIcon>
@@ -207,24 +205,23 @@ import {
                     
                     <MenuItem onClick={() => handleMenuClick('/account')}>
                         <ListItemIcon>
-                            <Settings fontsize="small" />
+                            <Settings fontSize="small" />
                         </ListItemIcon>
                         Account Settings
                     </MenuItem>
 
                     <MenuItem onClick={() => handleMenuClick('/create')}>
                         <ListItemIcon>
-                            <AddIcon fontsize="small" />
+                            <AddIcon fontSize="small" />
                         </ListItemIcon>
                         Create Game
                     </MenuItem>
                     
                     <MenuItem onClick={() => {
-                        setLoggedIn(false);
-                        handleMenuClick('/login');
+                        auth.logoutUser(store);
                         }}>
                         <ListItemIcon>
-                            <Logout fontsize="small" />
+                            <Logout fontSize="small" />
                         </ListItemIcon>
                         Logout
                     </MenuItem>
@@ -237,31 +234,37 @@ import {
     // aren't connected to actions
     const HeaderBar = (props) => {
 
-    // this should be changed to reflect the state later
-    const [loggedIn, setLoggedIn] = useState(true);
+        const { auth } = useContext(AuthContext);
 
-    return (
-    <AppBar position="static">
-        <Toolbar>
-            <Box display='flex' flexGrow={1} sx = {{
+        // this should be changed to reflect the state later
+        const [loggedIn, setLoggedIn] = useState(auth.loggedIn);
 
-            }}>
-                <HomeButton />
-                <SearchBar/>
-            </Box>
+        useEffect(() => {
+            setLoggedIn(auth.loggedIn);
+        }, [auth.loggedIn]);
 
-            <Box display='flex' sx={{
-                justifyContent: 'flex-end',
-                padding: 1.5,
-                height: '100%',
-            }}>
-                <SiteToggle />
-                {loggedIn ? <AccountDropdown loggedIn={loggedIn} setLoggedIn={setLoggedIn}/> : <LoginButton/>}
-            </Box>
-        </Toolbar>
-    </AppBar>
+        return (
+        <AppBar position="static">
+            <Toolbar>
+                <Box display='flex' flexGrow={1} sx = {{
 
-    );
+                }}>
+                    <HomeButton />
+                    <SearchBar/>
+                </Box>
+
+                <Box display='flex' sx={{
+                    justifyContent: 'flex-end',
+                    padding: 1.5,
+                    height: '100%',
+                }}>
+                    <SiteToggle />
+                    {loggedIn ? <AccountDropdown loggedIn={loggedIn} setLoggedIn={setLoggedIn}/> : <LoginButton/>}
+                </Box>
+            </Toolbar>
+        </AppBar>
+
+        );
     }
 
 export default HeaderBar;

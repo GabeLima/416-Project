@@ -1,4 +1,4 @@
-import { React, useState } from 'react'
+import { React } from 'react'
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -7,8 +7,10 @@ import Button from '@mui/material/Button';
 
 import LobbyCard from "./LobbyCard";
 import PlayerCard from "./PlayerCard";
-
+import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import GlobalGameContext from "../game";
+import AuthContext from '../auth';
 
 //Array of objects of gameInfo
 // const gameInfo = {
@@ -25,25 +27,24 @@ import { useHistory } from 'react-router-dom';
 
 const GameLobby = (props) => {
     const history = useHistory();
-    // TODO : REMOVE
-    const propsHardcoded = {
-        currentUser: "hatsuyuki",
-        game: {
-            playerList: ["hatsuyuki", "picard", "fuyu", "aoi", "mckenna", "asdsadsa", "asda", "asdsa"],
-            creator: "hatsuyuki",
-            numRounds: 5,
-            timePerRound: 30,
-            tags: ["Comedy", "Anime", "Family-Friendly"]
-        }
-    }
-    // TODO : REMOVE ABOVE
 
-    const { playerList, creator, numRounds, timePerRound, tags } = propsHardcoded.game; // TODO - update this to just props
-    const currentUser = propsHardcoded.currentUser; // TODO - maybe we use the global store to get this?
 
-    // TODO - When we bring in state/the store, we'll want to determine who the user is that is actually invoking these events.
+    const { game } = useContext(GlobalGameContext);
+    const { auth } = useContext(AuthContext);
+
+    let playerList = game.players;
+    let creator = game.creator;
+    let numRounds = game.numRounds;
+    let timePerRound = game.timePerRound;
+    let tags = game.tags;
+    let gameID = game.gameID;
+    const currentUser = auth.user.username;
+
     const handleLeaveGame = (event) => {
-        console.log("User left game");
+        console.log(auth.user.username + " left game");
+
+        game.playerLeftLobby({username: auth.user.username });
+
         history.push('/')
     }
 
@@ -61,11 +62,11 @@ const GameLobby = (props) => {
 
         } }}>
 
-            <Typography variant="h1"
+            <Typography variant="h2"
                         noWrap
                         component="div"
                         align="center">
-                    {creator + "'s Game"}
+                    {creator + "'s Game - " + gameID}
             </Typography>
 
             <Box display="flex" alignItems="flex-start" justifyContent="center" gap="10px">
@@ -95,7 +96,7 @@ const GameLobby = (props) => {
                         }}>
                     {playerList.map((player, i) => {
 
-                        return <PlayerCard username={player} isCurrentUser={currentUser === player}/>
+                        return <PlayerCard key={i} username={player} isCurrentUser={currentUser === player}/>
                     })}
                 </List>
             </Box>
