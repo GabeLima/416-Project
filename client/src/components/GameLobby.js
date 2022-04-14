@@ -11,6 +11,7 @@ import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import GlobalGameContext from "../game";
 import AuthContext from '../auth';
+import { useTheme } from '@mui/system';
 
 //Array of objects of gameInfo
 // const gameInfo = {
@@ -38,7 +39,8 @@ const GameLobby = (props) => {
     let timePerRound = game.timePerRound;
     let tags = game.tags;
     let gameID = game.gameID;
-    const currentUser = auth.user.username;
+    const currentUser = 'david';//= auth.user.username;
+
 
     const handleLeaveGame = (event) => {
         console.log(auth.user.username + " left game");
@@ -55,12 +57,11 @@ const GameLobby = (props) => {
 
     const isOwner = (currentUser === creator);
 
+    const theme = useTheme();
+
     return (
         <div>
-            {/*            display: {
-                backgroundColor: "#6A8D92",
-            }  */}
-        <Box alignItems="center" sx={{ bgcolor: 'background.default' }}>
+        <Box alignItems="center" sx={{ bgcolor: theme.lobby.bg }}>
 
             <Typography variant="h2"
                         noWrap
@@ -105,7 +106,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: "#4b4e6d",
+                            backgroundColor: theme.lobby.button,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -117,7 +118,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: "#4b4e6d",
+                            backgroundColor: theme.lobby.button,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -131,9 +132,9 @@ const GameLobby = (props) => {
             {/* 
                 Hacky solution to fill the entire screen with the
                 outer box background color
-                            <Box sx= {{ height: 200}}/>
-
+                Not needed as long as the background color for this page isn't custom
             */}
+            <Box sx= {{ height: 200, bgcolor: theme.lobby.bg}}/>
         </Box>
         </div>
     );

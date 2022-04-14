@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, TextField, Typography, useTheme } from '@mui/material';
 
 import React, { useEffect, useState } from 'react'
 import StoryCard from './StoryCard';
@@ -65,10 +65,11 @@ const GameResult = () => {
     console.log(commWinner);
   }, [commWinner]);
 
+  const theme = useTheme();
   return (
     <div className='back'>
       <Box textAlign='center' mt={5} className="Game" >
-        <Button variant="outlined" style={{backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} size="large">
+        <Button variant="outlined" style={{backgroundColor: theme.results.button.fill, color: theme.results.button.text, fontWeight:"bold"}} size="large">
           Play Again
         </Button>
 
@@ -80,7 +81,7 @@ const GameResult = () => {
       </Box>
 
       <Box mt={8} className="Comments" pb={5}>
-        <Typography variant="h2" align="center" style={{color:"#4b4e6d", textDecoration:"underline"}} mb={4} mt={3}>
+        <Typography variant="h2" align="center" style={{color: theme.results.text, textDecoration:"underline"}} mb={4} mt={3}>
             Comments
         </Typography>
 
@@ -88,7 +89,7 @@ const GameResult = () => {
           <TextField id="comment" variant="filled" fullWidth multiline label="Add a comment" ></TextField>
           <Grid container justifyContent="right">
             <Grid item mt={2} mb={4}>
-              <Button style={{backgroundColor:"#4b4e6d", color:"white", fontWeight:"600"}}>Comment</Button>
+              <Button style={{backgroundColor: theme.results.button.fill, color: theme.results.button.text, fontWeight:"600"}}>Comment</Button>
             </Grid>
           </Grid>
         </Container>

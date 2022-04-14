@@ -11,7 +11,6 @@ import { Grid } from '@mui/material';
 import Tags from "./Tags"
 import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
-import { CssBaseline } from '@material-ui/core';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router-dom';
 import { useContext, useEffect } from 'react';

@@ -20,6 +20,8 @@ import PublishedGameCard from "./PublishedGameCard";
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth'
 import api from '../api'
+import { useTheme } from '@mui/system';
+
 
 const SearchResults = (props) => {
     const { store } = useContext(GlobalStoreContext);
@@ -316,13 +318,13 @@ const SearchResults = (props) => {
     );
     
 
-
+    const theme = useTheme();
     // we don't need the cards just return the user
     if (isUserSearch) {
         return (
             <div>
                 <Box alignItems="center" sx={{ display: {
-                    backgroundColor: "#6A8D92",
+                    backgroundColor: theme.search.bg,
         
                 } }}>
         
@@ -348,7 +350,7 @@ const SearchResults = (props) => {
                             return (
                                 <ListItem
                                     key={i}
-                                    sx={{ marginTop: '5px',bgcolor: "#4b4e6d", height:"65px", minWidth:"100px", maxWidth:"500px"}}
+                                    sx={{ marginTop: '5px',bgcolor: theme.card.user.bg , height:"65px", minWidth:"100px", maxWidth:"500px"}}
                                     style={{
                                         fontSize: '24pt',
                                         width: '500%',
@@ -359,13 +361,13 @@ const SearchResults = (props) => {
                                         borderRadius: "20px",
                                         borderStyle: "solid",
                                         borderWidth: "3px",
-                                        borderColor: "#80b192"
+                                        borderColor: theme.card.user.border
                                     }}>
                                         <Link underline="none" href={"/profile/" + user.username}>
                                             <Typography variant="h4"
                                                         noWrap
                                                         component="div"
-                                                        color={ "#A1E887"}>
+                                                        color={ theme.card.user.text}>
                                                 {user.username}
                                             </Typography>
                                         </Link>

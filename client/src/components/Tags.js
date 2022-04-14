@@ -6,7 +6,7 @@ const Tags = ({tag}) => {
   let theme = useTheme();
   return (
     <Grid item>
-        <Container style={{backgroundColor: theme.lobby.button.main, borderRadius:"20px"}}>
+        <Container style={{backgroundColor: theme.card.game.tags, borderRadius:"20px"}}>
             <Typography variant="subtitle2">
                 {tag}
             </Typography>

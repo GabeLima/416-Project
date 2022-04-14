@@ -51,7 +51,6 @@ const AccountScreen = () => {
     return (
         <div className='back'>
                 <Container component="main" maxWidth="lg" maxHeight="lg">
-                <CssBaseline />
                 <Box pb={5}
                 sx={{
                     marginTop: 10,
