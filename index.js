@@ -537,12 +537,12 @@ io.on('connect', function (socket) {
         else{
             let newStoryNumber = (storyNumber + g.currentRound) % g.players.length;
             socket.emit(gameEvents.START_ROUND, newStoryNumber);
+            //Call client round end, which will call saveImage and this function again (if the game isn't over)
+            setTimeout(() => {
+                console.log("Calling roundEnd!");
+                io.to(gameID).emit(gameEvents.ROUND_END);
+                }, g.timePerRound * 1000);
         }
-        //Call client round end, which will call saveImage and this function again (if the game isn't over)
-        setTimeout(() => {
-            console.log("Calling roundEnd!");
-            io.to(gameID).emit(gameEvents.ROUND_END);
-            }, g.timePerRound * 1000);
         });    
     }, 500);
 
