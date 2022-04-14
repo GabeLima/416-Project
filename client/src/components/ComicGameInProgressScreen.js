@@ -21,22 +21,28 @@ const ComicGameInProgressScreen = (props) => {
             }, 1000);
         }
     }
+    //setup painterro 
+
 
     
     let saveHandler = (image, done) => {
-        console.log("image data url: ", image.asDataURL("image/png", 1));
+        console.log("Calling save panel for round: ", game.currentRound);
+        //console.log("image data url: ", image.asDataURL("image/png", 1));
         game.savePanel(image.asDataURL("image/png", 1));
+        setTimePerRound(game.timePerRound);
     }
 
     useEffect(() => {
         if(game.gameStatus === gameStatus.START_ROUND){
             //Tell painteroo to save
+            console.log("Telling ptro to save!", window.ptro.save);
             window.ptro.save();
             setTimeout(() => {
                 console.log("Calling setPreviousPanel");
                 game.setPreviousPanel();
-                window.ptro.clear();
+                //window.ptro.clear();
             }, 500);
+            window.ptro.show();
         }
     }, [game.gameStatus]);
 

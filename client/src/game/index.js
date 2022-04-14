@@ -260,7 +260,8 @@ function GlobalGameContextProvider(props) {
     const startRound = (newStoryNumber) =>{
         console.log("START_ROUND received, starting the round! New story number: ", newStoryNumber);
         let currentGame = gameRef.current;
-        if(newStoryNumber !== undefined || newStoryNumber !== null){
+        if(newStoryNumber !== undefined && newStoryNumber !== null){
+            console.log("Start Round Reducer being called as newStoryNumber is valid!");
             storeReducer({
                 type: GlobalGameActionType.START_ROUND,
                 payload: {storyNumber: newStoryNumber, currentRound: currentGame.currentRound + 1}
@@ -338,15 +339,15 @@ function GlobalGameContextProvider(props) {
 
     useEffect(() => {
         socket.on("joinSuccess", joinSuccess);
-        socket.once(gameEvents.ROUND_END, roundEnd);
-        socket.once(gameEvents.START_ROUND, startRound);
-        socket.once("getImage", setPreviousPanel);
-        socket.once("getText", setPreviousPanel);
-        socket.once(gameEvents.GAME_OVER, gameOver);
-        socket.once("loadGamePage", loadGamePage);
-        socket.once(gameEvents.JOINING_GAME, joiningGame);
-        socket.once("playerLeftLobby", playerLeftLobby);
-        socket.once(gameEvents.START_GAME, startGame);
+        socket.on(gameEvents.ROUND_END, roundEnd);
+        socket.on(gameEvents.START_ROUND, startRound);
+        socket.on("getImage", setPreviousPanel);
+        socket.on("getText", setPreviousPanel);
+        socket.on(gameEvents.GAME_OVER, gameOver);
+        socket.on("loadGamePage", loadGamePage);
+        socket.on(gameEvents.JOINING_GAME, joiningGame);
+        socket.on("playerLeftLobby", playerLeftLobby);
+        socket.on(gameEvents.START_GAME, startGame);
     }, []);
 
   
