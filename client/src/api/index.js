@@ -21,7 +21,7 @@ export const updateUser = (payload) => api.put('/user/updateInfo', payload);
 export const updateFollowers = (payload) => api.put('/user/followers', payload);
 export const removeUser = (payload) => api.delete(`/user/delete/${payload.email}/${payload.password}`);
 
-export const changePassword = (payload) => api.put(`/changePassword/`, payload)
+export const changePassword = (payload) => api.put(`/changePassword/`, payload);
 
 
 const apis = {

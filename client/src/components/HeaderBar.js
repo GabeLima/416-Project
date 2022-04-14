@@ -29,7 +29,13 @@ import AuthContext from '../auth'
         <Button 
             variant="contained" 
             color="secondary" 
-            onClick={() => history.push('/')}
+            onClick={(event) => {
+                console.log(event);
+                event.stopPropagation();
+                event.preventDefault();
+                history.push('/')
+                }
+            }
             startIcon={<HomeIcon />}
             size="large"
         >
