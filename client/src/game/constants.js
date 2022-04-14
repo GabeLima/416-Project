@@ -11,10 +11,17 @@ const gameEvents ={
 const gameStatus ={
     LOBBY : "lobby", // Waiting for players
     PLAYING: "playing", // Drawing the games
-    DONE: "done" //We finished playing, but users are still voting
+    DONE: "done", //We finished playing, but users are still voting
+    ROUND_END: "round end"
+};
+
+const gameFailure ={
+    BLANK_IMAGE_ID : "0",
+    BLANK_TEXT_ID: "0"
 };
 
 module.exports = {
     gameEvents,
-    gameStatus
+    gameStatus,
+    gameFailure
 }
