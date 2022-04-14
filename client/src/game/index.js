@@ -42,12 +42,6 @@ function GlobalGameContextProvider(props) {
         previousPanel: "" //Its either text, or its the image. 
     });
 
-    //Setup the gameRef for the socket functions
-    const gameRef = useRef(game);
-    //This runs ever render to update the gameRef
-    useEffect(() => {
-        gameRef.current = game;
-    });
 
     //SETUP THE CLIENT SOCKET
     const socket = useContext(SocketContext);
@@ -57,6 +51,18 @@ function GlobalGameContextProvider(props) {
 
     // SINCE WE'VE WRAPPED THE STORE IN THE AUTH CONTEXT WE CAN ACCESS THE USER HERE
     const { auth } = useContext(AuthContext);
+
+
+    //Setup the gameRef for the socket functions
+    const gameRef = useRef(game);
+    const authRef = useRef(auth);
+    //This runs ever render to update the gameRef
+    useEffect(() => {
+        gameRef.current = game;
+        authRef.current = auth;
+    });
+
+
 
     const storeReducer = (action) => {
         const { type, payload } = action;
@@ -202,13 +208,6 @@ function GlobalGameContextProvider(props) {
     game.startGame = () =>{
         console.log(game.gameID);
         //Setup our storyNumber to be our playerNumber
-        const players = game.players;
-        let storyNumber = players.indexOf(auth.user.username);
-        console.log("Initial storyNumber: ", storyNumber)
-        storeReducer({
-            type: GlobalGameActionType.UPDATE_STORY_NUMBER,
-            payload: storyNumber
-        });
         socket.emit(gameEvents.START_GAME, {gameID: game.gameID})
     }
 
@@ -321,6 +320,16 @@ function GlobalGameContextProvider(props) {
     
     const startGame = (data) =>{
         const { gameInfo } = data;
+        let currentGame = gameRef.current;
+        const players = currentGame.players;
+        
+        let storyNumber = players.indexOf(authRef.current.user.username);
+        console.log("Initial storyNumber: ", storyNumber)
+        storeReducer({
+            type: GlobalGameActionType.UPDATE_STORY_NUMBER,
+            payload: storyNumber
+        });
+
         console.log("Game we're pushing to: " + gameInfo.gameID);
         history.push("/CGameInProgress/" + gameInfo.gameID);
     }
