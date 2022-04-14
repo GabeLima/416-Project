@@ -480,10 +480,10 @@ io.on('connect', function (socket) {
         console.log("Image received");
         //console.log(data.imageID + " : " + data.image);
         //Add the imageID to every story
-        if(data.storyNumber){
-            console.log("Adding image: " + imageID + " to panel[]: " + data.storyNumber);
-            g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber);
-        }   
+        // if(data.storyNumber){
+        //     console.log("Adding image: " + imageID + " to panel[]: " + data.storyNumber);
+        //     g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber);
+        // }   
 
         const imageData = new Images({
             image: data.image,
@@ -519,11 +519,14 @@ io.on('connect', function (socket) {
     });
 
    socket.on(gameEvents.ROUND_END, function(data) {
+    console.log("Inside round end!");
     const {gameID, storyNumber, currentRound} = data;
     const g = games.get(gameID);
     //currentRound will be passed from the client, and will be the ID of the round that JUST ended
     g.currentRound = Math.max(g.currentRound, currentRound + 1);
     //MOVED TO SAVEIMAGE AND SAVETEXT
+    console.log("Adding image: " + "" + data.gameID + data.storyNumber + data.currentRound + " to panel[]: " + data.storyNumber);
+    g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + data.currentRound);
 
     setTimeout(() => {
         //Generate the new story they'll be adding to
@@ -539,6 +542,7 @@ io.on('connect', function (socket) {
 
     //Call client round end, which will call saveImage and this function again (if the game isn't over)
     setTimeout(() => {
+        console.log("Calling roundEnd!");
         io.to(gameID).emit(gameEvents.ROUND_END);
         }, g.timePerRound * 1000);
     });

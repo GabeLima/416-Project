@@ -60,10 +60,11 @@ function GlobalGameContextProvider(props) {
 
     const storeReducer = (action) => {
         const { type, payload } = action;
+        let currentGame = gameRef.current;
         switch (type) {
             case GlobalGameActionType.CREATE_GAME: {
                 return setGame({
-                    ...game,
+                    ...currentGame,
                     gameID: payload.gameID,
                     numRounds: payload.numRounds,
                     timePerRound: payload.timePerRound, 
@@ -74,7 +75,7 @@ function GlobalGameContextProvider(props) {
             case GlobalGameActionType.LOAD_LOBBY: {
                 console.log("LOAD LOBBY CALLED WITH PAYLOAD: ", payload);
                 return setGame({
-                    ...game,
+                    ...currentGame,
                     gameID: payload.gameID,
                     players:payload.players,
                     creator: payload.creator,
@@ -85,7 +86,7 @@ function GlobalGameContextProvider(props) {
             }
             case GlobalGameActionType.START_ROUND: {
                 return setGame({
-                    ...game,
+                    ...currentGame,
                     storyNumber:payload.storyNumber,
                     currentRound: payload.currentRound,
                     gameStatus: gameStatus.START_ROUND
@@ -93,27 +94,27 @@ function GlobalGameContextProvider(props) {
             }
             case GlobalGameActionType.UPDATE_GAME_STATUS: {
                 return setGame({
-                    ...game,
+                    ...currentGame,
                     gameStatus: payload
                 });
             }
             case GlobalGameActionType.UPDATE_STORY_NUMBER: {
                 return setGame({
-                    ...game,
+                    ...currentGame,
                     storyNumber: payload
                 });
             }
             case GlobalGameActionType.SET_PREVIOUS_PANEL: {
                 console.log("Setting previous panel to: ", payload);
                 return setGame({
-                    ...game,
+                    ...currentGame,
                     previousPanel:payload,
                     gameStatus: gameStatus.PLAYING
                 });
             }
             case GlobalGameActionType.PLAYER_LIST_UPDATE: {
                 return setGame({
-                    ...game,
+                    ...currentGame,
                     players: payload
                 });
             }
@@ -259,10 +260,11 @@ function GlobalGameContextProvider(props) {
 
     const startRound = (newStoryNumber) =>{
         console.log("START_ROUND received, starting the round! New story number: ", newStoryNumber);
+        let currentGame = gameRef.current;
         if(newStoryNumber !== undefined || newStoryNumber !== null){
             storeReducer({
                 type: GlobalGameActionType.START_ROUND,
-                payload: {storyNumber: newStoryNumber, currentRound: game.currentRound + 1}
+                payload: {storyNumber: newStoryNumber, currentRound: currentGame.currentRound + 1}
             });
         }
     }
@@ -278,7 +280,6 @@ function GlobalGameContextProvider(props) {
         console.log("New player joined:" + username);
         console.log(game);
         console.log(gameInfo);
-
         storeReducer({
             type: GlobalGameActionType.LOAD_LOBBY,
             payload: gameInfo
@@ -298,18 +299,20 @@ function GlobalGameContextProvider(props) {
     }
 
     const gameOver = (data) =>{
-        if(data.gameID !== game.gameID){
-            console.log("Something went wrong in gameOver!", data.gameID, game.gameID);
+        let currentGame = gameRef.current;
+        if(data.gameID !== currentGame.gameID){
+            console.log("Something went wrong in gameOver!", data.gameID, currentGame.gameID);
         }
         else{
-            socket.emit("saveGame", game.gameID);
+            socket.emit("saveGame", currentGame.gameID);
             //We can't push to gameResult here as the socket might not have finished actually saving the game 
         }
     }
 
     const loadGamePage = () =>{
+        let currentGame = gameRef.current;
         //Push the player to seeing the published game
-        history.push("/gameResult/" + game.gameID);
+        history.push("/gameResult/" + currentGame.gameID);
         //Reset the game state client side
         storeReducer({
             type: GlobalGameActionType.RESET_GAME_INFO
@@ -335,7 +338,7 @@ function GlobalGameContextProvider(props) {
         socket.once(gameEvents.JOINING_GAME, joiningGame);
         socket.once("playerLeftLobby", playerLeftLobby);
         socket.once(gameEvents.START_GAME, startGame);
-    }, [game]);
+    }, []);
 
   
       return(
