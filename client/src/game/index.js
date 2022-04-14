@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { createContext, useState, useContext } from 'react'
+import { createContext, useState, useContext, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import AuthContext from '../auth'
 import { SocketContext } from "../context/socket";
@@ -18,7 +18,8 @@ export const GlobalGameActionType = {
     SET_PREVIOUS_PANEL: "SET_PREVIOUS_PANEL",
     UPDATE_GAME_STATUS: "UPDATE_GAME_STATUS",
     RESET_GAME_INFO: "RESET_GAME_INFO",
-    PLAYER_LIST_UPDATE: "PLAYER_LIST_UPDATE"
+    PLAYER_LIST_UPDATE: "PLAYER_LIST_UPDATE",
+    UPDATE_STORY_NUMBER: "UPDATE_STORY_NUMBER"
 
 }
 
@@ -39,6 +40,13 @@ function GlobalGameContextProvider(props) {
         tags: [],
         storyNumber: 0,
         previousPanel: "" //Its either text, or its the image. 
+    });
+
+    //Setup the gameRef for the socket functions
+    const gameRef = useRef(game);
+    //This runs ever render to update the gameRef
+    useEffect(() => {
+        gameRef.current = game;
     });
 
     //SETUP THE CLIENT SOCKET
@@ -89,7 +97,14 @@ function GlobalGameContextProvider(props) {
                     gameStatus: payload
                 });
             }
+            case GlobalGameActionType.UPDATE_STORY_NUMBER: {
+                return setGame({
+                    ...game,
+                    storyNumber: payload
+                });
+            }
             case GlobalGameActionType.SET_PREVIOUS_PANEL: {
+                console.log("Setting previous panel to: ", payload);
                 return setGame({
                     ...game,
                     previousPanel:payload,
@@ -140,13 +155,20 @@ function GlobalGameContextProvider(props) {
         socket.emit("joinGame", {gameID: data.gameID, email: data.email, username: data.username});
     }
 
-    game.setPreviousPanel = function (){
-        if(game.currentRound > 0 && game.storyNumber && game.gameID !== "fakeID"){
+    game.setPreviousPanel =() =>{
+        //console.log("Game: ", game);
+        console.log("GameRef: ", gameRef.current);
+        //console.log(game.currentRound, game.storyNumber, game.gameID);
+        let currentGame = gameRef.current;
+        if(currentGame.currentRound >= 0 && currentGame.storyNumber !== undefined && currentGame.gameID !== "fakeID"){
+            const ID = "" + currentGame.gameID + currentGame.storyNumber + (currentGame.currentRound -1);
             if(store.isComic === true){
-                socket.emit("getImage", {gameID: game.gameID, storyNumber: game.storyNumber});
+                console.log("Emitting getImage");
+                socket.emit("getImage", {imageID: ID});
             }
             else{
-                socket.emit("getText", {gameID: game.gameID, storyNumber: game.storyNumber});
+                console.log("Emitting getText");
+                socket.emit("getText", {gameID: currentGame.gameID, storyNumber: currentGame.storyNumber});
             }
         }
     }
@@ -155,7 +177,7 @@ function GlobalGameContextProvider(props) {
     game.savePanel = function (data){
         const ID = "" + game.gameID + game.storyNumber + game.currentRound;
         if(store.isComic === true){
-            socket.emit("saveImage", {image: data, imageID: ID});
+            socket.emit("saveImage", {image: data, imageID: ID, storyNumber: game.storyNumber});
         }
         else{
             socket.emit("saveText", {text: data, textID: ID});
@@ -178,6 +200,14 @@ function GlobalGameContextProvider(props) {
 
     game.startGame = () =>{
         console.log(game.gameID);
+        //Setup our storyNumber to be our playerNumber
+        const players = game.players;
+        let storyNumber = players.indexOf(auth.user.username);
+        console.log("Initial storyNumber: ", storyNumber)
+        storeReducer({
+            type: GlobalGameActionType.UPDATE_STORY_NUMBER,
+            payload: storyNumber
+        });
         socket.emit(gameEvents.START_GAME, {gameID: game.gameID})
     }
 
@@ -300,7 +330,7 @@ function GlobalGameContextProvider(props) {
     const startGame = (data) =>{
         const { gameInfo } = data;
         console.log("Game we're pushing to: " + gameInfo.gameID);
-        history.push("/CGameInProgress/:" + gameInfo.gameID);
+        history.push("/CGameInProgress/" + gameInfo.gameID);
     }
 
 
@@ -317,6 +347,7 @@ function GlobalGameContextProvider(props) {
         socket.once("playerLeftLobby", playerLeftLobby);
         socket.once(gameEvents.START_GAME, startGame);
     }, [game]);
+
   
       return(
         <GlobalGameContext.Provider value={{

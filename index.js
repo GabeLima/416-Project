@@ -373,25 +373,26 @@ io.on('connect', function (socket) {
             console.log("Inside getImage!", data);
             if(gameID !== undefined && storyNumber!== undefined){
                 const g = games.get(gameID);
-                if(g){
-                    let panel = g.panels.get(storyNumber);
-                    while(panel.length < g.currentRound){
-                        panel.push(gameFailure.BLANK_IMAGE_ID);
-                    }
-                    imageID = panel[panel.length - 1];
+                let panel = g.panels.get(storyNumber);
+                console.log("Panel: ", panel);
+                while(panel.length < g.currentRound){
+                    panel.push(gameFailure.BLANK_IMAGE_ID);
                 }
+                console.log("Panel: ", panel);
+                imageID = panel[panel.length - 1];
             }
             else if(imageID === undefined || imageID === null){
                 console.log("Error on getImage, missing data from the payload: ", data);
                 return;
             }
+            console.log("Searching for imageID: ", imageID);
             Images.findOne({imageID: imageID}, (err, data) => {
                 if(err ||!data) {
                     console.log("Error in getImage: " + err);
-                    socket.emit('getImage', false);
+                    socket.emit('getImage', gameFailure.BLANK_IMAGE_ID);
                 }
                 else {
-                    socket.emit('getImage', data.image);
+                    socket.emit('getImage', data.image.toString());
                 }
             });
         }
@@ -425,7 +426,7 @@ io.on('connect', function (socket) {
         Texts.findOne({textID: textID}, (err, data) => {
             if(err || !data) {
                 console.log("Error in getText " + err);
-                socket.emit('getText', false);
+                socket.emit('getText', gameFailure.BLANK_TEXT_ID);
             }
             else {
                 socket.emit('getText', data.text);

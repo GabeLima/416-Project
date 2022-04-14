@@ -24,18 +24,21 @@ const ComicGameInProgressScreen = (props) => {
 
     
     let saveHandler = (image, done) => {
-        game.savePanel(image.asDataURL());
+        console.log("image data url: ", image.asDataURL("image/png", 1));
+        game.savePanel(image.asDataURL("image/png", 1));
     }
 
-    if(game.gameStatus === gameStatus.START_ROUND){
-        //Tell painteroo to save
-        window.ptro.save();
-        setTimeout(() => {
-            console.log("Calling setPreviousPanel");
-            game.setPreviousPanel();
-            window.ptro.clear();
-        }, 500);
-    }
+    useEffect(() => {
+        if(game.gameStatus === gameStatus.START_ROUND){
+            //Tell painteroo to save
+            window.ptro.save();
+            setTimeout(() => {
+                console.log("Calling setPreviousPanel");
+                game.setPreviousPanel();
+                window.ptro.clear();
+            }, 500);
+        }
+    }, [game.gameStatus]);
 
     useEffect(() => {
         decreaseTimer();
