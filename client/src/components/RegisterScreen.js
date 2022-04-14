@@ -43,8 +43,8 @@ const RegisterScreen = () =>{
                             alignItems: 'center',
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: theme.login.lockIcon.bg }}>
-                            <LockOutlinedIcon style={{color: theme.login.lockIcon.color}}/>
+                        <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg }}>
+                            <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
                         </Avatar>
                         <Typography component="h1" variant="h5">
                             Sign up
@@ -120,7 +120,7 @@ const RegisterScreen = () =>{
                                 type="submit"
                                 fullWidth
                                 variant="contained"
-                                sx={{ mt: 3, mb: 2, backgroundColor: theme.login.button.bg, color: theme.login.button.text, fontWeight:"bold"}}
+                                sx={{ mt: 3, mb: 2, backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}}
                             >
                                 Sign Up
                             </Button>

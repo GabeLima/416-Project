@@ -23,167 +23,23 @@ import { GlobalStoreContextProvider } from './store';
 import { GlobalGameContextProvider } from './game';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
-import { createTheme } from '@mui/material/styles';
 import AlertModal from './components/AlertModal';
 
-// original color palette from the minds of DERIT
-const light_green = '#a1e887'
-const original_green = '#80b192'
-const blue_grey = '#4b4e6d'
-const white = '#ffffff'
-const original_primary = '#6A8D92'
-const original_secondary = '#9FB4C7'
-const blue_white = '#EEEFFF'
-const original_theme = createTheme({
-    palette: {
-        primary: {
-          main: original_primary,
-        },
-        secondary: {
-          main: original_secondary,
-        },
-        background: {
-          default: blue_white, // changes the background of every page
-        },
-    },
-    lobby: {
-        button: blue_grey,
-        bg: original_primary // bg for the entire page, matches header bar tho
-    },
-    // GameResults, GameComment
-    results: {
-        text: blue_grey, // color of the underlined comments header
-        comment: {
-            bg: white, // color of the comment box 
-            text: blue_grey 
-        },
-        button: {
-            fill: blue_grey,
-            text: white
-        }
-    },
-    // logginScreen and RegisterScreen
-    login: {
-        button: {
-            bg: blue_grey,
-            text: white
-        },
-        lockIcon: {
-            bg: original_secondary,
-            color: white
-        }
-    },
-    // SearchResults
-    search: {
-        bg: original_primary, // only changes background when searching for users for some reason
-    },
-    // user, game, and lobby cards
-    card: {
-        // other players in lobby/searching profiles
-        user: {
-            bg: blue_grey,
-            border: original_green,
-            text: light_green,
-            opponentText: blue_white // text color of opponents in lobby
-        },
-        // live/published game cards
-        game: {
-            bg: original_green,
-            tags: light_green,
-            button: light_green
-        },
-        // displaying game rules in lobby
-        lobby: {
-            bg: blue_grey,
-            text: light_green,
-            border: original_green,
-        },
-    }
-});
-
-// everything is yellow
-// used to show what is/isn't linked
-// despite the constant's name, you can change the color to whatever you like
-const yellow = '#ffff00'
-const yellow_theme = createTheme({
-    palette: {
-        primary: {
-          main: yellow,
-        },
-        secondary: {
-          main: yellow,
-        },
-        background: {
-          default: yellow,
-        },
-    },
-    lobby: {
-        button: yellow,
-        bg: yellow // bg for the entire page, matches header bar tho
-    },
-    // GameResults, GameComment
-    results: {
-        text: yellow, // color of the underlined comments header
-        comment: {
-            bg: yellow, // color of the comment box 
-            text: yellow 
-        },
-        button: {
-            fill: yellow,
-            text: yellow
-        }
-    },
-    // logginScreen and RegisterScreen
-    login: {
-        button: {
-            bg: yellow,
-            text: yellow
-        },
-        lockIcon: {
-            bg: yellow,
-            color: yellow
-        }
-    },
-    // SearchResults
-    search: {
-        bg: yellow, // only changes background when searching for users for some reason
-    },
-    // user, game, and lobby cards
-    card: {
-        // other players in lobby/searching profiles
-        user: {
-            bg: yellow,
-            border: yellow,
-            text: yellow,
-            opponentText: yellow // text color of opponents in lobby
-        },
-        // live/published game cards
-        game: {
-            bg: yellow,
-            tags: yellow,
-            button: yellow
-        },
-        // displaying game rules in lobby
-        lobby: {
-            bg: yellow,
-            text: yellow,
-            border: yellow,
-        },
-    }
-});
-
-// Thanks lov for the color pallete
-// a theme will be created to see if this works
-const pink = '#dd6e80'
-const green = '#8ab48e'
-const purple = '#9667aa'
-const blue = '#a4c6e5'
-const black = '#000000'
+// theme imports
+import original_theme from './themes/original';
+import test_theme from './themes/testing';
+import updated_theme from './themes/updated';
+let themes = new Map( [
+    ['original', original_theme],
+    ['test', test_theme],
+    ['updated', updated_theme]
+]);
 
 /*
-    Current Themes:
-    original_theme - original colors from the collective mind of DERIT
-    yellow_theme - everything is yellow; used to show what is connected to the theme
+    Current Themes (themes['name']):
+    original - original colors from the collective mind of DERIT
+    test - everything  is set to one color to determine what's connected
+    updated - work in progress for improved color palette
 */
 const App = () => {
     console.log(socket);

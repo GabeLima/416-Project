@@ -61,7 +61,7 @@ const GameLobby = (props) => {
 
     return (
         <div>
-        <Box alignItems="center" sx={{ bgcolor: theme.lobby.bg }}>
+        <Box alignItems="center" sx={{ bgcolor: theme.palette.background.default }}>
 
             <Typography variant="h2"
                         noWrap
@@ -106,7 +106,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: theme.lobby.button,
+                            backgroundColor: theme.button.bg,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -118,7 +118,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: theme.lobby.button,
+                            backgroundColor: theme.button.bg,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -134,7 +134,7 @@ const GameLobby = (props) => {
                 outer box background color
                 Not needed as long as the background color for this page isn't custom
             */}
-            <Box sx= {{ height: 200, bgcolor: theme.lobby.bg}}/>
+            <Box sx= {{ height: 200, bgcolor: theme.palette.background.default}}/>
         </Box>
         </div>
     );

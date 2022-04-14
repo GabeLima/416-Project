@@ -323,10 +323,7 @@ const SearchResults = (props) => {
     if (isUserSearch) {
         return (
             <div>
-                <Box alignItems="center" sx={{ display: {
-                    backgroundColor: theme.search.bg,
-        
-                } }}>
+                <Box alignItems="center">
         
                     <Typography variant="h2"
                                 noWrap

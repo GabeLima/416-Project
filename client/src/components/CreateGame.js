@@ -12,11 +12,11 @@ import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 
 import { useHistory } from 'react-router-dom';
-import { unstable_getThemeValue } from '@mui/system';
 import AuthContext from '../auth';
 import { useContext } from 'react';
 import { GlobalStoreContext } from '../store'
 import GlobalGameContext from '../game';
+import { useTheme } from '@mui/material';
 const crypto = require("crypto");
 
 const CreateGame = (props) => {
@@ -166,6 +166,8 @@ const CreateGame = (props) => {
     let currentNumTags = selectedTags.length + customTags.split(",").filter((v) => v !== "").length;
     console.log("current num tags " + currentNumTags);
     let canCreate = (currentNumTags > 5 ? false : true);
+
+    const theme = useTheme();
 
     return (
         <div>
@@ -326,8 +328,9 @@ const CreateGame = (props) => {
                             borderRadius: 35,
                             padding: "18px 36px",
                             fontSize: "18px",
+                            backgroundColor: theme.button.bg
                         }}
-                        color='secondary'
+                        sx={{color: theme.button.text}}
                         onClick={handleCreateGame}
                         disabled={!canCreate}
                         >

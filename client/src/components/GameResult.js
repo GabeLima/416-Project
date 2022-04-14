@@ -69,7 +69,7 @@ const GameResult = () => {
   return (
     <div className='back'>
       <Box textAlign='center' mt={5} className="Game" >
-        <Button variant="outlined" style={{backgroundColor: theme.results.button.fill, color: theme.results.button.text, fontWeight:"bold"}} size="large">
+        <Button variant="outlined" style={{backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}} size="large">
           Play Again
         </Button>
 
@@ -89,7 +89,7 @@ const GameResult = () => {
           <TextField id="comment" variant="filled" fullWidth multiline label="Add a comment" ></TextField>
           <Grid container justifyContent="right">
             <Grid item mt={2} mb={4}>
-              <Button style={{backgroundColor: theme.results.button.fill, color: theme.results.button.text, fontWeight:"600"}}>Comment</Button>
+              <Button style={{backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"600"}}>Comment</Button>
             </Grid>
           </Grid>
         </Container>

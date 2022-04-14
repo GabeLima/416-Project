@@ -63,8 +63,8 @@ const theme = useTheme();
                 alignItems: 'center',
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: theme.login.lockIcon.bg}}>
-                <LockOutlinedIcon style={{color: theme.login.lockIcon.color}}/>
+              <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg}}>
+                <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
               </Avatar>
               <Typography component="h1" variant="h5">
                 Sign in
@@ -94,8 +94,8 @@ const theme = useTheme();
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, color: theme.login.button.text, fontWeight:"bold"}}
-                  style={{backgroundColor: theme.login.button.bg}}
+                  sx={{ mt: 3, mb: 2, color: theme.button.text, fontWeight:"bold"}}
+                  style={{backgroundColor: theme.button.bg}}
                 >
                   Sign In
                 </Button>
@@ -130,8 +130,8 @@ const theme = useTheme();
                 alignItems: 'center',
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: theme.login.lockIcon.bg }}>
-                <LockOutlinedIcon style={{color: theme.login.lockIcon.color}}/>
+              <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg }}>
+                <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
               </Avatar>
               <Typography component="h1" variant="h5">
                 Enter Account Email
@@ -151,7 +151,7 @@ const theme = useTheme();
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, backgroundColor: theme.login.button.bg, color: theme.login.button.text, fontWeight:"bold"}}
+                  sx={{ mt: 3, mb: 2, backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}}
                 >
                   Continue
                 </Button>
@@ -173,8 +173,8 @@ const theme = useTheme();
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: theme.login.lockIcon.bg }}>
-            <LockOutlinedIcon style={{color: theme.login.lockIcon.color}}/>
+          <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg }}>
+            <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
           </Avatar>
           <Typography alignContent="center" component="h1" variant="h5">
             {"Your security Question: " + state.securityQuestion}
@@ -214,7 +214,7 @@ const theme = useTheme();
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, backgroundColor: theme.login.button.bg, color: theme.login.button.text, fontWeight:"bold"}}
+              sx={{ mt: 3, mb: 2, backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}}
             >
               Continue
             </Button>
