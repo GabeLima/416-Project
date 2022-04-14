@@ -164,7 +164,7 @@ function GlobalGameContextProvider(props) {
             const ID = "" + currentGame.gameID + currentGame.storyNumber + (currentGame.currentRound -1);
             if(store.isComic === true){
                 console.log("Emitting getImage");
-                socket.emit("getImage", {imageID: ID});
+                socket.emit("getImage", {gameID: currentGame.gameID, storyNumber: currentGame.storyNumber});
             }
             else{
                 console.log("Emitting getText");
@@ -180,7 +180,7 @@ function GlobalGameContextProvider(props) {
             socket.emit("saveImage", {image: data, imageID: ID, storyNumber: game.storyNumber});
         }
         else{
-            socket.emit("saveText", {text: data, textID: ID});
+            socket.emit("saveText", {text: data, textID: ID, storyNumber: game.storyNumber});
         }
     }
 

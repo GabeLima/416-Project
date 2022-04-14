@@ -479,6 +479,11 @@ io.on('connect', function (socket) {
 
         console.log("Image received");
         //console.log(data.imageID + " : " + data.image);
+        //Add the imageID to every story
+        if(data.storyNumber){
+            console.log("Adding image: " + imageID + " to panel[]: " + data.storyNumber);
+            g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber);
+        }   
 
         const imageData = new Images({
             image: data.image,
@@ -518,8 +523,7 @@ io.on('connect', function (socket) {
     const g = games.get(gameID);
     //currentRound will be passed from the client, and will be the ID of the round that JUST ended
     g.currentRound = Math.max(g.currentRound, currentRound + 1);
-    //Add the imageID to every story
-    g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + currentRound);
+    //MOVED TO SAVEIMAGE AND SAVETEXT
 
     setTimeout(() => {
         //Generate the new story they'll be adding to
