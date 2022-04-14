@@ -104,7 +104,7 @@ const ComicGameInProgressScreen = (props) => {
                         </Box>
                     </Box>
                     <Box>
-                        <Typography mb={2} align="center" variant="h4"> Round {game.currentRound + 1}/{game.numRounds + 1} </Typography>
+                        <Typography mb={2} align="center" variant="h4"> Round {game.currentRound + 1}/{game.numRounds} </Typography>
                         <Typography align="center" variant="h4"> Current Panel </Typography>
                         <Box id="painterro" className="pa" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black"}}>
                         </Box>
