@@ -184,6 +184,7 @@ function GlobalGameContextProvider(props) {
     game.savePanel = function (data){
         const ID = "" + game.gameID + game.storyNumber + game.currentRound;
         if(store.isComic === true){
+            console.log("Calling saveImage");
             socket.emit("saveImage", {image: data, imageID: ID, storyNumber: game.storyNumber});
         }
         else{

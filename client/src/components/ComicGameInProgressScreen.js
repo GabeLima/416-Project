@@ -42,7 +42,7 @@ const ComicGameInProgressScreen = (props) => {
             setTimeout(() => {
                 console.log("Calling setPreviousPanel");
                 gameRef.current.setPreviousPanel();
-                //window.ptro.clear();
+                window.ptro.clear();
             }, 500);
             //window.ptro.show();
         }
@@ -61,7 +61,7 @@ const ComicGameInProgressScreen = (props) => {
         saveHandler: function (image, done){
             console.log("Calling save panel for round: ", gameRef.current.currentRound);
             //console.log("image data url: ", image.asDataURL("image/png", 1));
-            game.savePanel(image.asDataURL("image/png", 1));
+            gameRef.current.savePanel(image.asDataURL("image/png", 1));
             setTimePerRound(gameRef.current.timePerRound);
             done(false);
         }
