@@ -306,7 +306,7 @@ function GlobalGameContextProvider(props) {
         }
         else{
             console.log("Saving the game with gameID: ", currentGame.gameID);
-            socket.emit("saveGame", currentGame.gameID);
+            socket.emit("saveGame", {gameID: currentGame.gameID});
             //We can't push to gameResult here as the socket might not have finished actually saving the game 
         }
     }

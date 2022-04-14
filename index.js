@@ -440,7 +440,7 @@ io.on('connect', function (socket) {
         Save the game to the database
     */
     socket.on('saveGame', async (data) => {
-        const {gameID} = data
+        const {gameID} = data;
         if(!gameID) {
             console.log("Error in saveGame, gameID not provided");
             return;
@@ -451,7 +451,7 @@ io.on('connect', function (socket) {
             const gameData = new Games( {
                 isComic: g.isComic,
                 players: g.players,
-                panels: g.panels,
+                panels: Array.from(g.panels.values()),
                 playerVotes: g.playerVotes,
                 communityVotes: [],
                 gameID: g.gameID,
@@ -461,7 +461,7 @@ io.on('connect', function (socket) {
             });
             const savedGame = await gameData.save().then(() => {
                 games.delete(gameID);
-                console.log("Game: " + savedGame.gameID + " was successfully saved");
+                console.log("Game: " + gameID + " was successfully saved");
                 //Push the players to seeing the published game
                 io.to(gameID).emit("loadGamePage");
             });
