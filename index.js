@@ -518,7 +518,7 @@ io.on('connect', function (socket) {
         console.log(savedText.textID + " was successfully saved.");
     });
 
-   socket.on('roundEnd', function(data) {
+   socket.on(gameEvents.ROUND_END, function(data) {
     const {gameID, storyNumber, currentRound} = data;
     const g = games.get(gameID);
     //currentRound will be passed from the client, and will be the ID of the round that JUST ended

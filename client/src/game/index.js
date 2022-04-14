@@ -258,8 +258,8 @@ function GlobalGameContextProvider(props) {
     }
 
     const startRound = (newStoryNumber) =>{
-        console.log("Inside startRound!");
-        if(newStoryNumber){
+        console.log("START_ROUND received, starting the round! New story number: ", newStoryNumber);
+        if(newStoryNumber !== undefined || newStoryNumber !== null){
             storeReducer({
                 type: GlobalGameActionType.START_ROUND,
                 payload: {storyNumber: newStoryNumber, currentRound: game.currentRound + 1}
@@ -268,20 +268,9 @@ function GlobalGameContextProvider(props) {
     }
 
     const roundEnd = () =>{
-        //This will eventually lead to game.savePanel being called
-        if(game.currentRound === 0){
-            let newStoryNumber = (game.storyNumber + game.currentRound) % game.players.length;
-            storeReducer({
-                type: GlobalGameActionType.START_ROUND,
-                payload: {storyNumber: newStoryNumber, currentRound: game.currentRound + 1}
-            });
-        }
-        else{
-            storeReducer({
-                type: GlobalGameActionType.UPDATE_GAME_STATUS,
-                payload: gameStatus.ROUND_END
-            });
-        }
+        console.log("Round end received! Sending it back to the server");
+        let currentGame = gameRef.current;
+        socket.emit(gameEvents.ROUND_END, {gameID: currentGame.gameID, storyNumber: currentGame.storyNumber, currentRound: currentGame.currentRound})
     }
 
     const joiningGame = (data) => {
