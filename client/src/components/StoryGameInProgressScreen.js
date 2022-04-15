@@ -1,10 +1,7 @@
 import { React} from 'react'
-import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@mui/private-theming';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 
 const StoryGameInProgressScreen = (props) => {
@@ -13,21 +10,9 @@ const StoryGameInProgressScreen = (props) => {
     //     socket.emit("saveText", text);
     // }
 
-    const theme = createTheme({
-        palette: {
-            primary: {
-              main: '#6A8D92',
-            },
-            secondary: {
-              main: '#9FB4C7',
-            }
-        },
-      });
     return (
         <div>
-            <ThemeProvider theme={theme}>
                 <Container component="main" maxWidth="false" maxHeight="lg">
-                <CssBaseline />
                 <Box
                 sx={{
                     marginTop:15,
@@ -61,7 +46,6 @@ const StoryGameInProgressScreen = (props) => {
                     </Box>
                 </Box>
             </Container>
-    </ThemeProvider>
   </div>
       );
 }
