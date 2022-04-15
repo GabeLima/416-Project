@@ -17,8 +17,9 @@
   --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
 }
 
+/* the background is overwritten by the themes*/
 #root {
-  background-color: #EEEEFF;
+  /*background-color: #EEEEFF;*/
   font-family: "Lexend Exa";
   position: absolute;
   width: 100%;
@@ -57,9 +58,11 @@
   background-repeat: no-repeat;
 }
 
+/*
 .back {
-  background-color: #EEEEFF !important;
+  background-color: #EEEEFF;/* !important;
 }
+*/
 .MuiSlider-thumb{
   color: black;
 }

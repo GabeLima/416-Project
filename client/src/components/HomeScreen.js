@@ -232,7 +232,7 @@ const HomeScreen = () => {
                             <Typography align="center" variant="h4" sx={{mt: 3, mb: 2, width:'100%'}}>Filter Games</Typography>
                             <GameToggle alignment={alignment} setAlignment={setAlignment} />
                             <Typography align="center" variant="h4" sx={{mt: 3, width:'100%'}}>Join Game</Typography>
-                            <TextField disabled={!auth.loggedIn} onKeyPress={handleKeyPress} name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
+                            <TextField color='secondary' disabled={!auth.loggedIn} onKeyPress={handleKeyPress} name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
                             <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={() => handleClick('/create')}>
                                 Create Game
                             </Button>
@@ -241,6 +241,13 @@ const HomeScreen = () => {
                 </Grid>
             </Grid>
 
+            {/* 
+            Hacky solution from whoever created GameLobby
+            It just creates a big box so that the background color
+            fills the whole screen
+            
+            <Box sx= {{ height: 400}}/>
+            */}
         </Box>
         </>
     )
