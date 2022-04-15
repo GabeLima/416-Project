@@ -8,11 +8,13 @@ import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@mui/private-theming';
 import GlobalGameContext from '../game';
 import {gameEvents, gameStatus, gameFailure} from "../game/constants"
+import { useHistory } from 'react-router-dom'
 
 const ComicGameInProgressScreen = (props) => {
     
     const { game } = useContext(GlobalGameContext);
     const gameRef = useRef(game);
+    const history = useHistory();
     const [timePerRound, setTimePerRound] = useState(game.timePerRound);
 
     const decreaseTimer = () =>{
@@ -23,16 +25,6 @@ const ComicGameInProgressScreen = (props) => {
         }
     }
     //setup painterro 
-
-
-    
-    let saveHandler = (image, done) => {
-        console.log("Calling save panel for round: ", game.currentRound);
-        //console.log("image data url: ", image.asDataURL("image/png", 1));
-        game.savePanel(image.asDataURL("image/png", 1));
-        setTimePerRound(game.timePerRound);
-        done(true);
-    }
 
     useEffect(() => {
         if(game.gameStatus === gameStatus.START_ROUND){
@@ -54,6 +46,12 @@ const ComicGameInProgressScreen = (props) => {
     });
 
     useEffect(() => {
+        //console.log("history: ", history);
+        //Hide the previous painterro instance to prevent bugs.
+        if(window.ptro){
+            window.ptro.hide();
+        }
+        //Show a new painterro instance.
         window.ptro = Painterro({
         id: 'painterro',
         defaultTool: "brush",
@@ -66,7 +64,7 @@ const ComicGameInProgressScreen = (props) => {
             done(false);
         }
         }).show();
-    }, []);
+    }, [history]);
 
 
     const theme = createTheme({
