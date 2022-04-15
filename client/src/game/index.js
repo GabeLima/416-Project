@@ -271,10 +271,15 @@ function GlobalGameContextProvider(props) {
         }
     }
 
-    const roundEnd = () =>{
-        console.log("Round end received! Sending it back to the server");
+    const roundEnd = (data) =>{
         let currentGame = gameRef.current;
-        socket.emit(gameEvents.ROUND_END, {gameID: currentGame.gameID, storyNumber: currentGame.storyNumber, currentRound: currentGame.currentRound})
+        if(data.gameID === gameRef.current.gameID){
+            console.log("Round end received! Sending it back to the server");
+            socket.emit(gameEvents.ROUND_END, {gameID: currentGame.gameID, storyNumber: currentGame.storyNumber, currentRound: currentGame.currentRound});
+        }
+        else{
+            console.log("Not sending round end back to server as we're in a different game!");
+        }
     }
 
     const joiningGame = (data) => {

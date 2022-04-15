@@ -15,7 +15,7 @@ function startGame(io, g){
 
     // We'll be storing timePerRound as seconds, so we need to multiply accordingly to reach ms.
     setTimeout(() => {
-        io.to(g.gameID).emit(gameEvents.ROUND_END);
+        io.to(g.gameID).emit(gameEvents.ROUND_END, {gameID: g.gameID});
     }, g.timePerRound * 1000);
     return;
 }

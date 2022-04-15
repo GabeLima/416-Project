@@ -514,34 +514,34 @@ io.on('connect', function (socket) {
     });
 
    socket.on(gameEvents.ROUND_END, function(data) {
-    console.log("Inside round end!");
-    const {gameID, storyNumber, currentRound} = data;
-    const g = games.get(gameID);
-    //currentRound will be passed from the client, and will be the ID of the round that JUST ended
-    g.currentRound = Math.max(g.currentRound, currentRound + 1);
-    //MOVED TO SAVEIMAGE AND SAVETEXT
-    console.log("Adding image: " + "" + data.gameID + data.storyNumber + data.currentRound + " to panel[]: " + data.storyNumber);
-    g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + data.currentRound);
+        console.log("Inside round end!");
+        const {gameID, storyNumber, currentRound} = data;
+        const g = games.get(gameID);
+        if(g){
+            //currentRound will be passed from the client, and will be the ID of the round that JUST ended
+            g.currentRound = Math.max(g.currentRound, currentRound + 1);
+            //MOVED TO SAVEIMAGE AND SAVETEXT
+            console.log("Adding image: " + "" + data.gameID + data.storyNumber + data.currentRound + " to panel[]: " + data.storyNumber);
+            g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + data.currentRound);
 
-    setTimeout(() => {
-        //Generate the new story they'll be adding to
-        if(g.currentRound == g.numRounds){
-            socket.emit(gameEvents.GAME_OVER, g);    
-            g.gameStatus = gameStatus.DONE;
-        }
-        else{
-            let newStoryNumber = (storyNumber + g.currentRound) % g.players.length;
-            socket.emit(gameEvents.START_ROUND, newStoryNumber);
-            //Call client round end, which will call saveImage and this function again (if the game isn't over)
             setTimeout(() => {
-                console.log("Calling roundEnd!");
-                socket.emit(gameEvents.ROUND_END);
-                }, g.timePerRound * 1000);
+                //Generate the new story they'll be adding to
+                if(g.currentRound == g.numRounds){
+                    socket.emit(gameEvents.GAME_OVER, g);    
+                    g.gameStatus = gameStatus.DONE;
+                }
+                else{
+                    let newStoryNumber = (storyNumber + g.currentRound) % g.players.length;
+                    socket.emit(gameEvents.START_ROUND, newStoryNumber);
+                    //Call client round end, which will call saveImage and this function again (if the game isn't over)
+                    setTimeout(() => {
+                        console.log("Calling roundEnd!");
+                        socket.emit(gameEvents.ROUND_END, {gameID: g.gameID});
+                        }, g.timePerRound * 1000);
+                    }
+            });    
         }
-        });    
-    }, 500);
-
-
+    });
 
 });
 
