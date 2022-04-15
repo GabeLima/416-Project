@@ -542,7 +542,7 @@ io.on('connect', function (socket) {
             //Call client round end, which will call saveImage and this function again (if the game isn't over)
             setTimeout(() => {
                 console.log("Calling roundEnd!");
-                io.to(gameID).emit(gameEvents.ROUND_END);
+                socket.emit(gameEvents.ROUND_END);
                 }, g.timePerRound * 1000);
         }
         });    
