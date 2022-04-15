@@ -11,6 +11,7 @@ import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 import GlobalGameContext from "../game";
 import AuthContext from '../auth';
+import { useTheme } from '@mui/system';
 
 //Array of objects of gameInfo
 // const gameInfo = {
@@ -43,6 +44,7 @@ const GameLobby = (props) => {
         currentUser = auth.user.username;
     }
 
+
     const handleLeaveGame = (event) => {
         console.log(auth.user.username + " left game");
 
@@ -57,12 +59,11 @@ const GameLobby = (props) => {
 
     const isOwner = (currentUser === creator);
 
+    const theme = useTheme();
+
     return (
         <div>
-        <Box alignItems="center" sx={{ display: {
-            backgroundColor: "#6A8D92",
-
-        } }}>
+        <Box alignItems="center" sx={{ bgcolor: theme.palette.background.default }}>
 
             <Typography variant="h2"
                         noWrap
@@ -107,7 +108,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: "#4b4e6d",
+                            backgroundColor: theme.button.bg,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -119,7 +120,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: "#4b4e6d",
+                            backgroundColor: theme.button.bg,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -130,7 +131,12 @@ const GameLobby = (props) => {
                 </Button>
             </Box>
 
-            <Box sx= {{ height: 200}}/>
+            {/* 
+                Hacky solution to fill the entire screen with the
+                outer box background color
+                Not needed as long as the background color for this page isn't custom
+            */}
+            <Box sx= {{ height: 200, bgcolor: theme.palette.background.default}}/>
         </Box>
         </div>
     );

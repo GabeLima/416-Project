@@ -19,7 +19,7 @@ router.get('/user/email/:email', UserController.getUserSecurityQuestion);
 router.get('/logout', UserController.logoutUser)
 router.get('/loggedIn', UserController.getLoggedIn)
 router.put('/resetPassword', UserController.resetPassword)
-router.get('/changePassword', UserController.changePassword)
+router.put('/changePassword', UserController.changePassword)
 
 router.put('/user/updateInfo', auth.verify, UserController.updateUser);
 router.delete('/user/delete/:email/:password', auth.verify, UserController.removeUser);

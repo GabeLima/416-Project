@@ -1,16 +1,19 @@
 import * as React from 'react';
 import Typography from '@mui/material/Typography';
 import ListItem from '@mui/material/ListItem';
+import { useTheme } from '@mui/system';
 
 export default function PlayerCard(props) {
 
-    const { username, isCurrentUser } = props;
+    let { username, isCurrentUser } = props;
+
+    const theme = useTheme();
 
     let cardElement =
         <ListItem
             id={"player"}
             
-            sx={{ marginTop: '10px',bgcolor: "#4b4e6d", height:"65px", minWidth:"100px", maxWidth:"500px"}}
+            sx={{ marginTop: '10px', bgcolor: theme.card.user.bg , height:"65px", minWidth:"100px", maxWidth:"500px"}}
             style={{
                 fontSize: '24pt',
                 width: '500%',
@@ -21,13 +24,13 @@ export default function PlayerCard(props) {
                 borderRadius: "20px",
                 borderStyle: "solid",
                 borderWidth: "3px",
-                borderColor: "#80b192"
+                borderColor: theme.card.user.border
             }}>
         
                 <Typography variant="h4"
                             noWrap
                             component="div"
-                            color={isCurrentUser ? "#A1E887" : "#EEEEFF"}
+                            color={isCurrentUser ? theme.card.user.text : theme.card.user.otherPlayerText}
                             sx={{fontWeight: isCurrentUser ? "bold" : "", maxWidth: "200px"}}
                                 >
                     {username}

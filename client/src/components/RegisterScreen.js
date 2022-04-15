@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { GlobalStoreContext } from '../store'
+import { useTheme } from '@mui/system';
 
 const RegisterScreen = () =>{
     const { auth } = useContext(AuthContext);
@@ -29,6 +30,8 @@ const RegisterScreen = () =>{
         }, store);
     };
 
+    const theme = useTheme();
+
     return (<div className='back'>
                 <Container component="main" maxWidth="xs">
                     <CssBaseline />
@@ -40,8 +43,8 @@ const RegisterScreen = () =>{
                             alignItems: 'center',
                         }}
                     >
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
+                        <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg }}>
+                            <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
                         </Avatar>
                         <Typography component="h1" variant="h5">
                             Sign up
@@ -117,7 +120,7 @@ const RegisterScreen = () =>{
                                 type="submit"
                                 fullWidth
                                 variant="contained"
-                                sx={{ mt: 3, mb: 2, backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}
+                                sx={{ mt: 3, mb: 2, backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}}
                             >
                                 Sign Up
                             </Button>

@@ -15,7 +15,7 @@ import { useHistory } from 'react-router-dom';
 import { 
     AppBar, Box, Toolbar, IconButton, Typography, 
     InputBase, MenuItem, Menu, Tooltip, Avatar, 
-    Button,ToggleButton, ToggleButtonGroup, ListItemIcon,
+    Button,ToggleButton, ToggleButtonGroup, ListItemIcon, useTheme,
 } from '@mui/material';
 
 
@@ -25,11 +25,23 @@ import AuthContext from '../auth'
     // Button that has logo and routes to the homepage
     const HomeButton = () => {
         let history = useHistory();
+        const theme = useTheme();
         return (
         <Button 
             variant="contained" 
-            color="secondary" 
-            onClick={() => history.push('/')}
+            style={{
+                backgroundColor: theme.button.bg
+            }}
+            sx={{
+                color: theme.button.text
+            }}
+            onClick={(event) => {
+                console.log(event);
+                event.stopPropagation();
+                event.preventDefault();
+                history.push('/')
+                }
+            }
             startIcon={<HomeIcon />}
             size="large"
         >
@@ -40,11 +52,17 @@ import AuthContext from '../auth'
 
     const LoginButton = () => {
         let history = useHistory();
+        const theme = useTheme();
         return(
         <>
         <Button 
             variant="contained" 
-            color="secondary" 
+            style={{
+                backgroundColor: theme.button.bg
+            }}
+            sx={{
+                color: theme.button.text
+            }}
             onClick={() => history.push('/login')}
             startIcon={<LoginIcon />}
             size="large"
