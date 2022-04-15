@@ -35,7 +35,13 @@ import AuthContext from '../auth'
             sx={{
                 color: theme.button.text
             }}
-            onClick={() => history.push('/')}
+            onClick={(event) => {
+                console.log(event);
+                event.stopPropagation();
+                event.preventDefault();
+                history.push('/')
+                }
+            }
             startIcon={<HomeIcon />}
             size="large"
         >

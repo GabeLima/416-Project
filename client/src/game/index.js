@@ -183,7 +183,6 @@ function GlobalGameContextProvider(props) {
             type: GlobalGameActionType.LOAD_LOBBY,
             payload: gameInfo
         });
-
     }
 
 
