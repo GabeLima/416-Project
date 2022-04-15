@@ -463,6 +463,7 @@ io.on('connect', function (socket) {
                 games.delete(gameID);
                 console.log("Game: " + gameID + " was successfully saved");
                 //Push the players to seeing the published game
+                //THIS MIGHT HAVE TO BE CHANGED TO SOCKET.EMIT
                 io.to(gameID).emit("loadGamePage");
             });
         }
@@ -472,7 +473,6 @@ io.on('connect', function (socket) {
         Uploading the image that was received from the message (saving it to the database)
     */
     socket.on('saveImage', async (data) => {
-        //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
         if(!data.image || !data.imageID)
         {
             console.log("The necessary parameters for saving the image was not provided.");
@@ -480,12 +480,6 @@ io.on('connect', function (socket) {
         }
 
         console.log("Image received");
-        //console.log(data.imageID + " : " + data.image);
-        //Add the imageID to every story
-        // if(data.storyNumber){
-        //     console.log("Adding image: " + imageID + " to panel[]: " + data.storyNumber);
-        //     g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber);
-        // }   
 
         const imageData = new Images({
             image: data.image,
@@ -508,7 +502,6 @@ io.on('connect', function (socket) {
         }
 
         console.log("Text received");
-        //console.log(data.textID + " : " + data.text);
 
         const textData = new Texts({
             text : data.text,
