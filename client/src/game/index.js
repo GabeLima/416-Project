@@ -159,13 +159,14 @@ function GlobalGameContextProvider(props) {
     }
 
     game.joinGame = (data) => {
+        storeReducer({
+            type: GlobalGameActionType.RESET_GAME_INFO
+        });
         socket.emit("joinGame", {gameID: data.gameID, email: data.email, username: data.username});
     }
 
     game.setPreviousPanel =() =>{
-        //console.log("Game: ", game);
         console.log("GameRef: ", gameRef.current);
-        //console.log(game.currentRound, game.storyNumber, game.gameID);
         let currentGame = gameRef.current;
         if(currentGame.currentRound >= 0 && currentGame.storyNumber !== undefined && currentGame.gameID !== "fakeID"){
             const ID = "" + currentGame.gameID + currentGame.storyNumber + (currentGame.currentRound -1);
