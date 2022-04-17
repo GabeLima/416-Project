@@ -40,6 +40,9 @@ const ComicGameInProgressScreen = (props) => {
     useEffect(() => {
         decreaseTimer();
         gameRef.current = game;
+        if(game.gameStatus == "" && window.ptro){
+            window.ptro.hide();
+        }
     });
 
     useEffect(() => {

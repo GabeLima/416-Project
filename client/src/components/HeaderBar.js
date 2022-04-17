@@ -39,6 +39,10 @@ import AuthContext from '../auth'
                 console.log(event);
                 event.stopPropagation();
                 event.preventDefault();
+                //Ptro hides itself if it exists (prevent bugs)
+                if(window.ptro){
+                    window.ptro.hide();
+                }
                 history.push('/')
                 }
             }
@@ -63,7 +67,13 @@ import AuthContext from '../auth'
             sx={{
                 color: theme.button.text
             }}
-            onClick={() => history.push('/login')}
+            onClick={() => {
+                if(window.ptro){
+                    window.ptro.hide();
+                }        
+                history.push('/login')
+            }
+        }
             startIcon={<LoginIcon />}
             size="large"
         >
@@ -193,6 +203,9 @@ import AuthContext from '../auth'
             setAnchorElUser(null);
             // routes to a new page
             console.log(pageURL);
+            if(window.ptro){
+                window.ptro.hide();
+            }
             history.push(pageURL);
         };
 
