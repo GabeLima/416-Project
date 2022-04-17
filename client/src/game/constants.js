@@ -21,11 +21,6 @@ const gameFailure ={
     BLANK_TEXT_ID: "0"
 };
 
-const gameFailure ={
-    BLANK_IMAGE_ID : "0",
-    BLANK_TEXT_ID: "0"
-};
-
 module.exports = {
     gameEvents,
     gameStatus,
