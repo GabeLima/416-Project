@@ -38,7 +38,8 @@ function GlobalGameContextProvider(props) {
         currentRound: 0,
         tags: [],
         storyNumber: 0,
-        previousPanel: "" //Its either text, or its the image. 
+        previousPanel: "", //Its either text, or its the image. 
+        isComic: true
     });
 
     //SETUP THE CLIENT SOCKET
