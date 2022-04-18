@@ -41,6 +41,11 @@ import { useLocation } from "react-router-dom";
                 console.log(event);
                 event.stopPropagation();
                 event.preventDefault();
+
+                //Ptro hides itself if it exists (prevent bugs)
+                if(window.ptro){
+                    window.ptro.hide();
+                }
                 history.push('/')
                 }
             }
@@ -65,7 +70,13 @@ import { useLocation } from "react-router-dom";
             sx={{
                 color: theme.button.text
             }}
-            onClick={() => history.push('/login')}
+            onClick={() => {
+                if(window.ptro){
+                    window.ptro.hide();
+                }        
+                history.push('/login')
+            }
+        }
             startIcon={<LoginIcon />}
             size="large"
         >
@@ -195,6 +206,9 @@ import { useLocation } from "react-router-dom";
             setAnchorElUser(null);
             // routes to a new page
             console.log(pageURL);
+            if(window.ptro){
+                window.ptro.hide();
+            }
             history.push(pageURL);
         };
 

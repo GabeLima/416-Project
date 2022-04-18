@@ -160,7 +160,8 @@ const CreateGame = (props) => {
         const gameID = crypto.randomBytes(3).toString("hex");
 
         console.log(gameID);
-        game.createGame({gameID:gameID, numRounds:numRounds, timePerRound:timePerRound, tags: selectedTags_copy, email: auth.user.email, username: auth.user.username, isComic: store.isComic});
+
+        game.createGame({gameID:gameID, numRounds:numRounds, timePerRound:timePerRound, tags: selectedTags_copy, email: auth.user.email, username: auth.user.username, isComic:store.isComic});
     }
     
     let currentNumTags = selectedTags.length + customTags.split(",").filter((v) => v !== "").length;

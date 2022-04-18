@@ -39,7 +39,10 @@ const GameLobby = (props) => {
     let timePerRound = game.timePerRound;
     let tags = game.tags;
     let gameID = game.gameID;
-    const currentUser = auth.user.username;
+    let currentUser = "";
+    if(auth.user){
+        currentUser = auth.user.username;
+    }
 
 
     const handleLeaveGame = (event) => {
@@ -51,8 +54,7 @@ const GameLobby = (props) => {
     }
 
     const handleStartGame = (event) => {
-        console.log("User started game");
-        history.push("/CGameInProgress/:id");
+        game.startGame();
     }
 
     const isOwner = (currentUser === creator);

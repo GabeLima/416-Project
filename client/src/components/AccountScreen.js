@@ -14,37 +14,63 @@ const AccountScreen = () => {
     const changePassword = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        await api.changePassword({
-            email : auth.user.email,
-            password : formData.get('password'),
-            newPassword : formData.get('newPassword'),
-            newPasswordVerify : formData.get('newPasswordVerify')
-        }).then(() => {
-            auth.getLoggedIn();
-        });
+        if(!formData.get('password') || !formData.get('newPassword') || !formData.get('newPasswordVerify')){
+            store.setErrorMessage("Please enter the required fields");
+            return;
+        }
+        try{
+            await api.changePassword({
+                email : auth.user.email,
+                password : formData.get('password'),
+                newPassword : formData.get('newPassword'),
+                newPasswordVerify : formData.get('newPasswordVerify')
+            }).then(() => {
+                auth.getLoggedIn();
+            });
+        }
+        catch(Exception){
+            store.setErrorMessage("Incorrect information!");
+        }
     } 
 
     const changeUser = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        await api.updateUser({
-            email : auth.user.email,
-            username : formData.get('username'),
-            password : formData.get('password')
-        }).then(() => {
-            auth.getLoggedIn();
-        });
+        if(!formData.get('username') || !formData.get('password')){
+            store.setErrorMessage("Please enter the required fields");
+            return;
+        }
+        try{
+            await api.updateUser({
+                email : auth.user.email,
+                username : formData.get('username'),
+                password : formData.get('password')
+            }).then(() => {
+                auth.getLoggedIn();
+            });
+        }
+        catch(Exception){
+            store.setErrorMessage("Incorrect information!");
+        }
     }
 
     const deleteUser = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        await api.removeUser({
-            email : formData.get('email'),
-            password : formData.get('password')
-        }).then(() => {
-            auth.logoutUser();
-        });
+        if(!formData.get('email') || !formData.get('password')){
+            store.setErrorMessage("Please enter the required fields");
+            return;
+        }
+        try{
+            await api.removeUser({
+                email : formData.get('email'),
+                password : formData.get('password')
+            }).then(() => {
+                auth.logoutUser();
+            });
+        }catch(Exception){
+            store.setErrorMessage("Incorrect information!");
+        }
     }
       
     return (
