@@ -60,7 +60,8 @@ function GlobalGameContextProvider(props) {
                     numRounds: payload.numRounds,
                     timePerRound: payload.timePerRound, 
                     creator: payload.username,
-                    tags: payload.tags
+                    tags: payload.tags,
+                    gameStatus: gameStatus.LOBBY
                 });
             }
             case GlobalGameActionType.LOAD_LOBBY: {
@@ -156,10 +157,16 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+    // handle the current client leaving a game
     // if the creator left, we need to promote the next person in line. if players left are 0, we just delete the game.
     game.playerLeftLobby = (data) => {
         const { username } = data;
         console.log(username + " left game");
+
+        //Reset the game state client side
+        storeReducer({
+            type: GlobalGameActionType.RESET_GAME_INFO
+        });
 
         if (game.players.length === 1) {
             // we would have no one left, just delete the game.
@@ -170,6 +177,7 @@ function GlobalGameContextProvider(props) {
         
     }
 
+    // Notify existing players that a player left
     const playerLeftLobby = (data) => {
         // TODO - add a notification or smth?
         const { gameInfo } = data;
@@ -278,12 +286,12 @@ function GlobalGameContextProvider(props) {
 
     useEffect(() => {
         socket.on("joinSuccess", joinSuccess);
-        socket.once(gameEvents.ROUND_END, roundEnd);
-        socket.once(gameEvents.START_ROUND, startRound);
-        socket.once("getImage", setPreviousPanel);
-        socket.once("getText", setPreviousPanel);
-        socket.once(gameEvents.GAME_OVER, gameOver);
-        socket.once("loadGamePage", loadGamePage);
+        socket.on(gameEvents.ROUND_END, roundEnd);
+        socket.on(gameEvents.START_ROUND, startRound);
+        socket.on("getImage", setPreviousPanel);
+        socket.on("getText", setPreviousPanel);
+        socket.on(gameEvents.GAME_OVER, gameOver);
+        socket.on("loadGamePage", loadGamePage);
         socket.on(gameEvents.JOINING_GAME, joiningGame);
         socket.on("playerLeftLobby", playerLeftLobby);
     }, []);

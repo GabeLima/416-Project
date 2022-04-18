@@ -133,7 +133,7 @@ io.on('connect', function (socket) {
         When we create a game we'll have to create proper game session in our games variable. Their display will also
         switch to the game lobby.
     */
-    socket.once(gameEvents.CREATE_GAME, (data) => {
+    socket.on(gameEvents.CREATE_GAME, (data) => {
         console.log("Inside create game!");
         if(games.has(data.gameID))
         {
