@@ -57,6 +57,7 @@ const io = socketio(server, {
 var clients =[];
 //Array of objects of gameInfo
 // const gameInfo = {
+//     isComic: true
 //     gameID: "",
 //     players: [],
 //     gameStatus: gameStatus.STATUS,
@@ -133,7 +134,7 @@ io.on('connect', function (socket) {
         When we create a game we'll have to create proper game session in our games variable. Their display will also
         switch to the game lobby.
     */
-    socket.once(gameEvents.CREATE_GAME, (data) => {
+    socket.on(gameEvents.CREATE_GAME, (data) => {
         console.log("Inside create game!");
         if(games.has(data.gameID))
         {
@@ -159,6 +160,7 @@ io.on('connect', function (socket) {
         }
 
         const gameInfo = {
+            isComic: data.isComic,
             gameID: data.gameID,
             players: [data.username],
             creator: data.username,
@@ -194,6 +196,8 @@ io.on('connect', function (socket) {
                     //Fill in every storyNumber with an empty array to represent the story
                     g.panels.set(i, []);
                 }
+                //console.log("Game after adding panels: ", g);
+                //console.log(games.get(data.gameID));
 
                 startGame(io, g);
                 return;
@@ -364,30 +368,39 @@ io.on('connect', function (socket) {
     */
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
-        const {gameID, storyNumber} = data;
-        let imageID = data.imageID;
-
-        if(!imageID && !(gameID && storyNumber)){
-            console.log("Error on getImage, missing data from the payload: ", data);
-            return;
+        try{
+            
+            const {gameID, storyNumber} = data;
+            let imageID = data.imageID;
+            console.log("Inside getImage!", data);
+            if(gameID !== undefined && storyNumber!== undefined){
+                const g = games.get(gameID);
+                let panel = g.panels.get(storyNumber);
+                console.log("Panel: ", panel);
+                while(panel.length < g.currentRound){
+                    panel.push(gameFailure.BLANK_IMAGE_ID);
+                }
+                console.log("Panel: ", panel);
+                imageID = panel[panel.length - 1];
+            }
+            else if(imageID === undefined || imageID === null){
+                console.log("Error on getImage, missing data from the payload: ", data);
+                return;
+            }
+            console.log("Searching for imageID: ", imageID);
+            Images.findOne({imageID: imageID}, (err, data) => {
+                if(err ||!data) {
+                    console.log("Error in getImage: " + err);
+                    socket.emit('getImage', gameFailure.BLANK_IMAGE_ID);
+                }
+                else {
+                    socket.emit('getImage', data.image.toString());
+                }
+            });
         }
-        if(gameID && storyNumber){
-            const g = games.get(gameID);
-            let panel = g.panels.get(storyNumber);
-            while(panel.length < g.currentRound){
-                panel.push(gameFailure.BLANK_IMAGE_ID);
-            }
-            imgID = panel[panel.length - 1];
+        catch{
+            console.log("Exception in getImage");
         }
-        Images.findOne({imageID: imageID}, (err, data) => {
-            if(err ||!data) {
-                console.log("Error in getImage: " + err);
-                socket.emit('getImage', false);
-            }
-            else {
-                socket.emit('getImage', data.image);
-            }
-        });
     });
 
     /*
@@ -404,16 +417,18 @@ io.on('connect', function (socket) {
         }
         if(gameID && storyNumber){
             const g = games.get(gameID);
-            let panel = g.panels.get(storyNumber);
-            while(panel.length < g.currentRound){
-                panel.push(gameFailure.BLANK_TEXT_ID);
+            if(g){
+                let panel = g.panels.get(storyNumber);
+                while(panel.length < g.currentRound){
+                    panel.push(gameFailure.BLANK_TEXT_ID);
+                }
+                textID = panel[panel.length - 1];
             }
-            textID = panel[panel.length - 1];
         }
         Texts.findOne({textID: textID}, (err, data) => {
             if(err || !data) {
                 console.log("Error in getText " + err);
-                socket.emit('getText', false);
+                socket.emit('getText', gameFailure.BLANK_TEXT_ID);
             }
             else {
                 socket.emit('getText', data.text);
@@ -425,7 +440,7 @@ io.on('connect', function (socket) {
         Save the game to the database
     */
     socket.on('saveGame', async (data) => {
-        const {gameID} = data
+        const {gameID} = data;
         if(!gameID) {
             console.log("Error in saveGame, gameID not provided");
             return;
@@ -433,10 +448,10 @@ io.on('connect', function (socket) {
         const g = games.get(gameID);
         //Every client is going to be calling this.
         if(g){
-            const gameData = new Game( {
-                isComic: true,
+            const gameData = new Games( {
+                isComic: g.isComic,
                 players: g.players,
-                panels: g.panels,
+                panels: Array.from(g.panels.values()),
                 playerVotes: g.playerVotes,
                 communityVotes: [],
                 gameID: g.gameID,
@@ -446,8 +461,9 @@ io.on('connect', function (socket) {
             });
             const savedGame = await gameData.save().then(() => {
                 games.delete(gameID);
-                console.log(savedGame.gameID + " was successfully saved");
+                console.log("Game: " + gameID + " was successfully saved");
                 //Push the players to seeing the published game
+                //THIS MIGHT HAVE TO BE CHANGED TO SOCKET.EMIT
                 io.to(gameID).emit("loadGamePage");
             });
         }
@@ -457,7 +473,6 @@ io.on('connect', function (socket) {
         Uploading the image that was received from the message (saving it to the database)
     */
     socket.on('saveImage', async (data) => {
-        //data.imageID = gameID + storyNumber(different stories) + roundNumber(panel number of story)
         if(!data.image || !data.imageID)
         {
             console.log("The necessary parameters for saving the image was not provided.");
@@ -465,7 +480,6 @@ io.on('connect', function (socket) {
         }
 
         console.log("Image received");
-        console.log(data.imageID + " : " + data.image);
 
         const imageData = new Images({
             image: data.image,
@@ -488,7 +502,6 @@ io.on('connect', function (socket) {
         }
 
         console.log("Text received");
-        console.log(data.textID + " : " + data.text);
 
         const textData = new Texts({
             text : data.text,
@@ -500,33 +513,35 @@ io.on('connect', function (socket) {
         console.log(savedText.textID + " was successfully saved.");
     });
 
-   socket.on('roundEnd', function(data) {
-    const {gameID, storyNumber, currentRound} = data;
-    const g = games.get(gameID);
-    //currentRound will be passed from the client, and will be the ID of the round that JUST ended
-    g.currentRound = Math.max(g.currentRound, currentRound + 1);
-    //Add the imageID to every story
-    g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + currentRound);
+   socket.on(gameEvents.ROUND_END, function(data) {
+        console.log("Inside round end!");
+        const {gameID, storyNumber, currentRound} = data;
+        const g = games.get(gameID);
+        if(g){
+            //currentRound will be passed from the client, and will be the ID of the round that JUST ended
+            g.currentRound = Math.max(g.currentRound, currentRound + 1);
+            //MOVED TO SAVEIMAGE AND SAVETEXT
+            console.log("Adding image: " + "" + data.gameID + data.storyNumber + data.currentRound + " to panel[]: " + data.storyNumber);
+            g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + data.currentRound);
 
-    setTimeout(() => {
-        //Generate the new story they'll be adding to
-        if(g.currentRound == g.numRounds){
-            socket.emit(gameEvents.GAME_OVER, g);    
-            g.gameStatus = gameStatus.DONE;
+            setTimeout(() => {
+                //Generate the new story they'll be adding to
+                if(g.currentRound == g.numRounds){
+                    socket.emit(gameEvents.GAME_OVER, g);    
+                    g.gameStatus = gameStatus.DONE;
+                }
+                else{
+                    let newStoryNumber = (storyNumber + g.currentRound) % g.players.length;
+                    socket.emit(gameEvents.START_ROUND, newStoryNumber);
+                    //Call client round end, which will call saveImage and this function again (if the game isn't over)
+                    setTimeout(() => {
+                        console.log("Calling roundEnd!");
+                        socket.emit(gameEvents.ROUND_END, {gameID: g.gameID});
+                        }, g.timePerRound * 1000);
+                    }
+            });    
         }
-        else{
-            let newStoryNumber = (storyNumber + g.currentRound) % g.players.length;
-            socket.emit(gameEvents.START_ROUND, newStoryNumber);
-        }
-    }, 500);
-
-    //Call client round end, which will call saveImage and this function again (if the game isn't over)
-    setTimeout(() => {
-        io.to(gameID).emit(gameEvents.ROUND_END);
-        }, g.timePerRound * 1000);
     });
-
-
 
 });
 
