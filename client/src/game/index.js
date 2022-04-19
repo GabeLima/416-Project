@@ -201,11 +201,6 @@ function GlobalGameContextProvider(props) {
         const { username } = data;
         console.log(username + " left game");
 
-        //Reset the game state client side
-        storeReducer({
-            type: GlobalGameActionType.RESET_GAME_INFO
-        });
-
         if (game.players.length === 1) {
             // we would have no one left, just delete the game.
             socket.emit("deleteEmptyLobby", {gameID: game.gameID});
