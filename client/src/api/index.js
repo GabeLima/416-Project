@@ -2,7 +2,7 @@ import axios from 'axios'
 axios.defaults.withCredentials = true;
 const api = axios.create({
     baseURL: 'http://localhost:4000/api' //LOCAL BUILD
-    //baseURL: 'https://derit.herokuapp.com/api', HEROKU DEPLOYMENT 
+    //baseURL: 'https://derit.herokuapp.com/api'
 
 })
 export const getLoggedIn = () => api.get(`/loggedIn/`);
@@ -20,6 +20,9 @@ export const updateUser = (payload) => api.put('/user/updateInfo', payload);
 export const updateFollowers = (payload) => api.put('/user/followers', payload);
 export const removeUser = (payload) => api.delete(`/user/delete/${payload.email}/${payload.password}`);
 
+export const changePassword = (payload) => api.put(`/changePassword/`, payload);
+
+
 
 const apis = {
     getLoggedIn,
@@ -33,7 +36,8 @@ const apis = {
     searchGames,
     updateUser,
     updateFollowers,
-    removeUser
+    removeUser,
+    changePassword
 }
 
 export default apis

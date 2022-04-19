@@ -4,6 +4,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
+import { useTheme } from '@mui/material';
 
 const bull = (
     <Box
@@ -18,18 +19,20 @@ export default function LobbyCard(props) {
 
   const { title, value } = props;
   
+  const theme = useTheme();
+
   let card;
   if (value instanceof Array) {
     card = (
         <React.Fragment>
           <CardContent  >
-            <Typography sx={{textDecoration: 'underline'}} align="center" nowrap color="#a1e887" variant="h5" component="div" gutterBottom>
+            <Typography style={{color: theme.card.lobby.text}} sx={{textDecoration: 'underline'}} align="center" nowrap variant="h5" component="div" gutterBottom>
               {title}
             </Typography>
-            <List align="center" nowrap color="#a1e887"  sx={{ minHeight:"50px", maxHeight:"150px", overflow: "auto"}}>
+            <List align="center" nowrap style={{color: theme.card.lobby.text}}  sx={{ minHeight:"50px", maxHeight:"150px", overflow: "auto"}}>
               {value.map((value) => {
                   return (
-                    <Typography nowrap color="#a1e887" variant="h6" component="div" gutterBottom>
+                    <Typography nowrap style={{color: theme.card.lobby.text}} variant="h6" component="div" gutterBottom>
                         {bull}{value}
                     </Typography>
                   );
@@ -43,10 +46,10 @@ export default function LobbyCard(props) {
     card = (
         <React.Fragment>
           <CardContent>
-            <Typography sx={{textDecoration: 'underline'}} align="center" nowrap color="#a1e887" variant="h5" component="div" gutterBottom>
+            <Typography sx={{textDecoration: 'underline'}} align="center" nowrap style={{color: theme.card.lobby.text}} variant="h5" component="div" gutterBottom>
               {title}
             </Typography>
-            <Typography align="center" nowrap color="#a1e887" variant="h6" component="div" gutterBottom>
+            <Typography align="center" nowrap style={{color: theme.card.lobby.text}} variant="h6" component="div" gutterBottom>
               {value}
             </Typography>
           </CardContent>
@@ -62,9 +65,9 @@ export default function LobbyCard(props) {
                 borderRadius: "20px",
                 borderStyle: "solid",
                 borderWidth: "3px",
-                borderColor: "#80b192"
+                borderColor: theme.card.lobby.border
             }}
-            sx={{display: { backgroundColor: "#4b4e6d"}}}>
+            sx={{display: { backgroundColor: theme.card.lobby.bg}}}>
             {card}
         </Card>
     </Box>

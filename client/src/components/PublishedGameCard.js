@@ -5,6 +5,7 @@ import SimpleImageSlider from "react-simple-image-slider";
 import React, { useEffect, useState, useContext } from 'react'
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../auth';
+import { useTheme } from '@mui/material';
 
 const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
    const { auth } = useContext(AuthContext);
@@ -42,16 +43,16 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
   }, [votes]);
 
   useEffect(() => {
-    if(auth){
-      if(auth.user.username === creator){
+      if(auth.user && auth.user.username === creator){
         setIsOwner(true);
       }
-    }
   })
+
+  const theme = useTheme();
 
   return (
     <Grid item m={2}>
-        <Container style={{width:"330px", backgroundColor:"#80B192", borderRadius:"20px"}}>
+        <Container style={{width:"330px", backgroundColor: theme.card.game.bg, borderRadius:"20px"}}>
             <Grid container>
               <Grid item xs={9}>
                 {isOwner ? 
@@ -65,7 +66,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
               </Grid>
               <Grid item pt={1}>
                 <Button 
-                style={{backgroundColor:"#A1E887", color:"black"}}
+                style={{backgroundColor: theme.card.game.button, color:"black"}}
                 onClick={()=>{
                   history.push('/gameResult/:id')
                 }}

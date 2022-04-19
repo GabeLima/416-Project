@@ -15,7 +15,7 @@ import { useHistory } from 'react-router-dom';
 import { 
     AppBar, Box, Toolbar, IconButton, Typography, 
     InputBase, MenuItem, Menu, Tooltip, Avatar, 
-    Button,ToggleButton, ToggleButtonGroup, ListItemIcon,
+    Button,ToggleButton, ToggleButtonGroup, ListItemIcon, useTheme,
 } from '@mui/material';
 
 
@@ -25,11 +25,27 @@ import AuthContext from '../auth'
     // Button that has logo and routes to the homepage
     const HomeButton = () => {
         let history = useHistory();
+        const theme = useTheme();
         return (
         <Button 
             variant="contained" 
-            color="secondary" 
-            onClick={() => history.push('/')}
+            style={{
+                backgroundColor: theme.button.bg
+            }}
+            sx={{
+                color: theme.button.text
+            }}
+            onClick={(event) => {
+                console.log(event);
+                event.stopPropagation();
+                event.preventDefault();
+                //Ptro hides itself if it exists (prevent bugs)
+                if(window.ptro){
+                    window.ptro.hide();
+                }
+                history.push('/')
+                }
+            }
             startIcon={<HomeIcon />}
             size="large"
         >
@@ -40,12 +56,24 @@ import AuthContext from '../auth'
 
     const LoginButton = () => {
         let history = useHistory();
+        const theme = useTheme();
         return(
         <>
         <Button 
             variant="contained" 
-            color="secondary" 
-            onClick={() => history.push('/login')}
+            style={{
+                backgroundColor: theme.button.bg
+            }}
+            sx={{
+                color: theme.button.text
+            }}
+            onClick={() => {
+                if(window.ptro){
+                    window.ptro.hide();
+                }        
+                history.push('/login')
+            }
+        }
             startIcon={<LoginIcon />}
             size="large"
         >
@@ -175,6 +203,9 @@ import AuthContext from '../auth'
             setAnchorElUser(null);
             // routes to a new page
             console.log(pageURL);
+            if(window.ptro){
+                window.ptro.hide();
+            }
             history.push(pageURL);
         };
 
@@ -182,7 +213,7 @@ import AuthContext from '../auth'
             <>
                 <Tooltip title="Account Settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar alt="Gorilla Mckilla" fontsize="small"/>
+                        <Avatar alt="Gorilla Mckilla" fontSize="small"/>
                     </IconButton>
                 </Tooltip>
 
@@ -205,14 +236,14 @@ import AuthContext from '../auth'
                     
                     <MenuItem onClick={() => handleMenuClick('/account')}>
                         <ListItemIcon>
-                            <Settings fontsize="small" />
+                            <Settings fontSize="small" />
                         </ListItemIcon>
                         Account Settings
                     </MenuItem>
 
                     <MenuItem onClick={() => handleMenuClick('/create')}>
                         <ListItemIcon>
-                            <AddIcon fontsize="small" />
+                            <AddIcon fontSize="small" />
                         </ListItemIcon>
                         Create Game
                     </MenuItem>
@@ -221,7 +252,7 @@ import AuthContext from '../auth'
                         auth.logoutUser(store);
                         }}>
                         <ListItemIcon>
-                            <Logout fontsize="small" />
+                            <Logout fontSize="small" />
                         </ListItemIcon>
                         Logout
                     </MenuItem>

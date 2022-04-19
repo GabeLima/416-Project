@@ -7,8 +7,11 @@ import Button from '@mui/material/Button';
 
 import LobbyCard from "./LobbyCard";
 import PlayerCard from "./PlayerCard";
-
+import { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import GlobalGameContext from "../game";
+import AuthContext from '../auth';
+import { useTheme } from '@mui/system';
 
 //Array of objects of gameInfo
 // const gameInfo = {
@@ -25,47 +28,48 @@ import { useHistory } from 'react-router-dom';
 
 const GameLobby = (props) => {
     const history = useHistory();
-    // TODO : REMOVE
-    const propsHardcoded = {
-        currentUser: "hatsuyuki",
-        game: {
-            playerList: ["hatsuyuki", "picard", "fuyu", "aoi", "mckenna", "asdsadsa", "asda", "asdsa"],
-            creator: "hatsuyuki",
-            numRounds: 5,
-            timePerRound: 30,
-            tags: ["Comedy", "Anime", "Family-Friendly"]
-        }
+
+
+    const { game } = useContext(GlobalGameContext);
+    const { auth } = useContext(AuthContext);
+
+    let playerList = game.players;
+    let creator = game.creator;
+    let numRounds = game.numRounds;
+    let timePerRound = game.timePerRound;
+    let tags = game.tags;
+    let gameID = game.gameID;
+    let currentUser = "";
+    if(auth.user){
+        currentUser = auth.user.username;
     }
-    // TODO : REMOVE ABOVE
 
-    const { playerList, creator, numRounds, timePerRound, tags } = propsHardcoded.game; // TODO - update this to just props
-    const currentUser = propsHardcoded.currentUser; // TODO - maybe we use the global store to get this?
 
-    // TODO - When we bring in state/the store, we'll want to determine who the user is that is actually invoking these events.
     const handleLeaveGame = (event) => {
-        console.log("User left game");
+        console.log(auth.user.username + " left game");
+
+        game.playerLeftLobby({username: auth.user.username });
+
         history.push('/')
     }
 
     const handleStartGame = (event) => {
-        console.log("User started game");
-        history.push("/CGameInProgress/:id");
+        game.startGame();
     }
 
     const isOwner = (currentUser === creator);
 
+    const theme = useTheme();
+
     return (
         <div>
-        <Box alignItems="center" sx={{ display: {
-            backgroundColor: "#6A8D92",
+        <Box alignItems="center" sx={{ bgcolor: theme.palette.background.default }}>
 
-        } }}>
-
-            <Typography variant="h1"
+            <Typography variant="h2"
                         noWrap
                         component="div"
                         align="center">
-                    {creator + "'s Game"}
+                    {creator + "'s Game - " + gameID}
             </Typography>
 
             <Box display="flex" alignItems="flex-start" justifyContent="center" gap="10px">
@@ -95,7 +99,7 @@ const GameLobby = (props) => {
                         }}>
                     {playerList.map((player, i) => {
 
-                        return <PlayerCard username={player} isCurrentUser={currentUser === player}/>
+                        return <PlayerCard key={i} username={player} isCurrentUser={currentUser === player}/>
                     })}
                 </List>
             </Box>
@@ -104,7 +108,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: "#4b4e6d",
+                            backgroundColor: theme.button.bg,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -116,7 +120,7 @@ const GameLobby = (props) => {
                 <Button variant="contained"
                         style={{
                             borderRadius: 35,
-                            backgroundColor: "#4b4e6d",
+                            backgroundColor: theme.button.bg,
                             padding: "18px 36px",
                             fontSize: "18px",
                         }}
@@ -127,7 +131,12 @@ const GameLobby = (props) => {
                 </Button>
             </Box>
 
-            <Box sx= {{ height: 200}}/>
+            {/* 
+                Hacky solution to fill the entire screen with the
+                outer box background color
+                Not needed as long as the background color for this page isn't custom
+            */}
+            <Box sx= {{ height: 200, bgcolor: theme.palette.background.default}}/>
         </Box>
         </div>
     );

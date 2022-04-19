@@ -2,8 +2,13 @@ import React, { useState } from 'react';
 import { useParams } from "react-router-dom";
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography';
-import { Grid } from '@mui/material';
+import { CssBaseline, Grid } from '@mui/material';
 import PublishedGameCard from './PublishedGameCard';
+import Box from '@mui/material/Box';
+
+import AuthContext from '../auth';
+import api from '../api'
+import { useContext, useEffect } from 'react';
 
 import AuthContext from '../auth';
 import api from '../api'
@@ -22,7 +27,7 @@ const FollowButton = ({isFollowing, setIsFollowing, userInfo, auth}) => {
     return (
         <>
         <Button
-            color="primary"
+            color="secondary"
             variant="contained"
             sx={{
                 px: 5

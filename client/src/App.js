@@ -19,59 +19,64 @@ import {
 } from "./components";
 import GameResult from './components/GameResult';
 import { SocketContext, socket} from "./context/socket";
-import { ThemeProvider } from '@emotion/react';
-import { createTheme } from '@mui/material/styles';
 import { GlobalStoreContextProvider } from './store';
+import { GlobalGameContextProvider } from './game';
 import { CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
+import AlertModal from './components/AlertModal';
 
+// theme imports
+import original_theme from './themes/original';
+import test_theme from './themes/testing';
+import updated_theme from './themes/updated';
+let themes = new Map( [
+    ['original', original_theme],
+    ['test', test_theme],
+    ['updated', updated_theme]
+]);
 
+/*
+    Current Themes (themes['name']):
+    original - original colors from the collective mind of DERIT
+    test - everything  is set to one color to determine what's connected
+    updated - work in progress for improved color palette
+*/
 const App = () => {
     console.log(socket);
     console.log(SocketContext);
 
-    // applies the theme to all components
-    // we can potentialyl add other themes later
-    const default_theme = createTheme({
-        palette: {
-            primary: {
-              main: '#6A8D92',
-            },
-            secondary: {
-              main: '#9FB4C7',
-            },
-            background: {
-                default: '#EEEFF',
-            }
-        },
-      });
-
     return (
-        <ThemeProvider theme={default_theme}>
+        <ThemeProvider theme={original_theme}>
         <CssBaseline />
+
         <BrowserRouter>
             <AuthContextProvider>
                 <GlobalStoreContextProvider>
                     <SocketContext.Provider value={socket}>
-                        <HeaderBar />
-                        <Switch>
-                            <Route path="/" exact component={HomeScreen} />
-                            <Route path="/account" exact component={AccountScreen} />
-                            <Route path="/profile/:username" exact component={Profile} />
-                            <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
-                            <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
-                            <Route path="/paint" exact component={Paint} />
-                            <Route path="/login/" exact component={LoginScreen} />
-                            <Route path="/register/" exact component={RegisterScreen} />
-                            <Route path="/gameResult/:id" exact component={GameResult}/>
-                            <Route path="/lobby" exact component={GameLobby} />
-                            <Route path="/create" exact component={CreateGame} />
-                            <Route path="/search" exact component={SearchResults} />
-                        </Switch>
+                        <GlobalGameContextProvider>
+                            <HeaderBar />
+                            <Switch>
+                                <Route path="/" exact component={HomeScreen} />
+                                <Route path="/account" exact component={AccountScreen} />
+                                <Route path="/profile/:username" exact component={Profile} />
+                                <Route path="/CGameInProgress/:id" exact component={ComicGameInProgressScreen} />
+                                <Route path="/SGameInProgress/:id" exact component={StoryGameInProgressScreen} />
+                                <Route path="/paint" exact component={Paint} />
+                                <Route path="/login/" exact component={LoginScreen} />
+                                <Route path="/register/" exact component={RegisterScreen} />
+                                <Route path="/gameResult/:id" exact component={GameResult}/>
+                                <Route path="/lobby" exact component={GameLobby} />
+                                <Route path="/create" exact component={CreateGame} />
+                                <Route path="/search" exact component={SearchResults} />
+                            </Switch>
+                            <AlertModal></AlertModal>
+                        </GlobalGameContextProvider>
                         </SocketContext.Provider>
                     </GlobalStoreContextProvider>
             </AuthContextProvider>
         </BrowserRouter>
         </ThemeProvider>
+
     );
 }
 
