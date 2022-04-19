@@ -213,6 +213,13 @@ function GlobalGameContextProvider(props) {
         socket.emit(gameEvents.START_GAME, {gameID: game.gameID})
     }
 
+    game.saveGame = () =>{
+        console.log("Saving the game!")
+        let currentGame = gameRef.current;
+        socket.emit("saveGame", {gameID: currentGame.gameID});
+
+    }
+
 
     const playerLeftLobby = (data) => {
         // TODO - add a notification or smth?
@@ -310,8 +317,11 @@ function GlobalGameContextProvider(props) {
             console.log("Something went wrong in gameOver!", data.gameID, currentGame.gameID);
         }
         else{
-            console.log("Saving the game with gameID: ", currentGame.gameID);
-            socket.emit("saveGame", {gameID: currentGame.gameID});
+            //CGameInProgress will see this and call game.saveGame
+            storeReducer({
+                type: GlobalGameActionType.UPDATE_GAME_STATUS,
+                payload: gameStatus.GAME_OVER
+            });
             //We can't push to gameResult here as the socket might not have finished actually saving the game 
         }
     }
