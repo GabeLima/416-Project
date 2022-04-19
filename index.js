@@ -171,7 +171,6 @@ io.on('connect', function (socket) {
             timePerRound: timePerRound,
             currentRound: 0,
             tags: tags,
-            isComic: data.isComic
         };
         //Map uses set instead of push
         games.set(data.gameID, gameInfo);
