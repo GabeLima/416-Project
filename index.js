@@ -67,7 +67,6 @@ var clients =[];
 //     timePerRound: data.timePerRound,
 //     currentRound: 0,
 //     tags: [],
-//     isComic: data.isComic
 // };
 /*
     Changing games to a map
