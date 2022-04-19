@@ -13,7 +13,7 @@ import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router-dom';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, createRef } from 'react';
 import { SocketContext } from "../context/socket";
 import GlobalGameContext from "../game";
 
@@ -60,16 +60,9 @@ const HomeScreen = () => {
     const { auth } = useContext(AuthContext);
     const socket = useContext(SocketContext);
     const { game } = useContext(GlobalGameContext);
-    //const { store } = useContext(GlobalStoreContext);
+    const { store } = useContext(GlobalStoreContext);
 
-
-    // useEffect(() => {
-    //     store.loadIdNamePairs();
-    // }, []);
-
-    // obtain a list of cards based on what is being asked
-    // Story/Comic
-    // Completed/Joinable
+    let gameCodeInput = createRef();
 
     useEffect(() => {
         if (socket && auth.loggedIn && auth.user) {
@@ -82,49 +75,56 @@ const HomeScreen = () => {
         if (event.code === "Enter") {
             event.stopPropagation();
             event.preventDefault();
-            // Pass off to the search handler.
+            // Pass off to the join game handler
             let gameID = event.target.value;
             console.log("Attempting to join game with ID " + gameID);
             game.joinGame({gameID: gameID, username: auth.user.username});
         }
     }
 
+    const handleJoinClick = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        console.log(gameCodeInput.current);
+        console.log("Attempting to join game with ID " + gameCodeInput.current.value);
+        game.joinGame({gameID: gameCodeInput.current.value, username: auth.user.username});
+    }
 
-    //Example data
-    const liveGames = [
-        {
-            players:["tim", "gabe", "david", "vicky"],
-            creator:"tim",
-            gameID : "IYBH",
-            numRounds : 5,
-            timePerRound : 30,
-            tags : ["Anime", "Superpower", "Stickman", "Basic"]
-        },
-        {
-            players:["tim", "gabe", "david", "vicky"],
-            creator:"gabe",
-            gameID : "JYGS",
-            numRounds : 2,
-            timePerRound : 10,
-            tags : ["notCool"]
-        },
-        {
-            players:["jan", "tim", "gabe", "david", "vicky"],
-            creator:"jan",
-            gameID : "YGFV",
-            numRounds : 4,
-            timePerRound : 27,
-            tags : ["b"]
-        },
-        {
-            players:["jack", "tim", "gabe", "david", "vicky"],
-            creator:"jack",
-            gameID : "KUGH",
-            numRounds : 8,
-            timePerRound : 35,
-            tags : []
-        },
-    ];
+    const [liveGames, setLiveGames] = useState([]);
+
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic === store.isComic) {
+                    filteredGames.push(g);
+                }
+            });
+            console.log(store.isComic ? "loading comics" : "loading stories");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+
+    }, [store.isComic, alignment]);
+
+    // load comics by default
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic) {
+                    filteredGames.push(g);
+                }
+            });
+            console.log("loading comics");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+    }, []);
 
     const publishedGames = [
         {
@@ -232,7 +232,10 @@ const HomeScreen = () => {
                             <Typography align="center" variant="h4" sx={{mt: 3, mb: 2, width:'100%'}}>Filter Games</Typography>
                             <GameToggle alignment={alignment} setAlignment={setAlignment} />
                             <Typography align="center" variant="h4" sx={{mt: 3, width:'100%'}}>Join Game</Typography>
-                            <TextField color='secondary' disabled={!auth.loggedIn} onKeyPress={handleKeyPress} name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
+                            <TextField inputRef={gameCodeInput} color='secondary' disabled={!auth.loggedIn} onKeyPress={handleKeyPress} name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
+                            <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={handleJoinClick}>
+                                Join Game
+                            </Button>
                             <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={() => handleClick('/create')}>
                                 Create Game
                             </Button>

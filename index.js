@@ -66,7 +66,7 @@ var clients =[];
 //     numRounds: data.numRounds,
 //     timePerRound: data.timePerRound,
 //     currentRound: 0,
-//     tags: []
+//     tags: [],
 // };
 /*
     Changing games to a map
@@ -169,7 +169,7 @@ io.on('connect', function (socket) {
             numRounds: numRounds,
             timePerRound: timePerRound,
             currentRound: 0,
-            tags: tags
+            tags: tags,
         };
         //Map uses set instead of push
         games.set(data.gameID, gameInfo);

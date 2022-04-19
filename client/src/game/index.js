@@ -39,7 +39,8 @@ function GlobalGameContextProvider(props) {
         currentRound: 0,
         tags: [],
         storyNumber: 0,
-        previousPanel: "" //Its either text, or its the image. 
+        previousPanel: "", //Its either text, or its the image. 
+        isComic: true
     });
 
 
@@ -75,7 +76,8 @@ function GlobalGameContextProvider(props) {
                     numRounds: payload.numRounds,
                     timePerRound: payload.timePerRound, 
                     creator: payload.username,
-                    tags: payload.tags
+                    tags: payload.tags,
+                    gameStatus: gameStatus.LOBBY
                 });
             }
             case GlobalGameActionType.LOAD_LOBBY: {
@@ -193,6 +195,7 @@ function GlobalGameContextProvider(props) {
         }
     }
 
+    // handle the current client leaving a game
     // if the creator left, we need to promote the next person in line. if players left are 0, we just delete the game.
     game.playerLeftLobby = (data) => {
         const { username } = data;
@@ -207,13 +210,15 @@ function GlobalGameContextProvider(props) {
         
     }
 
+    
+
     game.startGame = () =>{
         console.log(game.gameID);
         //Setup our storyNumber to be our playerNumber
         socket.emit(gameEvents.START_GAME, {gameID: game.gameID})
     }
-
-
+    
+    // Notify existing players that a player left
     const playerLeftLobby = (data) => {
         // TODO - add a notification or smth?
         const { gameInfo } = data;
