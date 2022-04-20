@@ -15,24 +15,37 @@ import { useHistory } from 'react-router-dom';
 import { 
     AppBar, Box, Toolbar, IconButton, Typography, 
     InputBase, MenuItem, Menu, Tooltip, Avatar, 
-    Button,ToggleButton, ToggleButtonGroup, ListItemIcon,
+    Button,ToggleButton, ToggleButtonGroup, ListItemIcon, useTheme,
 } from '@mui/material';
 
 
 import { GlobalStoreContext } from '../store'
 import AuthContext from '../auth'
+import { useLocation } from "react-router-dom";
+
 
     // Button that has logo and routes to the homepage
     const HomeButton = () => {
         let history = useHistory();
+        const theme = useTheme();
         return (
         <Button 
             variant="contained" 
-            color="secondary" 
+            style={{
+                backgroundColor: theme.button.bg
+            }}
+            sx={{
+                color: theme.button.text
+            }}
             onClick={(event) => {
                 console.log(event);
                 event.stopPropagation();
                 event.preventDefault();
+
+                //Ptro hides itself if it exists (prevent bugs)
+                if(window.ptro){
+                    window.ptro.hide();
+                }
                 history.push('/')
                 }
             }
@@ -46,12 +59,24 @@ import AuthContext from '../auth'
 
     const LoginButton = () => {
         let history = useHistory();
+        const theme = useTheme();
         return(
         <>
         <Button 
             variant="contained" 
-            color="secondary" 
-            onClick={() => history.push('/login')}
+            style={{
+                backgroundColor: theme.button.bg
+            }}
+            sx={{
+                color: theme.button.text
+            }}
+            onClick={() => {
+                if(window.ptro){
+                    window.ptro.hide();
+                }        
+                history.push('/login')
+            }
+        }
             startIcon={<LoginIcon />}
             size="large"
         >
@@ -181,6 +206,9 @@ import AuthContext from '../auth'
             setAnchorElUser(null);
             // routes to a new page
             console.log(pageURL);
+            if(window.ptro){
+                window.ptro.hide();
+            }
             history.push(pageURL);
         };
 
@@ -241,6 +269,7 @@ import AuthContext from '../auth'
     const HeaderBar = (props) => {
 
         const { auth } = useContext(AuthContext);
+        const location = useLocation();
 
         // this should be changed to reflect the state later
         const [loggedIn, setLoggedIn] = useState(auth.loggedIn);
@@ -249,6 +278,31 @@ import AuthContext from '../auth'
             setLoggedIn(auth.loggedIn);
         }, [auth.loggedIn]);
 
+        let inGame = false;
+
+        if (location.pathname.includes("GameInProgress") || location.pathname.includes("lobby") || location.pathname.includes("create")) {
+            inGame = true;
+        }
+
+        if (inGame) {
+            return (
+            <AppBar position="static">
+                <Toolbar>
+                    <Box display='flex' flexGrow={1} sx = {{
+    
+                    }}>
+                    </Box>
+    
+                    <Box display='flex' sx={{
+                        justifyContent: 'flex-end',
+                        padding: 1.5,
+                        height: '100%',
+                    }}>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+            );
+        }
         return (
         <AppBar position="static">
             <Toolbar>

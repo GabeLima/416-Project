@@ -1,12 +1,9 @@
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@mui/private-theming';
 import AuthContext from '../auth';
 import api from '../api'
 import { useContext } from 'react';
@@ -16,26 +13,6 @@ import { GlobalStoreContext } from '../store'
 const AccountScreen = () => {
     const { auth } = useContext(AuthContext);
     const { store } = useContext(GlobalStoreContext);
-    const leftTheme = createTheme({
-        palette: {
-            primary: {
-              main: '#9FB4C7',
-            },
-            secondary: {
-              main: '#6A8D92',
-            }
-        },
-      });
-      const rightTheme = createTheme({
-        palette: {
-            primary: {
-              main: '#6A8D92',
-            },
-            secondary: {
-              main: '#9FB4C7',
-            }
-        },
-      });
 
     const changePassword = async (event) => {
         event.preventDefault();
@@ -102,7 +79,6 @@ const AccountScreen = () => {
     return (
         <div className='back'>
                 <Container component="main" maxWidth="lg" maxHeight="lg">
-                <CssBaseline />
                 <Box pb={5}
                 sx={{
                     marginTop: 10,
@@ -111,8 +87,7 @@ const AccountScreen = () => {
                     alignItems: 'center',
                 }}
                 >
-                    <ThemeProvider theme={leftTheme}>
-                    <Box sx={{bgcolor:"secondary.main", border:2, borderColor:"black", width:'75%'}}>
+                    <Box sx={{bgcolor:"primary.main", border:2, borderColor:"black", width:'75%'}}>
                         {/* Change Username*/}
                         <Box component="form" noValidate onSubmit={changeUser}>
                             <Box sx={{pt:10}}>
@@ -141,8 +116,6 @@ const AccountScreen = () => {
                                 </Typography>
                         </Box>
                     </Box>
-                    </ThemeProvider>
-                    <ThemeProvider theme={rightTheme}>
                     {/* Delete Account*/}
                     <Box component="form" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black", height: '100%'}} onSubmit={deleteUser}>
                         <Box sx={{pt:10, pb:22}}>
@@ -166,9 +139,8 @@ const AccountScreen = () => {
                         </Grid>
                         </Grid>
                     </Box>
-                    </ThemeProvider>
                 </Box>
-            </Container>
+    </Container>
   </div>
 
         )

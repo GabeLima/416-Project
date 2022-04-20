@@ -9,10 +9,10 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { GlobalStoreContext } from '../store'
 import Container from '@mui/material/Container';
 import { useState } from 'react'
+import { useTheme } from '@mui/system';
 
 const LoginScreen = () => {
     const { auth } = useContext(AuthContext);
@@ -48,6 +48,7 @@ const LoginScreen = () => {
       securityAnswer: formData.get('securityAnswer')
   }, setState, store);
 };
+const theme = useTheme();
 
   
     function normalLogin(){
@@ -62,8 +63,8 @@ const LoginScreen = () => {
                 alignItems: 'center',
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                <LockOutlinedIcon />
+              <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg}}>
+                <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
               </Avatar>
               <Typography component="h1" variant="h5">
                 Sign in
@@ -93,7 +94,8 @@ const LoginScreen = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}
+                  sx={{ mt: 3, mb: 2, color: theme.button.text, fontWeight:"bold"}}
+                  style={{backgroundColor: theme.button.bg}}
                 >
                   Sign In
                 </Button>
@@ -128,8 +130,8 @@ const LoginScreen = () => {
                 alignItems: 'center',
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                <LockOutlinedIcon />
+              <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg }}>
+                <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
               </Avatar>
               <Typography component="h1" variant="h5">
                 Enter Account Email
@@ -149,7 +151,7 @@ const LoginScreen = () => {
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}
+                  sx={{ mt: 3, mb: 2, backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}}
                 >
                   Continue
                 </Button>
@@ -171,8 +173,8 @@ const LoginScreen = () => {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{ m: 1, bgcolor: theme.lockIcon.bg }}>
+            <LockOutlinedIcon style={{color: theme.lockIcon.color}}/>
           </Avatar>
           <Typography alignContent="center" component="h1" variant="h5">
             {"Your security Question: " + state.securityQuestion}
@@ -212,7 +214,7 @@ const LoginScreen = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}}
+              sx={{ mt: 3, mb: 2, backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}}
             >
               Continue
             </Button>
