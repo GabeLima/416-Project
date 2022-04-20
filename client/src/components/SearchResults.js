@@ -419,8 +419,8 @@ const SearchResults = (props) => {
     
                         {
                             <Grid container>
-                                {filteredResults.map(({creator, tags, communityVotes, comments, panels}, i) => (
-                                    <PublishedGameCard key={i} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+                                {filteredResults.map(({creator, tags, communityVotes, comments, panels, isComic}, i) => (
+                                    <PublishedGameCard key={i} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels} isComic={isComic}/>
                                 ))}
                             </Grid>
                         }

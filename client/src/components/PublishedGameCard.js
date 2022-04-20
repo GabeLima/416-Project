@@ -7,12 +7,13 @@ import { useHistory } from 'react-router-dom';
 import AuthContext from '../auth';
 import { useTheme } from '@mui/material';
 
-const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
+const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) => {
    const { auth } = useContext(AuthContext);
    const [numVotes, setNumVotes] = useState(0);
    const [numComments, setNumComments] = useState(0);
    const [commWinner, setCommWinner] = useState(-1);
    const [isOwner, setIsOwner] = useState(false);
+   const [panelURLs, setPanelURLs] = useState([]);
    let history = useHistory();
 
    useEffect(()=> {
@@ -47,6 +48,18 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels}) => {
         setIsOwner(true);
       }
   })
+
+  //Changing pannels to urls
+  // useEffect(() => {
+  //   if(isComic){
+  //     for(let i = 0; i < panels.length; i++){
+  //       let round = []
+  //       for(let j = 0; j < panels[i].length; j++){
+  //         let img;
+  //       }
+  //     }
+  //   }
+  // }, [panels, isComic]);
 
   const theme = useTheme();
 

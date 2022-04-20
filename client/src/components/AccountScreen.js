@@ -6,10 +6,12 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import AuthContext from '../auth';
 import api from '../api'
+import { GlobalStoreContext } from '../store'
 import { useContext } from 'react';
 
 const AccountScreen = () => {
     const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
 
     const changePassword = async (event) => {
         event.preventDefault();
