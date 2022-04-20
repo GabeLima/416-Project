@@ -32,8 +32,18 @@ const ComicGameInProgressScreen = (props) => {
                 console.log("Calling setPreviousPanel");
                 gameRef.current.setPreviousPanel();
                 window.ptro.clear();
-            }, 500);
+            }, 250);
             //window.ptro.show();
+        }
+        else if(game.gameStatus === gameStatus.GAME_OVER){
+            console.log("Telling ptro to save!", window.ptro.save);
+            window.ptro.save();
+            setTimeout(() => {
+                gameRef.current.saveGame();
+                //Hide painterro
+                window.ptro.hide();
+
+            }, 250);
         }
     }, [game.gameStatus]);
 
