@@ -13,7 +13,7 @@ const LiveGameCard = ({creator, gameID, numRounds, timePerRound, tags}) => {
                 {creator}
             </Typography>
 
-            <Typography variant="h1" mb={1}>
+            <Typography variant="h2" mb={1}>
                 {gameID}
             </Typography>
 

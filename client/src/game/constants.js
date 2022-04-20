@@ -12,7 +12,9 @@ const gameStatus ={
     LOBBY : "lobby", // Waiting for players
     PLAYING: "playing", // Drawing the games
     DONE: "done", //We finished playing, but users are still voting
-    ROUND_END: "round end"
+    ROUND_END: "round end",
+    START_ROUND: "START_ROUND",
+    GAME_OVER: "GAME_OVER"
 };
 
 const gameFailure ={
