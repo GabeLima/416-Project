@@ -221,11 +221,29 @@ getImage = async(req, res) => {
     }
 }
 
+getLatestGames = async (req, res) => {
+    try{
+        let gameQuery = await Game.find().sort({createdAt : -1});
+
+        console.log(gameQuery);
+    
+        return res.status(200).json({ success: true, games: gameQuery});
+    }
+    catch(err){
+        console.log(err);
+        return res.status(404).json({
+            success: false,
+            message: "Getting Game Has Error!"
+        });
+    }
+}
+
 module.exports = {
     createGame,
     search,
     getGame,
     updateGame,
     deleteGame,
-    getImage
+    getImage,
+    getLatestGames
 }
