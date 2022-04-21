@@ -5,10 +5,44 @@ import Container from '@mui/material/Container';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 
 const StoryGameInProgressScreen = (props) => {
-    // const socket = useContext(SocketContext);
-    // let saveHandler = (text, done) => {
-    //     socket.emit("saveText", text);
-    // }
+    
+    const { game } = useContext(GlobalGameContext);
+    const gameRef = useRef(game);
+    const history = useHistory();
+    const [timePerRound, setTimePerRound] = useState(game.timePerRound);
+
+    const decreaseTimer = () =>{
+        if(timePerRound > 0){
+            setTimeout(() => {
+                setTimePerRound(timePerRound-1);
+            }, 1000);
+        }
+    }
+    //setup painterro 
+
+    useEffect(() => {
+        if(game.gameStatus === gameStatus.START_ROUND){
+            //Tell painteroo to save
+            console.log("Saving the text!", window.ptro.save);
+            //Save the text
+            
+        }
+        else if(game.gameStatus === gameStatus.GAME_OVER){
+            console.log("Saving the text!", window.ptro.save);
+            //save the text
+
+            setTimeout(() => {
+                //save the game
+                gameRef.current.saveGame();
+
+            }, 500);
+        }
+    }, [game.gameStatus]);
+
+    useEffect(() => {
+        decreaseTimer();
+        gameRef.current = game;
+    });
 
     return (
         <div>

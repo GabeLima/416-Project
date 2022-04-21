@@ -360,7 +360,12 @@ function GlobalGameContextProvider(props) {
         });
 
         console.log("Game we're pushing to: " + gameInfo.gameID);
-        history.push("/CGameInProgress/" + gameInfo.gameID);
+        if(store.isComic){
+            history.push("/CGameInProgress/" + gameInfo.gameID);
+        }
+        else{
+            history.push("/SGameInProgress/" + gameInfo.gameID);
+        }
     }
 
 
