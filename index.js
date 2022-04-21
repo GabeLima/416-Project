@@ -459,8 +459,8 @@ io.on('connect', function (socket) {
                 tags: g.tags,
                 creator: g.creator
             });
+            games.delete(gameID);
             const savedGame = await gameData.save().then(() => {
-                games.delete(gameID);
                 console.log("Game: " + gameID + " was successfully saved");
                 //Push the players to seeing the published game
                 //THIS MIGHT HAVE TO BE CHANGED TO SOCKET.EMIT
