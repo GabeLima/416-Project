@@ -19,7 +19,8 @@ const app = express();
 // SETUP THE MIDDLEWARE
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    origin: "https://derit.herokuapp.com/",
+    origin: "http://localhost:3000", //LOCAL DEPLOYMENT
+    //origin: "https://derit.herokuapp.com/", HEROKU DEPLOYMENT
     credentials: true
 }))
 app.use(express.json())

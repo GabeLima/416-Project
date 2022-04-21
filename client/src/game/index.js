@@ -217,6 +217,8 @@ function GlobalGameContextProvider(props) {
         //Setup our storyNumber to be our playerNumber
         socket.emit(gameEvents.START_GAME, {gameID: game.gameID})
     }
+    // Notify existing players that a player left
+
 
     game.saveGame = () =>{
         console.log("Saving the game!")
@@ -226,7 +228,6 @@ function GlobalGameContextProvider(props) {
     }
 
     // Notify existing players that a player left
-
     const playerLeftLobby = (data) => {
         // TODO - add a notification or smth?
         const { gameInfo } = data;

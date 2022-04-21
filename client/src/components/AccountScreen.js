@@ -6,8 +6,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import AuthContext from '../auth';
 import api from '../api'
-import { useContext } from 'react';
 import { GlobalStoreContext } from '../store'
+import { useContext } from 'react';
 
 
 const AccountScreen = () => {
