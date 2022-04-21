@@ -164,7 +164,7 @@ function GlobalGameContextProvider(props) {
         storeReducer({
             type: GlobalGameActionType.RESET_GAME_INFO
         });
-        socket.emit("joinGame", {gameID: data.gameID, email: data.email, username: data.username});
+        socket.emit("joinGame", {gameID: data.gameID, email: data.email, username: data.username, storeIsComic: store.isComic});
     }
 
     game.setPreviousPanel =() =>{

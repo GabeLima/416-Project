@@ -220,6 +220,11 @@ io.on('connect', function (socket) {
             if (g.players.includes(data.username)) {
                 return;
             }
+            if (g.isComic !== data.storeIsComic) {
+                socket.emit("joinSuccess", {value:false});
+                console.log("User isComic mismatch in joining a game");
+                return;
+            }
             if(g.gameStatus === gameStatus.LOBBY && g.players.length < gameRules.PLAYER_LIMIT)
             {
                 //Add their data to the game and updating the map
