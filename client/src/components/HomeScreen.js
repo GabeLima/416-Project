@@ -184,7 +184,7 @@ const HomeScreen = () => {
         });
     }, []);
 
-    //const publishedGames = []
+    // const publishedGames = []
     //     {
     //         creator:"vicky",
     //         gameID : "JYGS",
