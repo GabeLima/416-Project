@@ -14,6 +14,7 @@ const LiveGameCard = ({creator, gameID, numRounds, timePerRound, tags}) => {
   const { game } = useContext(GlobalGameContext);
 
   const handleJoinGame = () => {
+      if (!auth.user) {return;}
     console.log("Attempting to join game with ID " + gameID);
     game.joinGame({gameID: gameID, username: auth.user.username});
   }

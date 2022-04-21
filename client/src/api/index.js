@@ -45,7 +45,7 @@ const apis = {
     changePassword,
     getImage,
     deleteGame,
-    getLatestGames
+    getLatestGames,
     getGame
 }
 
