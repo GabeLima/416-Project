@@ -40,7 +40,8 @@ function GlobalGameContextProvider(props) {
         tags: [],
         storyNumber: 0,
         previousPanel: "", //Its either text, or its the image. 
-        isComic: true
+        isComic: true,
+        initialStoryNumber: 0
     });
 
 
@@ -109,7 +110,8 @@ function GlobalGameContextProvider(props) {
             case GlobalGameActionType.UPDATE_STORY_NUMBER: {
                 return setGame({
                     ...currentGame,
-                    storyNumber: payload
+                    storyNumber: payload,
+                    initialStoryNumber: payload
                 });
             }
             case GlobalGameActionType.SET_PREVIOUS_PANEL: {
@@ -130,7 +132,7 @@ function GlobalGameContextProvider(props) {
                 //SET THIS TO WHATEVER THE INITIAL STATE IS
                 // We do this to not carry over state to other games.
                 return setGame({
-                    gameID: "fakeID2",
+                    gameID: "fakeID",
                     players: [],
                     gameStatus: "",
                     creator: "",
@@ -139,7 +141,9 @@ function GlobalGameContextProvider(props) {
                     currentRound: 0,
                     tags: [],
                     storyNumber: 0,
-                    previousPanel: "" //Its either text, or its the image. 
+                    previousPanel: "", //Its either text, or its the image. 
+                    isComic: true,
+                    initialStoryNumber: 0
                 });
             }
             default:
@@ -288,7 +292,7 @@ function GlobalGameContextProvider(props) {
         let currentGame = gameRef.current;
         if(data.gameID === gameRef.current.gameID){
             console.log("Round end received! Sending it back to the server");
-            socket.emit(gameEvents.ROUND_END, {gameID: currentGame.gameID, storyNumber: currentGame.storyNumber, currentRound: currentGame.currentRound});
+            socket.emit(gameEvents.ROUND_END, {gameID: currentGame.gameID, storyNumber: currentGame.initialStoryNumber, currentRound: currentGame.currentRound});
         }
         else{
             console.log("Not sending round end back to server as we're in a different game!");
