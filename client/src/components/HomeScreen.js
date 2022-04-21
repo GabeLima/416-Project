@@ -105,8 +105,6 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log(store.isComic ? "loading comics" : "loading stories");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
 
@@ -123,8 +121,6 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log("loading comics");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
     }, []);
@@ -160,8 +156,6 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log(store.isComic ? "loading comics" : "loading stories");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
 
@@ -178,13 +172,11 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log("loading comics");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
     }, []);
 
-    //const publishedGames = []
+    // const publishedGames = []
     //     {
     //         creator:"vicky",
     //         gameID : "JYGS",
@@ -261,7 +253,7 @@ const HomeScreen = () => {
     return (
         <>
         <Box className="back" pb={4}>
-            <Typography align="center" variant="h1">Games</Typography>
+            <Typography align="center" variant="h1">{store.isComic? "Games": "Stories"}</Typography>
             <Grid 
                 container 
                 direction='row'

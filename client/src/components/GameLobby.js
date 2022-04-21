@@ -45,6 +45,7 @@ const GameLobby = (props) => {
     }
 
 
+
     const handleLeaveGame = (event) => {
         console.log(auth.user.username + " left game");
 

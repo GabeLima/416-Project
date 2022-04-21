@@ -30,7 +30,7 @@ export default function PlayerCard(props) {
                 <Typography variant="h4"
                             noWrap
                             component="div"
-                            color={isCurrentUser ? theme.card.user.text : theme.card.user.otherPlayerText}
+                            color={isCurrentUser ? theme.card.user.text : theme.card.user.opponentText}
                             sx={{fontWeight: isCurrentUser ? "bold" : "", maxWidth: "200px"}}
                                 >
                     {username}

@@ -133,7 +133,9 @@ const Profile = (props) => {
             if(auth.user.email === userInfo.email){
                 setIsOwner(true);
             }
+        }
 
+        if(userInfo){
             const getUserGames = async() => {
                 api.searchGames(`u:${userInfo.username}`).then((response) => {
                     return response.data.data;
