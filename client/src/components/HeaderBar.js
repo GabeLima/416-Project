@@ -280,7 +280,7 @@ import { useLocation } from "react-router-dom";
 
         let inGame = false;
 
-        if (location.pathname.includes("GameInProgress") || location.pathname.includes("lobby") || location.pathname.includes("create")) {
+        if (location.pathname.includes("GameInProgress") || location.pathname.includes("lobby")) {
             inGame = true;
         }
 
