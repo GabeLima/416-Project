@@ -63,6 +63,7 @@ const ComicGameInProgressScreen = (props) => {
         id: 'painterro',
         defaultTool: "brush",
         hiddenTools: ["crop", "resize", "save", "open", "zoomin", "zoomout", "select", "settings", "pixelize", "close"],
+        how_to_paste_actions: ["replace_all"],
         saveHandler: function (image, done){
             console.log("Calling save panel for round: ", gameRef.current.currentRound);
             //console.log("image data url: ", image.asDataURL("image/png", 1));
