@@ -43,7 +43,7 @@ const ComicGameInProgressScreen = (props) => {
                 //Hide painterro
                 window.ptro.hide();
 
-            }, 250);
+            }, 500);
         }
     }, [game.gameStatus]);
 
