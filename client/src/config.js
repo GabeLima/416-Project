@@ -1,1 +1,1 @@
-export const SOCKET_ENDPOINT = "http://localhost:4000";
+export const SOCKET_ENDPOINT = "https://derit.herokuapp.com";
