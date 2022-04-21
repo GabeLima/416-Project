@@ -261,7 +261,7 @@ function GlobalGameContextProvider(props) {
             console.log(store.isComic);
             if (data.gameInfo.isComic !== store.isComic) {
                 console.log("User isComic mismatch in joining a game. Store will gracefully switch game modes to allow the user to join.");
-                store.handleChangeMode();
+                storeRef.current.handleChangeMode();
             }
             storeReducer({
                 type: GlobalGameActionType.LOAD_LOBBY,
