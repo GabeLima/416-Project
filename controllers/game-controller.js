@@ -1,4 +1,5 @@
 const Game = require("../models/game-model");
+const Image = require("../models/image-model");
 
 
 createGame = (req, res) => {
@@ -168,10 +169,44 @@ deleteGame = async (req, res) => {
     });
 }
 
+getImage = async(req, res) => {
+    const imageID = req.params.imageID;
+
+    try{
+        console.log("Inside getImage! ImageID: ", imageID);
+        if(imageID === undefined){
+            console.log("imageID was not provided as parameter");
+            return res.status(404).json({
+                message: 'imageID not provided!',
+            })
+        }
+
+
+        console.log("Searching for imageID: ", imageID);
+
+        Image.findOne({imageID: imageID}, (err, data) => {
+            if(err ||!data) {
+                console.log("Error in getImage: " + err);
+                return res.status(404).json({
+                    err,
+                    message: 'Image not found!',
+                })
+            }
+            
+            console.log("Got Image: ", imageID);
+            return res.status(200).json({ success: true, image: data.image.toString()});
+        });
+    }
+    catch{
+        console.log("Exception in getImage");
+    }
+}
+
 module.exports = {
     createGame,
     search,
     getGame,
     updateGame,
-    deleteGame
+    deleteGame,
+    getImage
 }

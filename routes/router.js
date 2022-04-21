@@ -24,4 +24,6 @@ router.put('/changePassword', UserController.changePassword)
 router.put('/user/updateInfo', auth.verify, UserController.updateUser);
 router.delete('/user/delete/:email/:password', auth.verify, UserController.removeUser);
 
+router.get('/image/:imageID', GameController.getImage);
+
 module.exports = router

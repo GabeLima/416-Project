@@ -22,6 +22,8 @@ export const removeUser = (payload) => api.delete(`/user/delete/${payload.email}
 
 export const changePassword = (payload) => api.put(`/changePassword/`, payload);
 
+export const getImage = (imageID) => api.get(`/image/${imageID}`);
+
 
 
 const apis = {
@@ -37,7 +39,8 @@ const apis = {
     updateUser,
     updateFollowers,
     removeUser,
-    changePassword
+    changePassword,
+    getImage
 }
 
 export default apis
