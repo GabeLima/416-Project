@@ -56,7 +56,10 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
       if(auth.user && auth.user.username === creator){
         setIsOwner(true);
       }
-  })
+      else{
+        setIsOwner(false);
+      }
+  }, [auth])
 
   //Changing pannels to urls
   useEffect(() => {
