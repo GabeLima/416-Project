@@ -102,8 +102,6 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log(store.isComic ? "loading comics" : "loading stories");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
 
@@ -120,8 +118,6 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log("loading comics");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
     }, []);
@@ -137,8 +133,6 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log(store.isComic ? "loading comics" : "loading stories");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
 
@@ -155,8 +149,6 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
-            console.log("loading comics");
-            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
     }, []);

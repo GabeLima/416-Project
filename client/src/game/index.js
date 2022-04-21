@@ -251,6 +251,12 @@ function GlobalGameContextProvider(props) {
         if(value===true){
             console.log("Received a joinSuccess! Switching to the game lobby");
             console.log(data);
+            console.log(data.gameInfo.isComic);
+            console.log(store.isComic);
+            if (data.gameInfo.isComic !== store.isComic) {
+                console.log("User isComic mismatch in joining a game. Store will gracefully switch game modes to allow the user to join.");
+                store.handleChangeMode();
+            }
             storeReducer({
                 type: GlobalGameActionType.LOAD_LOBBY,
                 payload: data.gameInfo
