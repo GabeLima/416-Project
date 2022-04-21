@@ -261,7 +261,7 @@ const HomeScreen = () => {
     return (
         <>
         <Box className="back" pb={4}>
-            <Typography align="center" variant="h1">Games</Typography>
+            <Typography align="center" variant="h1">{store.isComic? "Games": "Stories"}</Typography>
             <Grid 
                 container 
                 direction='row'

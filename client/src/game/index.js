@@ -58,10 +58,12 @@ function GlobalGameContextProvider(props) {
     //Setup the gameRef for the socket functions
     const gameRef = useRef(game);
     const authRef = useRef(auth);
+    const storeRef = useRef(store);
     //This runs ever render to update the gameRef
     useEffect(() => {
         gameRef.current = game;
         authRef.current = auth;
+        storeRef.current = store;
     });
 
 
@@ -176,7 +178,7 @@ function GlobalGameContextProvider(props) {
         let currentGame = gameRef.current;
         if(currentGame.currentRound >= 0 && currentGame.storyNumber !== undefined && currentGame.gameID !== "fakeID"){
             const ID = "" + currentGame.gameID + currentGame.storyNumber + (currentGame.currentRound -1);
-            if(store.isComic === true){
+            if(storeRef.current.isComic === true){
                 console.log("Emitting getImage");
                 socket.emit("getImage", {gameID: currentGame.gameID, storyNumber: currentGame.storyNumber});
             }
@@ -190,7 +192,7 @@ function GlobalGameContextProvider(props) {
 
     game.savePanel = function (data){
         const ID = "" + game.gameID + game.storyNumber + game.currentRound;
-        if(store.isComic === true){
+        if(storeRef.current.isComic === true){
             console.log("Calling saveImage");
             socket.emit("saveImage", {image: data, imageID: ID, storyNumber: game.storyNumber});
         }
@@ -360,7 +362,7 @@ function GlobalGameContextProvider(props) {
         });
 
         console.log("Game we're pushing to: " + gameInfo.gameID);
-        if(store.isComic){
+        if(storeRef.current.isComic === true){
             history.push("/CGameInProgress/" + gameInfo.gameID);
         }
         else{
