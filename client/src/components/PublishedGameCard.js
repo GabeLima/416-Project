@@ -18,7 +18,6 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
    const [isOwner, setIsOwner] = useState(false);
    const [panelURLs, setPanelURLs] = useState([]);
    const [panelSet, setPanelSet] = useState(false);
-   const [update, setUpdate] = useState(0);
    let history = useHistory();
 
    useEffect(()=> {
