@@ -68,10 +68,10 @@ const ComicGameInProgressScreen = (props) => {
             console.log("Calling save panel for round: ", gameRef.current.currentRound);
             //console.log("image data url: ", image.asDataURL("image/png", 1));
             gameRef.current.savePanel(image.asDataURL("image/png", 1));
-            setTimePerRound(gameRef.current.timePerRound);
             done(false);
         }
         }).show();
+        setTimePerRound(gameRef.current.timePerRound);
     }, [history]);
 
     return (
