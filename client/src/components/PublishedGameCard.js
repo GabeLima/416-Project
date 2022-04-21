@@ -59,44 +59,26 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
     if(isComic && !panelSet){
       let temp = [];
 
-      const getImage = async(imageID, round) => {
-        return await api.getImage(imageID)
+      const getImage = async(panels) => {
+        return await api.getImage({panels : panels})
         .then((response) => {
-          // console.log(response.data.image);
+          console.log(response.data.image);
           return response.data.image;
         }).then((image) => {
-          round.push(image);
+          console.log("Set panel urls");
+          setPanelURLs(image);
+          setPanelSet(true);
         });
       }
 
+      getImage(panels);
 
-      for(let i = 0; i < panels.length; i++){
-        let round = []
-        for(let j = 0; j < panels[i].length; j++){
-          getImage(panels[i][j], round);
-
-          console.log(round);
-
-          // round.push(img.image);
-        }
-        temp.push(round);
-      }
 
       // console.log("TEmp: ", temp);
-
-      console.log("Set panel urls");
-      setPanelURLs([...temp]);
-      setPanelSet(true);
     }
   }, [panels, isComic, panelURLs, panelSet]);
 
 
-  useEffect(()=>{
-    if(panelURLs && update <50){
-      console.log("Still undefined");
-      setUpdate(update + 1);
-    }
-  }, [panelURLs, update])
 
   const theme = useTheme();
 
@@ -125,7 +107,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
             </Grid>
 
             {panelSet && console.log("Works: ", panelURLs[0])}
-            {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider key={update} width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[0]} />)}
+            {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider key={update} width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />)}
 
             <Typography variant="subtitle1" mb={1}>
                 Votes: {numVotes}; Comments: {numComments}
