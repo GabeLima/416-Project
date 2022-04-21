@@ -78,7 +78,6 @@ const GameResult = () => {
         </Button>
 
         <>
-        {panels.length}
           {
             panels.map((story, i) => {
               return <StoryCard key={i} content={story} winner={winnerIndex===i}/>
