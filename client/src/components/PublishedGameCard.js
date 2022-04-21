@@ -110,7 +110,9 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
               </Grid>
             </Grid>
 
+
             {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />)}
+
 
             <Typography variant="subtitle1" mb={1}>
                 Votes: {numVotes}; Comments: {numComments}

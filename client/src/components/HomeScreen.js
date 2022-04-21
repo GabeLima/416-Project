@@ -150,6 +150,113 @@ const HomeScreen = () => {
         setPublishedGames(publishedGames.filter(g => g.gameID != id));
     }
 
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic === store.isComic) {
+                    filteredGames.push(g);
+                }
+            });
+            console.log(store.isComic ? "loading comics" : "loading stories");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+
+    }, [store.isComic, alignment]);
+
+    // load comics by default
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic) {
+                    filteredGames.push(g);
+                }
+            });
+            console.log("loading comics");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+    }, []);
+
+    const publishedGames = []
+    //     {
+    //         creator:"vicky",
+    //         gameID : "JYGS",
+    //         panels: [
+    //             ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
+    //             ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
+    //         ],
+    //         communityVotes: [
+    //             ["npc1", "npc2"],
+    //             []
+    //         ],
+    //         comments: [
+    //             {
+    //               user:"user1",
+    //               message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user2",
+    //               message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user3",
+    //               message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user4",
+    //               message:"I hope one day I can see something as beautiful as this again. I can't believe something as amazing as this exists!",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user5",
+    //               message:"I hope the user above me has a good day",
+    //               postDate:new Date()
+    //             },
+    //         ],
+    //         tags : ["Unbelievable", "Pokemon", "Digimon", "War"]
+    //     },
+    //     {
+    //         creator:"david",
+    //         gameID : "KUGB",
+    //         panels: [
+    //             ["/images/mark_oukan_crown7_blue.png", "/images/4.png", "/images/4.png", "/images/4.png"],
+    //             ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
+    //         ],
+    //         communityVotes: [
+    //             [],
+    //             []
+    //         ],
+    //         comments: [
+    //             {
+    //               user:"user1",
+    //               message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user2",
+    //               message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user3",
+    //               message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
+    //               postDate:new Date()
+    //             }
+    //         ],
+    //         tags : ["NewPlayer", "Crown"]
+    //     }
+    // ];
+
 
     return (
         <>
