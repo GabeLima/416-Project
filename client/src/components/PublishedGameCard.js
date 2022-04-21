@@ -104,7 +104,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
                 <Button 
                 style={{backgroundColor: theme.card.game.button, color:"black"}}
                 onClick={()=>{
-                  history.push('/gameResult/:id')
+                  history.push(`/gameResult/${gameID}`)
                 }}
                 >Visit</Button>
               </Grid>
