@@ -8,7 +8,6 @@ import AuthContext from '../auth';
 import api from '../api'
 import { GlobalStoreContext } from '../store'
 import { useContext } from 'react';
-import { GlobalStoreContext } from '../store'
 
 const AccountScreen = () => {
     const { auth } = useContext(AuthContext);

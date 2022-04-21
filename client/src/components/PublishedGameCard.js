@@ -106,7 +106,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
             </Grid>
 
             {panelSet && console.log("Works: ", panelURLs[0])}
-            {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider key={update} width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />)}
+            {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider key={0} width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />)}
 
             <Typography variant="subtitle1" mb={1}>
                 Votes: {numVotes}; Comments: {numComments}
