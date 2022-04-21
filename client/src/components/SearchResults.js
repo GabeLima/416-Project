@@ -32,6 +32,8 @@ const SearchResults = (props) => {
     const [isUserSearch, setIsUserSearch] = useState(true);
     const [currentSort, setCurrentSort] = useState(null);
 
+    const [update, setUpdate] = useState(0);
+
     useEffect(() => {
         
         let query = store.searchQuery;
@@ -116,6 +118,10 @@ const SearchResults = (props) => {
     }
     else {
         filteredResults = results;
+    }
+
+    function deleteCard(id){
+        filteredResults = filteredResults.filter(game => game.gameID != id);
     }
 
     const currentSortType = {
@@ -419,8 +425,8 @@ const SearchResults = (props) => {
     
                         {
                             <Grid container>
-                                {filteredResults.map(({creator, tags, communityVotes, comments, panels}, i) => (
-                                    <PublishedGameCard key={i} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+                                {filteredResults.map(({creator, tags, communityVotes, comments, panels, isComic, gameID}, i) => (
+                                    <PublishedGameCard key={gameID} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels} isComic={isComic} gameID={gameID} deleteCard={deleteCard}/>
                                 ))}
                             </Grid>
                         }
