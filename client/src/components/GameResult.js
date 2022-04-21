@@ -9,35 +9,49 @@ import api from '../api'
 // Page viewed after clicking on a completed game card
 
 const GameResult = () => {
-  const [playerWinner, setPlayerWinner] = useState(-1);
-  const [commWinner, setCommWinner] = useState(-1);
-
-  const [game, setGame] = useState();
 
   const location = useLocation();
-  
+
+  const [comics, setComics] = useState([]);
+  const [game, setGame] = useState();
+
   const getGame = async (gameID) => {
     let res = await api.getGame(gameID);
     if (res.data.success) {
-      let gameResult = res.data.game;
+      let gameRes = res.data.game;
       console.log("Game found");
-      console.log(gameResult);
-      setGame(gameResult);
+      console.log(gameRes);
+      setGame(gameRes);
+
+      let newComics = [...comics];
+      for (let i = 0; i < gameRes.panels.length; i++) {
+        let panels = gameRes.panels[i];
+        let res = await api.getImage({panels : panels})
+        if (res.data.success) {
+          let comic = res.data.image;
+          newComics.push(comic);
+        }
+      }
+
+      console.log("New Comics:");
+      console.log(newComics);
+
+      setComics(newComics);
     }
   }
-  
+
   useEffect(() => {
     let gameID = location.pathname.split("gameResult/")[1];
     getGame(gameID);
   }, []);
 
-  let communityVotes, panels, comments;
+
+  let panels = comics;
   let winnerVotes = 0;
   let winnerIndex = 0;
-
+  let communityVotes,comments;
   if (game) {
     communityVotes = game.communityVotes;
-    panels = game.panels;
     comments = game.comments;
     communityVotes.forEach((subset, i) => {
       if (subset.length > winnerVotes) {
@@ -45,14 +59,15 @@ const GameResult = () => {
         winnerIndex = i;
       }
     });
-
   }
   else {
     communityVotes = [];
-    panels = [];
     comments = [];
   }
-  
+
+
+  console.log("panel");
+  console.log(panels);
 
   const theme = useTheme();
   return (
@@ -63,9 +78,12 @@ const GameResult = () => {
         </Button>
 
         <>
-          {panels.map((story, index) => (
-            <StoryCard content={story} winner={winnerIndex===index}/>
-          ))}
+        {panels.length}
+          {
+            panels.map((story, i) => {
+              return <StoryCard key={i} content={story} winner={winnerIndex===i}/>
+            })
+          }
         </>
       </Box>
 
