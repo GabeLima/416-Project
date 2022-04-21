@@ -1,4 +1,5 @@
 const Game = require("../models/game-model");
+const Image = require("../models/image-model");
 
 
 createGame = (req, res) => {
@@ -170,10 +171,63 @@ deleteGame = async (req, res) => {
     });
 }
 
+getImage = async(req, res) => {
+    const {panels} = req.body;
+    let result = [];
+
+    try{
+        console.log("Inside getImage! ImageID: ", panels);
+        if(panels === undefined){
+            console.log("imageID was not provided as parameter");
+            return res.status(404).json({
+                message: 'panels not provided!',
+            })
+        }
+
+
+        console.log("Searching for imageID: ", panels);
+
+        // Image.findOne({imageID: imageID}, (err, data) => {
+        //     if(err ||!data) {
+        //         console.log("Error in getImage: " + err);
+        //         return res.status(404).json({
+        //             err,
+        //             message: 'Image not found!',
+        //         })
+        //     }
+            
+        //     console.log("Got Image: ", imageID);
+        //     return res.status(200).json({ success: true, image: data.image.toString()});
+        // });
+        for(let i = 0; i < panels.length; i++){
+            //Get images in a round
+            let round = await Image.find({imageID : {$in : panels[i]}}).sort({imageID : 1});
+
+            let temp = [];
+            for(let j = 0; j < round.length; j++){
+                temp.push(round[j].image.toString());
+            }
+            console.log(`Round ${i}: `, temp);
+            result.push(temp);
+        }
+
+        console.log("Got Image: ", panels);
+        return res.status(200).json({ success: true, image: result});        
+    }
+    catch(err){
+        console.log(err);
+        console.log("Exception in getImage");
+        return res.status(404).json({
+            message: 'Excetion!',
+        })
+    }
+}
+
 module.exports = {
     createGame,
     search,
     getGame,
     updateGame,
-    deleteGame
+    deleteGame,
+    getImage
 }
