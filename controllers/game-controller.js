@@ -109,6 +109,8 @@ getGame = async (req, res) => {
                 message: "Game not found!"
             });
         }
+        console.log("Game Found");
+        console.log(game);
         return res.status(200).json({ success: true, game: game});
     });
 }

@@ -22,7 +22,7 @@ export const removeUser = (payload) => api.delete(`/user/delete/${payload.email}
 
 export const changePassword = (payload) => api.put(`/changePassword/`, payload);
 
-
+export const getGame = (gameID) => api.get(`/game/${gameID}`);
 
 const apis = {
     getLoggedIn,
@@ -37,7 +37,8 @@ const apis = {
     updateUser,
     updateFollowers,
     removeUser,
-    changePassword
+    changePassword,
+    getGame
 }
 
 export default apis

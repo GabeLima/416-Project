@@ -3,6 +3,8 @@ import { Box, Button, Container, Grid, TextField, Typography, useTheme } from '@
 import React, { useEffect, useState } from 'react'
 import StoryCard from './StoryCard';
 import GameComment from './GameComment';
+import { useLocation } from 'react-router-dom';
+import api from '../api'
 
 // Page viewed after clicking on a completed game card
 
@@ -10,60 +12,47 @@ const GameResult = () => {
   const [playerWinner, setPlayerWinner] = useState(-1);
   const [commWinner, setCommWinner] = useState(-1);
 
-  //Hard coded example data
-  const panels=[
-    ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
-    ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
-  ];
+  const [game, setGame] = useState();
 
-  const communityVotes=[
-    ["npc1", "npc2"],
-    []
-  ];
-
-  const comments=[
-    {
-      user:"user1",
-      message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
-      postDate:new Date()
-    },
-    {
-      user:"user2",
-      message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
-      postDate:new Date()
-    },
-    {
-      user:"user3",
-      message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
-      postDate:new Date()
-    },
-    {
-      user:"user4",
-      message:"I hope one day I can see something as beautiful as this again. I can't believe something as amazing as this exists!",
-      postDate:new Date()
-    },
-    {
-      user:"user5",
-      message:"I hope the user above me has a good day",
-      postDate:new Date()
-    },
-  ]
-
-  useEffect(() => {
-    let max = -1;
-    let win = -1;
-
-    for(let i = 0; i < communityVotes.length; i++)
-    {
-      if(communityVotes[i].length > max){
-        max = communityVotes[i].length;
-        win = i;
-      }
+  const location = useLocation();
+  
+  const getGame = async (gameID) => {
+    let res = await api.getGame(gameID);
+    if (res.data.success) {
+      let gameResult = res.data.game;
+      console.log("Game found");
+      console.log(gameResult);
+      setGame(gameResult);
     }
+  }
+  
+  useEffect(() => {
+    let gameID = location.pathname.split("gameResult/")[1];
+    getGame(gameID);
+  }, []);
 
-    setCommWinner(win);
-    console.log(commWinner);
-  }, [commWinner]);
+  let communityVotes, panels, comments;
+  let winnerVotes = 0;
+  let winnerIndex = 0;
+
+  if (game) {
+    communityVotes = game.communityVotes;
+    panels = game.panels;
+    comments = game.comments;
+    communityVotes.forEach((subset, i) => {
+      if (subset.length > winnerVotes) {
+        winnerVotes = subset.length;
+        winnerIndex = i;
+      }
+    });
+
+  }
+  else {
+    communityVotes = [];
+    panels = [];
+    comments = [];
+  }
+  
 
   const theme = useTheme();
   return (
@@ -75,7 +64,7 @@ const GameResult = () => {
 
         <>
           {panels.map((story, index) => (
-            <StoryCard content={story} winner={commWinner===index}/>
+            <StoryCard content={story} winner={winnerIndex===index}/>
           ))}
         </>
       </Box>
