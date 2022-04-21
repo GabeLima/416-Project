@@ -205,7 +205,7 @@ getImage = async(req, res) => {
             for(let j = 0; j < round.length; j++){
                 temp.push(round[j].image.toString());
             }
-            console.log(`Round ${i}: `, temp);
+            // console.log(`Round ${i}: `, temp);
             result.push(temp);
         }
 
