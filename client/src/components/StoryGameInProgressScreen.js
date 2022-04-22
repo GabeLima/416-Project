@@ -1,6 +1,5 @@
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { React, useContext, useEffect, useState, useRef } from 'react'
-import Painterro from "painterro"
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
