@@ -46,6 +46,8 @@
 
 #painterro {
   border: 2px solid red;
+  overflow-y: scroll;
+  background-color: white;
 }
 
 #p2 {

@@ -16,7 +16,9 @@ const StoryGameInProgressScreen = (props) => {
     const gameRef = useRef(game);
     const [timePerRound, setTimePerRound] = useState(game.timePerRound);
     const [text, setText] = useState("");
+    const [content, setContent] = useState("");
 
+    
 
     const decreaseTimer = () =>{
         if(timePerRound > 0){
@@ -32,8 +34,12 @@ const StoryGameInProgressScreen = (props) => {
         gameRef.current.savePanel(text);
         //reset the text
         setText("");
+        const emptyState = ContentState.createFromText('');
+        const resetValue = JSON.stringify(convertToRaw(emptyState));
+        setContent(resetValue);
         //reset the timer
         setTimePerRound(gameRef.current.timePerRound);
+        
     }
 
     useEffect(() => {
@@ -61,6 +67,7 @@ const StoryGameInProgressScreen = (props) => {
         gameRef.current = game;
     });
 
+
     return (
         <div>
                 <Container component="main" maxWidth="false" maxHeight="lg">
@@ -75,7 +82,7 @@ const StoryGameInProgressScreen = (props) => {
                     <Box>
                         <Typography mb={2} align="center" variant="h4"> Time left: {timePerRound}S </Typography>
                         <Typography align="center" variant="h4"> Previous Panel </Typography>
-                        <Box noValidate sx={{ border:2, borderColor:"black", height:"60vh", width:"40vw"}}>
+                        <Box overflow={"auto"} noValidate sx={{ border:2, borderColor:"black", height:"60vh", width:"40vw", bgcolor:"white"}}>
                         {gameRef.current.previousPanel === "" || gameRef.current.previousPanel === gameFailure.BLANK_TEXT_ID ?
                           ""
                           :
@@ -88,10 +95,11 @@ const StoryGameInProgressScreen = (props) => {
                         <Typography align="center" variant="h4"> Current Panel </Typography>
                         <Box id="painterro" class="pa" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black"}}>
                             <MUIRichTextEditor
-                            rows={40}
-                            maxRows={40}
+                            maxLength={500}
+                            // maxHeight="100%"
                             //aria-label="maximum height"
                             style={{ width:'100%', height:'100%' }}
+                            inlineToolbar={true}
                             // value={state.value}
                             controls={[
                                 'bold',
@@ -103,7 +111,7 @@ const StoryGameInProgressScreen = (props) => {
                                 'redo',
                                 'clear'
                             ]}
-                            //value={content} 
+                            value={content} 
                             label={'Type your message here...'}
                             onChange = {(value) =>{
                                 //console.log("html: ", stateToHTML(value.getCurrentContent()));
