@@ -7,6 +7,8 @@ import GlobalGameContext from '../game';
 import {gameEvents, gameStatus, gameFailure} from "../game/constants"
 import { useHistory } from 'react-router-dom'
 import MUIRichTextEditor from "mui-rte";
+import { stateToHTML } from 'draft-js-export-html'
+import { convertFromHTML, ContentState, convertToRaw } from 'draft-js'
 
 const StoryGameInProgressScreen = (props) => {
     
@@ -77,7 +79,7 @@ const StoryGameInProgressScreen = (props) => {
                         {gameRef.current.previousPanel === "" || gameRef.current.previousPanel === gameFailure.BLANK_TEXT_ID ?
                           ""
                           :
-                            gameRef.current.previousPanel
+                            <div dangerouslySetInnerHTML={{__html:gameRef.current.previousPanel}}></div>
                           }
                         </Box>
                     </Box>
@@ -85,16 +87,31 @@ const StoryGameInProgressScreen = (props) => {
                         <Typography mb={2} align="center" variant="h4"> Round {game.currentRound + 1}/{game.numRounds} </Typography>
                         <Typography align="center" variant="h4"> Current Panel </Typography>
                         <Box id="painterro" class="pa" noValidate sx={{bgcolor:"secondary.main", border:2, borderColor:"black"}}>
-                            <TextareaAutosize
+                            <MUIRichTextEditor
                             rows={40}
                             maxRows={40}
-                            aria-label="maximum height"
+                            //aria-label="maximum height"
                             style={{ width:'100%', height:'100%' }}
-                            value={text}
-                            onChange = {(event) =>{
-                                setText(event.target.value);
+                            // value={state.value}
+                            controls={[
+                                'bold',
+                                'italic',
+                                'underline',
+                                'bulletList',
+                                'numberList',
+                                'undo',
+                                'redo',
+                                'clear'
+                            ]}
+                            //value={content} 
+                            label={'Type your message here...'}
+                            onChange = {(value) =>{
+                                //console.log("html: ", stateToHTML(value.getCurrentContent()));
+                                setText(stateToHTML(value.getCurrentContent()));
                             }}
                             />
+
+                            
                         </Box>
                     </Box>
                 </Box>
