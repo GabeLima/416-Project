@@ -6,13 +6,15 @@ import GameComment from './GameComment';
 import { useLocation } from 'react-router-dom';
 import api from '../api'
 import { useHistory } from 'react-router-dom';
+import { useContext } from 'react';
+import AuthContext from '../auth'
 
 // Page viewed after clicking on a completed game card
 
 const GameResult = () => {
 
   const location = useLocation();
-
+  const { auth } = useContext(AuthContext);
   const [comics, setComics] = useState([]);
   const [game, setGame] = useState();
   let history = useHistory();
@@ -79,7 +81,7 @@ const GameResult = () => {
   return (
     <div className='back'>
       <Box textAlign='center' mt={5} className="Game" >
-        <Button variant="outlined" style={{backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}} size="large" onClick={() => handleClick('/create')}>
+        <Button variant="outlined" disabled={!auth.loggedIn} style={{backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"bold"}} size="large" onClick={() => handleClick('/create')}>
           Play Again
         </Button>
 
