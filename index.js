@@ -369,7 +369,6 @@ io.on('connect', function (socket) {
     socket.on('getImage', function(data) {
         // get imgID from gameID and storyNumber
         try{
-            
             const {gameID, storyNumber} = data;
             let imageID = data.imageID;
             console.log("Inside getImage!", data);
@@ -406,34 +405,69 @@ io.on('connect', function (socket) {
     /*
         Returns text from the database
     */
+    // socket.on('getText', function(data) {
+    //     // get imgID from gameID and storyNumber
+    //     const {gameID, storyNumber} = data;
+    //     let textID = data.textID;
+    //     if(!textID && !(gameID && storyNumber)){
+    //         console.log("Error on getText, missing data from the payload: ", data);
+    //         socket.emit('getText', false);
+    //         return;
+    //     }
+    //     if(gameID && storyNumber){
+    //         const g = games.get(gameID);
+    //         if(g){
+    //             let panel = g.panels.get(storyNumber);
+    //             while(panel.length < g.currentRound){
+    //                 panel.push(gameFailure.BLANK_TEXT_ID);
+    //             }
+    //             textID = panel[panel.length - 1];
+    //         }
+    //     }
+    //     Texts.findOne({textID: textID}, (err, data) => {
+    //         if(err || !data) {
+    //             console.log("Error in getText " + err);
+    //             socket.emit('getText', gameFailure.BLANK_TEXT_ID);
+    //         }
+    //         else {
+    //             socket.emit('getText', data.text);
+    //         }
+    //     });
+    // });
     socket.on('getText', function(data) {
         // get imgID from gameID and storyNumber
-        const {gameID, storyNumber} = data;
-        let textID = data.textID;
-        if(!textID && !(gameID && storyNumber)){
-            console.log("Error on getText, missing data from the payload: ", data);
-            socket.emit('getText', false);
-            return;
-        }
-        if(gameID && storyNumber){
-            const g = games.get(gameID);
-            if(g){
+        try{
+            const {gameID, storyNumber} = data;
+            let textID = data.textID;
+            console.log("Inside getText!", data);
+            if(gameID !== undefined && storyNumber!== undefined){
+                const g = games.get(gameID);
                 let panel = g.panels.get(storyNumber);
+                console.log("Panel: ", panel);
                 while(panel.length < g.currentRound){
                     panel.push(gameFailure.BLANK_TEXT_ID);
                 }
+                console.log("Panel: ", panel);
                 textID = panel[panel.length - 1];
             }
+            else if(textID === undefined || textID === null){
+                console.log("Error on getText, missing data from the payload: ", data);
+                return;
+            }
+            console.log("Searching for textID: ", textID);
+            Texts.findOne({textID: textID}, (err, data) => {
+                if(err || !data) {
+                    console.log("Error in getText " + err);
+                    socket.emit('getText', gameFailure.BLANK_TEXT_ID);
+                }
+                else {
+                    socket.emit('getText', data.text);
+                }
+            });
         }
-        Texts.findOne({textID: textID}, (err, data) => {
-            if(err || !data) {
-                console.log("Error in getText " + err);
-                socket.emit('getText', gameFailure.BLANK_TEXT_ID);
-            }
-            else {
-                socket.emit('getText', data.text);
-            }
-        });
+        catch{
+            console.log("Exception in getText");
+        }
     });
 
     /*
@@ -521,7 +555,7 @@ io.on('connect', function (socket) {
             //currentRound will be passed from the client, and will be the ID of the round that JUST ended
             g.currentRound = Math.max(g.currentRound, currentRound + 1);
             //MOVED TO SAVEIMAGE AND SAVETEXT
-            console.log("Adding image: " + "" + data.gameID + data.storyNumber + data.currentRound + " to panel[]: " + data.storyNumber);
+            console.log("Adding image/text: " + "" + data.gameID + data.storyNumber + data.currentRound + " to panel[]: " + data.storyNumber);
             g.panels.get(storyNumber).push("" + data.gameID + data.storyNumber + data.currentRound);
 
             setTimeout(() => {
