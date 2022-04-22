@@ -32,7 +32,7 @@ const ComicGameInProgressScreen = (props) => {
                 console.log("Calling setPreviousPanel");
                 gameRef.current.setPreviousPanel();
                 window.ptro.clear();
-            }, 250);
+            }, 500);
             //window.ptro.show();
         }
         else if(game.gameStatus === gameStatus.GAME_OVER){
