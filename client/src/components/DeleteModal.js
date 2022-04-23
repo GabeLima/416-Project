@@ -57,11 +57,9 @@ function DeleteModal() {
             <Modal
             open = {open}
             onClose={handleCloseModal}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
             >
             <Box sx={style}>
-                <Typography id="modal-modal-title" variant="h6" component="h2" align="center" width='100%'>
+                <Typography variant="h6" component="h2" align="center" width='100%'>
                 Delete the game: {gameID}?
                 <Box style={{  justifyContent: "space-between", position: "relative"}}>
                 <Button  variant="contained" onClick={handleDeleteList} align="left">Delete Game</Button>
