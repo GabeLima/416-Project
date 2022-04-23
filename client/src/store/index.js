@@ -85,7 +85,7 @@ function GlobalStoreContextProvider(props) {
             type: GlobalStoreActionType.CHANGE_MODE
         });
 
-        history.push("/"); // TODO - Is this a good idea??
+       // history.push("/"); // TODO - Is this a good idea??
     }
 
     return (
