@@ -10,7 +10,7 @@ const UserSchema = new Schema(
         following: { type: [String], required: true },
         followedTags: { type: [String], required: true },
         securityQuestion: { type: String, required: true },
-        securityAnswer: {type: String, required: true }
+        securityAnswerHash: {type: String, required: true }
     },
     { timestamps: true },
 );
