@@ -11,7 +11,8 @@ export const GlobalStoreContext = createContext({});
 export const GlobalStoreActionType = {
     SET_ERROR_MESSAGE: "SET_ERROR_MESSAGE",
     SET_SEARCH_QUERY: "SET_SEARCH_QUERY",
-    CHANGE_MODE: "CHANGE_MODE"
+    CHANGE_MODE: "CHANGE_MODE",
+    DELETE_CONFIRMATION: "DELETE_CONFIRMATION"
 }
 
 // WITH THIS WE'RE MAKING OUR GLOBAL DATA STORE
@@ -21,7 +22,9 @@ function GlobalStoreContextProvider(props) {
     const [store, setStore] = useState({
         errorMessage:null,
         searchQuery: "",
-        isComic: true
+        isComic: true,
+        gameToDelete: "",
+        deleteCard: ""
     });
 
     const history = useHistory();
@@ -47,6 +50,13 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     ... store,
                     isComic: !store.isComic
+                });
+            }
+            case GlobalStoreActionType.DELETE_CONFIRMATION: {
+                return setStore({
+                    ... store,
+                    gameToDelete: payload.gameID,
+                    deleteCard: payload.deleteCard
                 });
             }
             default:
@@ -86,6 +96,13 @@ function GlobalStoreContextProvider(props) {
         });
 
        // history.push("/"); // TODO - Is this a good idea??
+    }
+
+    store.handleDelete = function (gameID, deleteCard) {
+        storeReducer({
+            type: GlobalStoreActionType.DELETE_CONFIRMATION,
+            payload: {gameID:gameID, deleteCard: deleteCard}
+        });
     }
 
     return (

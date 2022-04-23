@@ -6,10 +6,12 @@ import React, { useEffect, useState, useContext, useRef } from 'react'
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../auth';
 import { useTheme } from '@mui/material';
+import { GlobalStoreContext } from '../store'
 
 import api from '../api';
 
 const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gameID, deleteCard}) => {
+  const { store } = useContext(GlobalStoreContext);
    const { auth } = useContext(AuthContext);
    const [numVotes, setNumVotes] = useState(0);
    const [numComments, setNumComments] = useState(0);
@@ -19,11 +21,13 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
    const [panelSet, setPanelSet] = useState(false);
    let history = useHistory();
 
-   async function deleteGame(){
-      await api.deleteGame(gameID);
-      deleteCard(gameID);
-      return;
+  function deleteGame(){
+      store.handleDelete(gameID, deleteCard);
+      //await api.deleteGame(gameID);
+      //deleteCard(gameID);
+      //return;
    }
+
 
    useEffect(()=> {
        let count = 0;
