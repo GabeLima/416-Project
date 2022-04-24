@@ -271,7 +271,7 @@ const CreateGame = (props) => {
                         }}
                         sc={{bgcolor: "secondary"}}>
                     {tagOptions.map((tag, i) => {
-                        let disabled = (currentNumTags > 5 ? true : false);
+                        let disabled = (currentNumTags > 4 ? true : false);
                         if (selectedTags.includes(tag)) {
                             // leave the selected tags as clickable or else we get locked out
                             disabled = false;

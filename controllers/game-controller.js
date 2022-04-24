@@ -1,6 +1,6 @@
 const Game = require("../models/game-model");
 const Image = require("../models/image-model");
-
+const Text = require("../models/text-model");
 
 createGame = (req, res) => {
     const body = req.body;
@@ -159,12 +159,41 @@ updateGame = async (req, res) => {
 deleteGame = async (req, res) => {
     const gameID = req.params.gameID;
     Game.findOne({gameID: gameID}, (err, game) => {
-        if (err) {
+        if (err || !game) {
             return res.status(404).json({
                 err,
                 message: 'Game not found!',
             })
         }
+        // generate list of ids to delete
+        let ids = []
+        for(let i=0; i<game.panels.length; i++) {
+            for(let j=0; j<game.panels[i].length; j++) {
+                let id = game.panels[i][j]
+                if(!ids.includes(id))
+                    ids.push(id)
+            }
+        }
+
+        console.log("deleteGame: list of ids to delete", ids)
+
+        // delete images/text from db
+        if (game.isComic) {
+            console.log("deleteGame: deleting images")
+            ids.forEach( id => Image.findOneAndDelete({imageID: id}, (err, img)=>{
+                if(err || !img)
+                    console.log("deleteGame: couldn't delete ", id)
+            }))
+        }
+        else {
+            console.log("deleteGame: deleting text")
+            ids.forEach( id => Text.findOneAndDelete({textID: id}, (err, txt)=>{
+                if(err || !txt)
+                    console.log("deleteGame: couldn't delete ", id)
+            }))
+        }
+
+        // delete game from db
         Game.findOneAndDelete({ gameID: gameID }, () => {
             return res.status(200).json({ success: true })
         }).catch(err => console.log(err))
@@ -207,7 +236,7 @@ getImage = async(req, res) => {
             for(let j = 0; j < round.length; j++){
                 temp.push(round[j].image.toString());
             }
-            console.log(`Round ${i}: `, temp);
+            // console.log(`Round ${i}: `, temp);
             result.push(temp);
         }
 
@@ -223,11 +252,29 @@ getImage = async(req, res) => {
     }
 }
 
+getLatestGames = async (req, res) => {
+    try{
+        let gameQuery = await Game.find().sort({createdAt : -1});
+
+        console.log(gameQuery);
+    
+        return res.status(200).json({ success: true, games: gameQuery});
+    }
+    catch(err){
+        console.log(err);
+        return res.status(404).json({
+            success: false,
+            message: "Getting Game Has Error!"
+        });
+    }
+}
+
 module.exports = {
     createGame,
     search,
     getGame,
     updateGame,
     deleteGame,
-    getImage
+    getImage,
+    getLatestGames
 }

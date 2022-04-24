@@ -6,11 +6,12 @@ import React, { useEffect, useState, useContext, useRef } from 'react'
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../auth';
 import { useTheme } from '@mui/material';
+import { GlobalStoreContext } from '../store'
 
-import api from '../api'
-import CardImageGallery from './CardImageGallery';
+import api from '../api';
 
-const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) => {
+const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gameID, deleteCard}) => {
+  const { store } = useContext(GlobalStoreContext);
    const { auth } = useContext(AuthContext);
    const [numVotes, setNumVotes] = useState(0);
    const [numComments, setNumComments] = useState(0);
@@ -19,6 +20,14 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
    const [panelURLs, setPanelURLs] = useState([]);
    const [panelSet, setPanelSet] = useState(false);
    let history = useHistory();
+
+  function deleteGame(){
+      store.handleDelete(gameID, deleteCard);
+      //await api.deleteGame(gameID);
+      //deleteCard(gameID);
+      //return;
+   }
+
 
    useEffect(()=> {
        let count = 0;
@@ -51,7 +60,10 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
       if(auth.user && auth.user.username === creator){
         setIsOwner(true);
       }
-  })
+      else{
+        setIsOwner(false);
+      }
+  }, [auth])
 
   //Changing pannels to urls
   useEffect(() => {
@@ -87,7 +99,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
             <Grid container>
               <Grid item xs={9}>
                 {isOwner ? 
-                  <IconButton color='error' aria-label="delete" mb={2} pt={1}>
+                  <IconButton color='error' aria-label="delete" mb={2} pt={1} onClick={deleteGame}>
                     <DeleteIcon />
                   </IconButton> : 
                   <Typography variant="h5" mb={2} pt={1}>
@@ -99,14 +111,15 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic}) =>
                 <Button 
                 style={{backgroundColor: theme.card.game.button, color:"black"}}
                 onClick={()=>{
-                  history.push('/gameResult/:id')
+                  history.push(`/gameResult/${gameID}`)
                 }}
                 >Visit</Button>
               </Grid>
             </Grid>
 
-            {panelSet && console.log("Works: ", panelURLs[0])}
-            {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider key={0} width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />)}
+
+            {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />)}
+
 
             <Typography variant="subtitle1" mb={1}>
                 Votes: {numVotes}; Comments: {numComments}

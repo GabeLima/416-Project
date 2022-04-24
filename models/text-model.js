@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const TextSchema = new Schema(
     {
-        text: { type: Buffer, required: true },
+        text: { type: String, required: true },
         textID: { type: String, required: true }
     }
 );

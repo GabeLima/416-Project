@@ -16,6 +16,7 @@ import { useHistory } from 'react-router-dom';
 import { useContext, useEffect, createRef } from 'react';
 import { SocketContext } from "../context/socket";
 import GlobalGameContext from "../game";
+import api from '../api';
 
 // toggles between live and completed games
 const GameToggle = ({alignment, setAlignment}) => {
@@ -61,6 +62,8 @@ const HomeScreen = () => {
     const socket = useContext(SocketContext);
     const { game } = useContext(GlobalGameContext);
     const { store } = useContext(GlobalStoreContext);
+
+    const [publishedGames, setPublishedGames] = useState([]);
 
     let gameCodeInput = createRef();
 
@@ -122,6 +125,26 @@ const HomeScreen = () => {
         });
     }, []);
 
+    //Load Published Games
+    useEffect(() => {
+        const getGames = async() => {
+            api.getLatestGames().then((response) => {
+                return response.data.games;
+            }).then((data) => {
+                console.log(data);
+                setPublishedGames(data);
+                return data;
+            })
+        }
+
+        getGames();
+    },[])
+
+    function deleteCard(id){
+        console.log("Deleting Card: ", id);
+        console.log(publishedGames.filter(g => g.gameID != id));
+        setPublishedGames(publishedGames.filter(g => g.gameID != id));
+    }
 
     useEffect(() => {
         socket.emit("getAllGames");
@@ -153,7 +176,7 @@ const HomeScreen = () => {
         });
     }, []);
 
-    const publishedGames = []
+    // const publishedGames = []
     //     {
     //         creator:"vicky",
     //         gameID : "JYGS",
@@ -226,10 +249,11 @@ const HomeScreen = () => {
     //     }
     // ];
 
+
     return (
         <>
         <Box className="back" pb={4}>
-            <Typography align="center" variant="h1">Games</Typography>
+            <Typography align="center" variant="h1">{store.isComic? "Games": "Stories"}</Typography>
             <Grid 
                 container 
                 direction='row'
@@ -245,8 +269,8 @@ const HomeScreen = () => {
 
                     {alignment === "completed" ? 
                         <Grid container>
-                            {publishedGames.map(({creator, tags, communityVotes, comments, panels}, i) => (
-                                <PublishedGameCard key={i} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+                            {publishedGames.map(({creator, tags, communityVotes, comments, panels, isComic, gameID}, i) => (
+                                <PublishedGameCard key={gameID} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels} isComic={isComic} gameID={gameID} deleteCard={deleteCard}/>
                             ))}
                         </Grid> : ''
                     }

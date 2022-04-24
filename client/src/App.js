@@ -24,6 +24,7 @@ import { GlobalGameContextProvider } from './game';
 import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import AlertModal from './components/AlertModal';
+import DeleteModal from './components/DeleteModal';
 
 // theme imports
 import original_theme from './themes/original';
@@ -69,6 +70,7 @@ const App = () => {
                                 <Route path="/create" exact component={CreateGame} />
                                 <Route path="/search" exact component={SearchResults} />
                             </Switch>
+                            <DeleteModal></DeleteModal>
                             <AlertModal></AlertModal>
                         </GlobalGameContextProvider>
                         </SocketContext.Provider>

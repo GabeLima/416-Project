@@ -12,6 +12,9 @@ export const logoutUser = () => api.get(`/logout/`)
 export const getUserByUsername = (username) => api.get(`/user/${username}`)
 export const getUserSecurityQuestion = (email) => api.get(`/user/email/${email}`)
 export const resetPassword = (payload) => api.put(`/resetPassword/`, payload)
+export const deleteGame = (gameID) => api.delete(`/game/${gameID}`);
+
+export const getLatestGames = () => api.get('/games/latest');
 
 export const getUser = (username) => api.get(`/user/${username}`);
 export const searchGames = (query) => api.get(`/search/${query}`);
@@ -40,9 +43,10 @@ const apis = {
     updateFollowers,
     removeUser,
     changePassword,
-    getGame,
-    getImage
-
+    getImage,
+    deleteGame,
+    getLatestGames,
+    getGame
 }
 
 export default apis
