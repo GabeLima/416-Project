@@ -60,7 +60,14 @@ const SearchResults = (props) => {
                     console.log(res.data)
                     console.log("games found");
                     console.log(results);
-                    setResults(results);
+
+                    const filteredGames = [];
+                    results.forEach((g) => {
+                        if (g.isComic === store.isComic) {
+                            filteredGames.push(g);
+                        }
+                    });
+                    setResults(filteredGames);
                 }
                 else {
                     setResults([]);

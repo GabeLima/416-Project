@@ -252,6 +252,59 @@ getImage = async(req, res) => {
     }
 }
 
+getText = async(req, res) => {
+    const {panels} = req.body;
+    let result = [];
+
+    try{
+        console.log("Inside getText! TextID: ", panels);
+        if(panels === undefined){
+            console.log("textID was not provided as parameter");
+            return res.status(404).json({
+                message: 'panels not provided!',
+            })
+        }
+
+
+        console.log("Searching for textID: ", panels);
+
+        // Image.findOne({imageID: imageID}, (err, data) => {
+        //     if(err ||!data) {
+        //         console.log("Error in getImage: " + err);
+        //         return res.status(404).json({
+        //             err,
+        //             message: 'Image not found!',
+        //         })
+        //     }
+            
+        //     console.log("Got Image: ", imageID);
+        //     return res.status(200).json({ success: true, image: data.image.toString()});
+        // });
+        for(let i = 0; i < panels.length; i++){
+            //Get images in a round
+            let round = await Text.find({textID : {$in : panels[i]}}).sort({textID : 1});
+
+            let temp = [];
+            for(let j = 0; j < round.length; j++){
+                temp.push(round[j].text.toString());
+            }
+            // console.log(`Round ${i}: `, temp);
+            result.push(temp);
+        }
+
+        console.log("Got Text: ", panels);
+        return res.status(200).json({ success: true, text: result});        
+    }
+    catch(err){
+        console.log(err);
+        console.log("Exception in getText");
+        return res.status(404).json({
+            message: 'Excetion!',
+        })
+    }
+}
+
+
 getLatestGames = async (req, res) => {
     try{
         let gameQuery = await Game.find().sort({createdAt : -1});
@@ -276,5 +329,6 @@ module.exports = {
     updateGame,
     deleteGame,
     getImage,
+    getText,
     getLatestGames
 }
