@@ -32,11 +32,12 @@ function DeleteModal() {
         event.stopPropagation();
         store.deleteCard(gameID);
         api.deleteGame(gameID);
-        store.handleDelete(null, null);
         handleCloseModal(event);
     }
     function handleCloseModal(event) {
         event.stopPropagation();
+        //Reset the store's delete status
+        store.handleDelete(null, null);
         handleClose();
     }
 
