@@ -1,38 +1,36 @@
 
 .carousel .control-next.control-arrow:before {
-    content: "";
-    border: solid black;
-    border-width: 0 8px 8px 0;
-    display: inline-block;
-    padding: 14px;
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-  }
-  
-  .carousel .control-prev.control-arrow:before {
-    content: "";
-    border: solid black;
-    border-width: 0 8px 8px 0;
-    display: inline-block;
-    padding: 14px;
-    transform: rotate(135deg);
-    -webkit-transform: rotate(135deg);
-  }
+  content: "";
+  border: solid black;
+  border-width: 0 8px 8px 0;
+  display: inline-block;
+  padding: 14px;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
 
+.carousel .control-prev.control-arrow:before {
+  content: "";
+  border: solid black;
+  border-width: 0 8px 8px 0;
+  display: inline-block;
+  padding: 14px;
+  transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+}
 
-  .carousel .control-dots .dot {
-    border-radius: 15% !important;
-    width: 20px !important;
-    height: 5px !important;
-    background-color: white;
-    border-color: black;
-  }
-  
-  .carousel .slide p {
-    max-width: 55vw;
-    max-height: 200px;
-    min-height: 200px;
+.carousel .control-dots .dot {
+  border-radius: 15% !important;
+  width: 20px !important;
+  height: 5px !important;
+  background-color: white;
+  border-color: black;
+}
 
-    overflow: hidden;
-  }
-  
+.carousel .slide p {
+  max-width: 55vw;
+  max-height: 25px;
+  min-height: 25px;
+
+  overflow: hidden;
+}
