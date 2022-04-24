@@ -25,6 +25,8 @@
   height: 5px !important;
   background-color: white;
   border-color: black;
+  border-style: solid;
+  border-width: 1px !important;
 }
 
 .carousel .slide p {
