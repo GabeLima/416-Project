@@ -14,6 +14,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.22.0",
+    "draft-js-export-html": "^1.4.1",
     "js-cookie": "^3.0.1",
     "mui-rte": "^2.0.1",
     "painterro": "1.2.73",

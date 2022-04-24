@@ -323,6 +323,7 @@ function GlobalGameContextProvider(props) {
             console.log("There was an error setting the previous panels information!");
         }
         else{
+            console.log("Setting previous panel to: ", data);
             storeReducer({
                 type: GlobalGameActionType.SET_PREVIOUS_PANEL,
                 payload: data
