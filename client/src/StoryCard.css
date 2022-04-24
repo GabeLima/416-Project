@@ -18,7 +18,8 @@
     transform: rotate(135deg);
     -webkit-transform: rotate(135deg);
   }
-  
+
+
   .carousel .control-dots .dot {
     border-radius: 15% !important;
     width: 20px !important;
@@ -33,11 +34,5 @@
     min-height: 200px;
 
     overflow: hidden;
-  }
-  
-  .slideshow {
-    border-radius: 5px;
-    border-style: double;
-    border-color: black;
   }
   
