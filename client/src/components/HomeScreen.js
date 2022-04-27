@@ -95,6 +95,8 @@ const HomeScreen = () => {
 
     const [liveGames, setLiveGames] = useState([]);
 
+
+    // get live games
     useEffect(() => {
         socket.emit("getAllGames");
 
@@ -105,6 +107,7 @@ const HomeScreen = () => {
                     filteredGames.push(g);
                 }
             });
+            console.log(filteredGames);
             setLiveGames(filteredGames);
         });
 

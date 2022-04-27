@@ -100,7 +100,11 @@ const GameResult = () => {
     else {
       cards = (panels.map((story, i) => {
         return (
+<<<<<<< HEAD
           <div className="slideshow">
+=======
+          <div>
+>>>>>>> tim2
             <SlideshowCard key={i} content={story} winner={winnerIndex===i}/>
           </div>
         );
@@ -158,7 +162,7 @@ const SlideshowCard = ({content, winner}) => {
         <Grid item xs={1}>
             {winner ? <img width="100%" src="/images/mark_oukan_crown7_blue.png" alt="commVoteCrown"></img> : ''}
         </Grid>
-        <Grid item xs={6} className="slider">
+        <Grid item xs={6} className="slideshowResult" >
             <Slideshow stories={content}/>
         </Grid>
         <Grid item xs={1}>

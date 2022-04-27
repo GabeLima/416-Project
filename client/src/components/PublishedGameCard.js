@@ -133,14 +133,14 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
     if (panelSet && panelURLs!==undefined) {
       if (commWinner >= 0) {
         cards = (
-          <div className="slideshow">
+          <div className="slideshowCard">
             <Slideshow stories={panelURLs[commWinner]} />
           </div>
         );
       }
       else {
         cards = (
-          <div className="slideshow">
+          <div className="slideshowCard">
             <Slideshow stories={[...panelURLs[0]]} />
           </div>
         );
@@ -151,7 +151,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
     <Grid item m={2}>
         <Container style={{width:"330px", backgroundColor: theme.card.game.bg, borderRadius:"20px"}}>
             <Grid container>
-              <Grid item xs={9}>
+              <Grid item xs={9} >
                 {isOwner ? 
                   <IconButton color='error' aria-label="delete" mb={2} pt={1} onClick={deleteGame}>
                     <DeleteIcon />

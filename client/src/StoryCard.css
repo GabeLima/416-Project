@@ -31,8 +31,23 @@
 
 .carousel .slide p {
   max-width: 55vw;
-  max-height: 25px;
-  min-height: 25px;
-
+  max-height: 200px;
+  min-height: 300px;
+  text-overflow: wrap;
   overflow: auto;
+}
+
+.slideshowCard {
+  max-height: 140px;
+  overflow: auto;
+  text-overflow: wrap;
+}
+
+.slideshowResult {
+  border-style: solid;
+  border-color: black;
+  max-height: 300px;
+  min-height: 100px;
+  overflow: auto;
+  text-overflow: wrap;
 }
