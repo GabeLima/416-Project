@@ -177,8 +177,8 @@ const Slideshow = (stories) => {
       {
         text.map((story) => {
           return (
-            <div className="carousel-item">
-              <div dangerouslySetInnerHTML={{__html: story}} />
+            <div className='padding'>
+              <div className="carousel-item" dangerouslySetInnerHTML={{__html: story}} />
             </div>
           );
         })
