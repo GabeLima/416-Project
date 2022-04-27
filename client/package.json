@@ -14,6 +14,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "axios": "^0.22.0",
+    "draft-js-export-html": "^1.4.1",
     "js-cookie": "^3.0.1",
     "mui-rte": "^2.0.1",
     "painterro": "1.2.73",
@@ -28,6 +29,7 @@
     "react-scripts": "^4.0.3",
     "react-simple-image-slider": "^2.4.1",
     "react-sparkle": "1.0.9",
+    "react-responsive-carousel": "^3.2.23",
     "socket.io-client": "4.4.1",
     "web-vitals": "^1.1.2"
   },

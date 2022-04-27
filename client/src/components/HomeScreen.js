@@ -131,14 +131,22 @@ const HomeScreen = () => {
             api.getLatestGames().then((response) => {
                 return response.data.games;
             }).then((data) => {
-                console.log(data);
-                setPublishedGames(data);
+
+                let filteredGames = [];
+                data.forEach((g) => {
+                    if (g.isComic === store.isComic) {
+                        filteredGames.push(g);
+                    }
+                })
+                console.log("Filtered published games");
+                console.log(filteredGames);
+                setPublishedGames(filteredGames);
                 return data;
             })
         }
 
         getGames();
-    },[])
+    },[store.isComic])
 
     function deleteCard(id){
         console.log("Deleting Card: ", id);

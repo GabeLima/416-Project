@@ -284,11 +284,14 @@ registerUser = async (req, res) => {
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordHash = await bcrypt.hash(password, salt);
 
+        const salt2 = await bcrypt.genSalt(saltRounds);
+        const securityAnswerHash = await bcrypt.hash(securityAnswer, salt2);
+
         let followers = []
         let following = []
         let followedTags = []
         const newUser = new User({
-            email, passwordHash, followers, following, followedTags, username, securityQuestion, securityAnswer
+            email, passwordHash, followers, following, followedTags, username, securityQuestion, securityAnswerHash
         });
         const savedUser = await newUser.save();
 
@@ -496,10 +499,11 @@ resetPassword = async(req, res) => {
             errorMessage: "Couldn't find an account with that email!"
         });
     }
-    if(securityAnswer !== loggedInUser.securityAnswer) {
-        return res
-        .status(400)
-        .json({ 
+    // verify sec answer
+    var result = await compareAsync(securityAnswer, loggedInUser.securityAnswerHash);
+    if(!result){
+        console.log("Incorrect Answer");
+        return res.status(400).json({ 
             success: false,
             errorMessage: "Incorrect Answer"
         });

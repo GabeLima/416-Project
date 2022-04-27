@@ -27,5 +27,6 @@ router.put('/user/updateInfo', auth.verify, UserController.updateUser);
 router.delete('/user/delete/:email/:password', auth.verify, UserController.removeUser);
 
 router.post('/image', GameController.getImage);
+router.post('/text', GameController.getText);
 
 module.exports = router

@@ -6,10 +6,16 @@ import React, { useEffect, useState, useContext, useRef } from 'react'
 import { useHistory } from 'react-router-dom';
 import AuthContext from '../auth';
 import { useTheme } from '@mui/material';
+import { GlobalStoreContext } from '../store'
 
 import api from '../api';
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+
+import "../StoryCard.css";
 
 const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gameID, deleteCard}) => {
+  const { store } = useContext(GlobalStoreContext);
    const { auth } = useContext(AuthContext);
    const [numVotes, setNumVotes] = useState(0);
    const [numComments, setNumComments] = useState(0);
@@ -19,11 +25,13 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
    const [panelSet, setPanelSet] = useState(false);
    let history = useHistory();
 
-   async function deleteGame(){
-      await api.deleteGame(gameID);
-      deleteCard(gameID);
-      return;
+  function deleteGame(){
+      store.handleDelete(gameID, deleteCard);
+      //await api.deleteGame(gameID);
+      //deleteCard(gameID);
+      //return;
    }
+
 
    useEffect(()=> {
        let count = 0;
@@ -83,12 +91,62 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
 
       // console.log("TEmp: ", temp);
     }
+    else if (!isComic && !panelSet) {
+      let temp = [];
+
+      const getText = async(panels) => {
+        return await api.getText({panels : panels})
+        .then((response) => {
+          console.log(response.data.text);
+          return response.data.text;
+        }).then((text) => {
+          console.log("Set panel urls");
+          setPanelURLs(text);
+          setPanelSet(true);
+        });
+      }
+
+      getText(panels);
+    }
   }, [panels, isComic, panelURLs, panelSet]);
 
 
 
   const theme = useTheme();
 
+  let cards = "";
+
+  // comic cards
+  if (isComic) {
+    if (panelSet && panelURLs!==undefined) {
+      if (commWinner >= 0) {
+        cards = (<SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} />);
+      }
+      else {
+        cards = (<SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />);
+      }
+    }
+  }
+
+  // story cards
+  else {
+    if (panelSet && panelURLs!==undefined) {
+      if (commWinner >= 0) {
+        cards = (
+          <div className="slideshow">
+            <Slideshow stories={panelURLs[commWinner]} />
+          </div>
+        );
+      }
+      else {
+        cards = (
+          <div className="slideshow">
+            <Slideshow stories={[...panelURLs[0]]} />
+          </div>
+        );
+      }
+    }
+  }
   return (
     <Grid item m={2}>
         <Container style={{width:"330px", backgroundColor: theme.card.game.bg, borderRadius:"20px"}}>
@@ -114,7 +172,7 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
             </Grid>
 
 
-            {(panelSet && panelURLs!==undefined) && (commWinner >= 0 ? <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={panelURLs[commWinner]} /> : <SimpleImageSlider width={280} height={280} showBullets={true} showNavs={true} images={[...panelURLs[0]]} />)}
+            {cards}
 
 
             <Typography variant="subtitle1" mb={1}>
@@ -129,6 +187,24 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
         </Container>
     </Grid>
   )
+}
+
+const Slideshow = (stories) => {
+  const text = stories.stories;
+  return (
+    <Carousel autoPlay={true} infiniteLoop={true} showStatus={false}>
+
+      {
+        text.map((story) => {
+          return (
+            <div className="carousel-item">
+              <div dangerouslySetInnerHTML={{__html: story}} />
+            </div>
+          );
+        })
+      }
+    </Carousel>
+  );
 }
 
 export default PublishedGameCard
