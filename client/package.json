@@ -29,6 +29,7 @@
     "react-scripts": "^4.0.3",
     "react-simple-image-slider": "^2.4.1",
     "react-sparkle": "1.0.9",
+    "react-responsive-carousel": "^3.2.23",
     "socket.io-client": "4.4.1",
     "web-vitals": "^1.1.2"
   },

@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, TextField, Typography, useTheme } from '@mui/material';
+import { Avatar, Box, Button, Container, Grid, TextField, Typography, useTheme } from '@mui/material';
 
 import React, { useEffect, useState } from 'react'
 import StoryCard from './StoryCard';
@@ -8,6 +8,9 @@ import api from '../api'
 import { useHistory } from 'react-router-dom';
 import { useContext } from 'react';
 import AuthContext from '../auth'
+
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
 // Page viewed after clicking on a completed game card
 
@@ -27,22 +30,40 @@ const GameResult = () => {
       console.log(gameRes);
       setGame(gameRes);
 
-      let newComics = [...comics];
-      for (let i = 0; i < gameRes.panels.length; i++) {
-        let panels = gameRes.panels[i];
-        let res = await api.getImage({panels : panels})
-        if (res.data.success) {
-          let comic = res.data.image;
-          newComics.push(comic);
+      if (gameRes.isComic) {
+        let newComics = [...comics];
+        for (let i = 0; i < gameRes.panels.length; i++) {
+          let panels = gameRes.panels[i];
+          let res = await api.getImage({panels : panels})
+          if (res.data.success) {
+            let comic = res.data.image;
+            newComics.push(comic);
+          }
+          }
+  
+        console.log("New Comics:");
+        console.log(newComics);
+  
+        setComics(newComics);
+      }
+      else {
+        let newComics = [...comics];
+        for (let i = 0; i < gameRes.panels.length; i++) {
+          let panels = gameRes.panels[i];
+          let res = await api.getText({panels : panels})
+          if (res.data.success) {
+            let comic = res.data.text;
+            newComics.push(comic);
+          }
+        }
+  
+        console.log("New Stories:");
+        console.log(newComics);
+  
+        setComics(newComics);
         }
       }
-
-      console.log("New Comics:");
-      console.log(newComics);
-
-      setComics(newComics);
     }
-  }
   const handleClick = (pageURL) => {
     console.log(pageURL);
     history.push(pageURL);
@@ -57,6 +78,7 @@ const GameResult = () => {
   let panels = comics;
   let winnerVotes = 0;
   let winnerIndex = 0;
+  let cards = "";
   let communityVotes,comments;
   if (game) {
     communityVotes = game.communityVotes;
@@ -67,6 +89,22 @@ const GameResult = () => {
         winnerIndex = i;
       }
     });
+
+    // determine what type of carousel to show the user
+    if (game.isComic) {
+      cards = (panels.map((story, i) => {
+        return <StoryCard key={i} content={story} winner={winnerIndex===i}/>
+      }));
+    }
+    else {
+      cards = (panels.map((story, i) => {
+        return (
+          <div className="slideshow">
+            <SlideshowCard key={i} content={story} winner={winnerIndex===i}/>
+          </div>
+        );
+      }));
+    }
   }
   else {
     communityVotes = [];
@@ -86,11 +124,7 @@ const GameResult = () => {
         </Button>
 
         <>
-          {
-            panels.map((story, i) => {
-              return <StoryCard key={i} content={story} winner={winnerIndex===i}/>
-            })
-          }
+          { cards }
         </>
       </Box>
 
@@ -114,6 +148,42 @@ const GameResult = () => {
       </Box>
     </div>
   )
+}
+
+const SlideshowCard = ({content, winner}) => {
+  console.log(content);
+  return (
+    <Grid container justifyContent="center" alignItems="center" columnSpacing={4} mt={5}>
+        <Grid item xs={1}>
+            {winner ? <img width="100%" src="/images/mark_oukan_crown7_blue.png" alt="commVoteCrown"></img> : ''}
+        </Grid>
+        <Grid item xs={6} className="slider">
+            <Slideshow stories={content}/>
+        </Grid>
+        <Grid item xs={1}>
+            <Button variant="outlined" size="large" startIcon={<Avatar src={"/images/heart_blur.png"}></Avatar>}>Vote</Button>
+        </Grid>
+    </Grid>
+  )
+}
+  
+const Slideshow = (stories) => {
+  console.log(stories);
+  const text = stories.stories;
+  return (
+    <Carousel autoPlay={true} infiniteLoop={true} showStatus={false}>
+
+      {
+        text.map((story) => {
+          return (
+            <div className="carousel-item">
+              <div dangerouslySetInnerHTML={{__html: story}} />
+            </div>
+          );
+        })
+      }
+    </Carousel>
+  );
 }
 
 export default GameResult;

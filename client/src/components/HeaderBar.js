@@ -91,6 +91,16 @@ import { useLocation } from "react-router-dom";
         const [alignment, setAlignment] = React.useState('comic');
         const { store }  = useContext(GlobalStoreContext);
 
+        
+        useEffect(() => {
+            if (store.isComic) {
+                setAlignment("comic");
+            }
+            else {
+                setAlignment("story");
+            }
+        }, [store.isComic]);
+        
         const handleChange = (event, newAlignment) => {
             if(newAlignment !== null) {
                 setAlignment(newAlignment);
