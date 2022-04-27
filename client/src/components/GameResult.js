@@ -100,11 +100,7 @@ const GameResult = () => {
     else {
       cards = (panels.map((story, i) => {
         return (
-<<<<<<< HEAD
-          <div className="slideshow">
-=======
           <div>
->>>>>>> tim2
             <SlideshowCard key={i} content={story} winner={winnerIndex===i}/>
           </div>
         );
