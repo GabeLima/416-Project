@@ -30,17 +30,24 @@
 }
 
 .carousel .slide p {
-  max-width: 55vw;
-  max-height: 200px;
-  min-height: 300px;
+  max-width: 50vw;
+  max-height: 50px;
+  min-height: 50px;
+  text-overflow: wrap;
+  overflow: auto;
+}
+
+.carousel-item {
+  min-height: 280px;
+  max-height: 280px;
+
   text-overflow: wrap;
   overflow: auto;
 }
 
 .slideshowCard {
-  max-height: 140px;
-  overflow: auto;
-  text-overflow: wrap;
+  min-height: 300px;
+  max-height: 300px;
 }
 
 .slideshowResult {
@@ -48,6 +55,15 @@
   border-color: black;
   max-height: 300px;
   min-height: 100px;
-  overflow: auto;
   text-overflow: wrap;
+}
+
+.storyCard {
+  width: 530px;
+  height: 430px;
+}
+
+.padding {
+  padding-right: 35px;
+  padding-left: 40px;
 }

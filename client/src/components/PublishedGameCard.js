@@ -147,46 +147,93 @@ const PublishedGameCard = ({creator, tags, votes, comments, panels, isComic, gam
       }
     }
   }
-  return (
-    <Grid item m={2}>
-        <Container style={{width:"330px", backgroundColor: theme.card.game.bg, borderRadius:"20px"}}>
-            <Grid container>
-              <Grid item xs={9} >
-                {isOwner ? 
-                  <IconButton color='error' aria-label="delete" mb={2} pt={1} onClick={deleteGame}>
-                    <DeleteIcon />
-                  </IconButton> : 
-                  <Typography variant="h5" mb={2} pt={1}>
-                  {creator}
-                </Typography>
-                }
+
+  if (isComic) {
+    return (
+      <Grid item m={2}>
+          <Container style={{ width:"330px", backgroundColor: theme.card.game.bg, borderRadius:"20px"}}>
+              <Grid container>
+                <Grid item xs={9} >
+                  {isOwner ? 
+                    <IconButton color='error' aria-label="delete" mb={2} pt={1} onClick={deleteGame}>
+                      <DeleteIcon />
+                    </IconButton> : 
+                    <Typography variant="h5" mb={2} pt={1}>
+                    {creator}
+                  </Typography>
+                  }
+                </Grid>
+                <Grid item pt={1}>
+                  <Button 
+                  style={{backgroundColor: theme.card.game.button, color:"black"}}
+                  onClick={()=>{
+                    history.push(`/gameResult/${gameID}`)
+                  }}
+                  >Visit</Button>
+                </Grid>
               </Grid>
-              <Grid item pt={1}>
-                <Button 
-                style={{backgroundColor: theme.card.game.button, color:"black"}}
-                onClick={()=>{
-                  history.push(`/gameResult/${gameID}`)
-                }}
-                >Visit</Button>
+  
+  
+              {cards}
+  
+  
+              <Typography variant="subtitle1" mb={1}>
+                  Votes: {numVotes}; Comments: {numComments}
+              </Typography>
+  
+              <Grid container spacing={1} pb={2} sx={{overflow:"auto"}}>
+                  {tags.map((tag, i) => (
+                      <Tags key={i} tag={tag}/>
+                  ))}
               </Grid>
-            </Grid>
+          </Container>
+      </Grid>
+    );
+  }
 
-
-            {cards}
-
-
-            <Typography variant="subtitle1" mb={1}>
-                Votes: {numVotes}; Comments: {numComments}
-            </Typography>
-
-            <Grid container spacing={1} pb={2} sx={{overflow:"auto"}}>
-                {tags.map((tag, i) => (
-                    <Tags key={i} tag={tag}/>
-                ))}
-            </Grid>
-        </Container>
-    </Grid>
-  )
+  else {
+    return (
+      <Grid item m={2}>
+          <Container style={{ width:"630px", height:"430px", backgroundColor: theme.card.game.bg, borderRadius:"20px"}}>
+              <Grid container>
+                <Grid item xs={9} >
+                  {isOwner ? 
+                    <IconButton color='error' aria-label="delete" mb={2} pt={1} onClick={deleteGame}>
+                      <DeleteIcon />
+                    </IconButton> : 
+                    <Typography variant="h5" mb={2} pt={1}>
+                    {creator}
+                  </Typography>
+                  }
+                </Grid>
+                <Grid item pt={1}>
+                  <Button 
+                  style={{backgroundColor: theme.card.game.button, color:"black"}}
+                  onClick={()=>{
+                    history.push(`/gameResult/${gameID}`)
+                  }}
+                  >Visit</Button>
+                </Grid>
+              </Grid>
+  
+  
+              {cards}
+  
+  
+              <Typography variant="subtitle1" mb={1}>
+                  Votes: {numVotes}; Comments: {numComments}
+              </Typography>
+  
+              <Grid container spacing={1} pb={2} sx={{overflow:"auto"}}>
+                  {tags.map((tag, i) => (
+                      <Tags key={i} tag={tag}/>
+                  ))}
+              </Grid>
+          </Container>
+      </Grid>
+    );
+  }
+  
 }
 
 const Slideshow = (stories) => {
@@ -197,8 +244,8 @@ const Slideshow = (stories) => {
       {
         text.map((story) => {
           return (
-            <div className="carousel-item">
-              <div dangerouslySetInnerHTML={{__html: story}} />
+            <div className='padding'>
+              <div className="carousel-item" dangerouslySetInnerHTML={{__html: story}} />
             </div>
           );
         })
