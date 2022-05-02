@@ -108,8 +108,7 @@ const StoryGameInProgressScreen = (props) => {
                                 'bulletList',
                                 'numberList',
                                 'undo',
-                                'redo',
-                                'clear'
+                                'redo'
                             ]}
                             value={content} 
                             label={'Type your message here...'}
