@@ -32,7 +32,7 @@ const ComicGameInProgressScreen = (props) => {
                 console.log("Calling setPreviousPanel");
                 gameRef.current.setPreviousPanel();
                 window.ptro.clear();
-            }, 250);
+            }, 500);
             //window.ptro.show();
         }
         else if(game.gameStatus === gameStatus.GAME_OVER){
@@ -43,7 +43,7 @@ const ComicGameInProgressScreen = (props) => {
                 //Hide painterro
                 window.ptro.hide();
 
-            }, 250);
+            }, 500);
         }
     }, [game.gameStatus]);
 
@@ -63,6 +63,7 @@ const ComicGameInProgressScreen = (props) => {
         id: 'painterro',
         defaultTool: "brush",
         hiddenTools: ["crop", "resize", "save", "open", "zoomin", "zoomout", "select", "settings", "pixelize", "close"],
+        how_to_paste_actions: ["replace_all"],
         saveHandler: function (image, done){
             console.log("Calling save panel for round: ", gameRef.current.currentRound);
             //console.log("image data url: ", image.asDataURL("image/png", 1));

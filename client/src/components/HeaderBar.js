@@ -91,6 +91,16 @@ import { useLocation } from "react-router-dom";
         const [alignment, setAlignment] = React.useState('comic');
         const { store }  = useContext(GlobalStoreContext);
 
+        
+        useEffect(() => {
+            if (store.isComic) {
+                setAlignment("comic");
+            }
+            else {
+                setAlignment("story");
+            }
+        }, [store.isComic]);
+        
         const handleChange = (event, newAlignment) => {
             if(newAlignment !== null) {
                 setAlignment(newAlignment);
@@ -280,7 +290,7 @@ import { useLocation } from "react-router-dom";
 
         let inGame = false;
 
-        if (location.pathname.includes("GameInProgress") || location.pathname.includes("lobby") || location.pathname.includes("create")) {
+        if (location.pathname.includes("GameInProgress") || location.pathname.includes("lobby")) {
             inGame = true;
         }
 
