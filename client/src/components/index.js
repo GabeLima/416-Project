@@ -15,6 +15,8 @@ import Profile from "./Profile"
 import LoginScreen from "./LoginScreen"
 import RegisterScreen from "./RegisterScreen"
 
+import GameNotification from "./GameNotification"
+
 
 export {
     Paint,
@@ -28,5 +30,6 @@ export {
     HeaderBar,
     Profile,
     LoginScreen,
-    RegisterScreen
+    RegisterScreen,
+    GameNotification
 }

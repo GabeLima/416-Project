@@ -14,7 +14,8 @@ import {
     HeaderBar,
     Profile,
     LoginScreen,
-    RegisterScreen
+    RegisterScreen,
+    GameNotification
   
 } from "./components";
 import GameResult from './components/GameResult';
@@ -25,6 +26,8 @@ import { CssBaseline } from '@mui/material';
 import { ThemeProvider } from '@mui/material/styles';
 import AlertModal from './components/AlertModal';
 import DeleteModal from './components/DeleteModal';
+// notify followers
+import {ReactNotifications} from 'react-notifications-component';
 
 // theme imports
 import original_theme from './themes/original';
@@ -56,6 +59,9 @@ const App = () => {
                     <SocketContext.Provider value={socket}>
                         <GlobalGameContextProvider>
                             <HeaderBar />
+                            <ReactNotifications />
+                            <GameNotification />
+                            
                             <Switch>
                                 <Route path="/" exact component={HomeScreen} />
                                 <Route path="/account" exact component={AccountScreen} />

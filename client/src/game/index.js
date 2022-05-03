@@ -164,6 +164,7 @@ function GlobalGameContextProvider(props) {
             payload: data
         });
         socket.emit(gameEvents.CREATE_GAME, data);
+        socket.emit('notifyFollowers', data);
     }
 
     game.joinGame = (data) => {

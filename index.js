@@ -179,7 +179,6 @@ io.on('connect', function (socket) {
         //Tell the user joining they can switch to the game-lobby
         socket.emit("joinSuccess", {value:true, gameID:data.gameID, username:data.username, email:data.email, gameInfo: gameInfo});
         
-        
     });
 
 
@@ -343,6 +342,7 @@ io.on('connect', function (socket) {
         Notifies Followers that a game has been created
     */
     socket.on('notifyFollowers', function(data) {
+        console.log("Inside notifyFollowers!", data);
         // get a list of followed users from the database
         const {email, gameID} = data;
         Users.findOne({email: email}, (err, data) => {
@@ -353,13 +353,17 @@ io.on('connect', function (socket) {
             else {
                 // reduce the clients list to those who follow this user
                 let followers = data.followers; // list of emails I assume?
+                console.log("followers: ", followers )
+                console.log("clients: ", clients)
                 const online_followers = clients.filter(client => followers.includes(client.email));
+                console.log("online_followers: ", online_followers)
 
                 // notify every online follower
                 online_followers.forEach( (follower) => {
-                    io.to(follower.clientId).emit("newGameNotification", email + " has started a game with gameID " + gameID);
+                    console.log('notifiying:', follower.email)
+                    io.to(follower.clientId).emit("newGameNotification", {email: email, gameID: gameID});
                 });
-                socket.emit("notifyFollowers", true);
+                 //socket.emit("notifyFollowers", true);
             }
         });
     });
