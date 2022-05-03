@@ -12,28 +12,30 @@ import { useEffect } from 'react';
 const GameNotification = (props) => {
 
     const socket = useContext(SocketContext);
-
-    // displays react notification when newGameNotification is received
     useEffect(()=>{
         socket.on('newGameNotification', function(data) {
             const {email, gameID} = data;
             const notification = {
-                title: "NEW GAME BITCH FUCK YOU NEW GAME HOLY SHIT FUCK YOU",//email + " has started a new game!",
-                message: 'Game ID: ' + gameID,
-                type: 'default',                         // 'default', 'success', 'info', 'warning'
+                title: email + " has started a new game!",
+                message: 'Click to copy the game code: ' + gameID,
+                type: 'success',                         // 'default', 'success', 'info', 'warning'
                 container: 'top-right',                // where to position the notifications
                 animationIn: ["animate__animated", "animate__fadeIn"],
                 animationOut: ["animate__animated", "animate__fadeOut"],
                 dismiss: {
-                  duration: 10000 
+                  duration: 10000 // lasts for 10 seconds
+                },
+                onRemoval: (id, removedBy) => {
+                    if(removedBy == "click")
+                        navigator.clipboard.writeText(gameID)
                 }
             }
-            Store.addNotification(notification);
+            Store.addNotification(notification); // displays notification
             Store.removeNotification(notification);
         })
     }, [])
 
-    // we just want the socket receiver to display on every page
+    // we just want the socket receiver to exist on every page
     return (
         <></>
     )
