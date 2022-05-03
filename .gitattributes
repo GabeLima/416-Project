@@ -1,2 +1,4 @@
 index.js merge=ours
 .env merge=ours
+/client/src/config.js merge=ours
+/client/src/api/index.js merge=ours

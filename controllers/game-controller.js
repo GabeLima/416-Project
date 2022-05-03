@@ -1,5 +1,6 @@
 const Game = require("../models/game-model");
-
+const Image = require("../models/image-model");
+const Text = require("../models/text-model");
 
 createGame = (req, res) => {
     const body = req.body;
@@ -109,6 +110,8 @@ getGame = async (req, res) => {
                 message: "Game not found!"
             });
         }
+        console.log("Game Found");
+        console.log(game);
         return res.status(200).json({ success: true, game: game});
     });
 }
@@ -156,16 +159,114 @@ updateGame = async (req, res) => {
 deleteGame = async (req, res) => {
     const gameID = req.params.gameID;
     Game.findOne({gameID: gameID}, (err, game) => {
-        if (err) {
+        if (err || !game) {
             return res.status(404).json({
                 err,
                 message: 'Game not found!',
             })
         }
+        // generate list of ids to delete
+        let ids = []
+        for(let i=0; i<game.panels.length; i++) {
+            for(let j=0; j<game.panels[i].length; j++) {
+                let id = game.panels[i][j]
+                if(!ids.includes(id))
+                    ids.push(id)
+            }
+        }
+
+        console.log("deleteGame: list of ids to delete", ids)
+
+        // delete images/text from db
+        if (game.isComic) {
+            console.log("deleteGame: deleting images")
+            ids.forEach( id => Image.findOneAndDelete({imageID: id}, (err, img)=>{
+                if(err || !img)
+                    console.log("deleteGame: couldn't delete ", id)
+            }))
+        }
+        else {
+            console.log("deleteGame: deleting text")
+            ids.forEach( id => Text.findOneAndDelete({textID: id}, (err, txt)=>{
+                if(err || !txt)
+                    console.log("deleteGame: couldn't delete ", id)
+            }))
+        }
+
+        // delete game from db
         Game.findOneAndDelete({ gameID: gameID }, () => {
             return res.status(200).json({ success: true })
         }).catch(err => console.log(err))
     });
+}
+
+getImage = async(req, res) => {
+    const {panels} = req.body;
+    let result = [];
+
+    try{
+        console.log("Inside getImage! ImageID: ", panels);
+        if(panels === undefined){
+            console.log("imageID was not provided as parameter");
+            return res.status(404).json({
+                message: 'panels not provided!',
+            })
+        }
+
+
+        console.log("Searching for imageID: ", panels);
+
+        // Image.findOne({imageID: imageID}, (err, data) => {
+        //     if(err ||!data) {
+        //         console.log("Error in getImage: " + err);
+        //         return res.status(404).json({
+        //             err,
+        //             message: 'Image not found!',
+        //         })
+        //     }
+            
+        //     console.log("Got Image: ", imageID);
+        //     return res.status(200).json({ success: true, image: data.image.toString()});
+        // });
+        for(let i = 0; i < panels.length; i++){
+            //Get images in a round
+            let round = await Image.find({imageID : {$in : panels[i]}}).sort({imageID : 1});
+
+            let temp = [];
+            for(let j = 0; j < round.length; j++){
+                temp.push(round[j].image.toString());
+            }
+            // console.log(`Round ${i}: `, temp);
+            result.push(temp);
+        }
+
+        console.log("Got Image: ", panels);
+        return res.status(200).json({ success: true, image: result});        
+    }
+    catch(err){
+        console.log(err);
+        console.log("Exception in getImage");
+        return res.status(404).json({
+            message: 'Excetion!',
+        })
+    }
+}
+
+getLatestGames = async (req, res) => {
+    try{
+        let gameQuery = await Game.find().sort({createdAt : -1});
+
+        console.log(gameQuery);
+    
+        return res.status(200).json({ success: true, games: gameQuery});
+    }
+    catch(err){
+        console.log(err);
+        return res.status(404).json({
+            success: false,
+            message: "Getting Game Has Error!"
+        });
+    }
 }
 
 module.exports = {
@@ -173,5 +274,7 @@ module.exports = {
     search,
     getGame,
     updateGame,
-    deleteGame
+    deleteGame,
+    getImage,
+    getLatestGames
 }

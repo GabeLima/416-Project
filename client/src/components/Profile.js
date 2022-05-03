@@ -97,6 +97,8 @@ const Profile = (props) => {
     let user = params.username;
     const [rendered, setRendered] = useState(false);
 
+    const [publishedGames, setPublishedGames] = useState([]);
+
 
     // viwer is who is viewing the profile
     
@@ -131,82 +133,27 @@ const Profile = (props) => {
             if(auth.user.email === userInfo.email){
                 setIsOwner(true);
             }
+
+            const getUserGames = async() => {
+                api.searchGames(`u:${userInfo.username}`).then((response) => {
+                    return response.data.data;
+                }).then((data) => {
+                    console.log(data);
+                    setPublishedGames(data);
+                    return data;
+                })
+            }
+
+            getUserGames();
         }
     }, [setIsFollowing, setIsOwner, userInfo, auth])
 
-    // implement a list of cards of completed games
-    const publishedGames = [
-        {
-            creator:"vicchan",
-            gameID : "JYGS",
-            panels: [
-                ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
-                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
-            ],
-            communityVotes: [
-                ["npc1", "npc2"],
-                []
-            ],
-            comments: [
-                {
-                  user:"user1",
-                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user2",
-                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user3",
-                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
-                  postDate:new Date()
-                },
-                {
-                  user:"user4",
-                  message:"I hope one day I can see something as beautiful as this again. I can't believe something as amazing as this exists!",
-                  postDate:new Date()
-                },
-                {
-                  user:"user5",
-                  message:"I hope the user above me has a good day",
-                  postDate:new Date()
-                },
-            ],
-            tags : ["Unbelievable", "Pokemon", "Digimon", "War"]
-        },
-        {
-            creator:"victor",
-            gameID : "KUGB",
-            panels: [
-                ["/images/mark_oukan_crown7_blue.png", "/images/4.png", "/images/4.png", "/images/4.png"],
-                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
-            ],
-            communityVotes: [
-                [],
-                []
-            ],
-            comments: [
-                {
-                  user:"user1",
-                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user2",
-                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user3",
-                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
-                  postDate:new Date()
-                }
-            ],
-            tags : ["NewPlayer", "Crown"]
-        }
-    ];
+    function deleteCard(id){
+        console.log("Deleting Card: ", id);
+        console.log(publishedGames.filter(g => g.gameID != id));
+        setPublishedGames(publishedGames.filter(g => g.gameID != id));
+    }
+
 
     return (
     <>
@@ -239,8 +186,8 @@ const Profile = (props) => {
         
     <Typography variant="h3">Completed Games</Typography>
     <Grid container className='back'>
-        {publishedGames.map(({creator, tags, communityVotes, comments, panels}) => (
-            <PublishedGameCard creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+        {publishedGames.map(({creator, tags, communityVotes, comments, panels, isComic, gameID}, i) => (
+            <PublishedGameCard key={gameID} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels} isComic={isComic} gameID={gameID} deleteCard={deleteCard}/>
         ))}
     </Grid> 
     </>

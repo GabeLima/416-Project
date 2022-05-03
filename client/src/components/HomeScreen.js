@@ -13,9 +13,10 @@ import LiveGameCard from './LiveGameCard';
 import PublishedGameCard from './PublishedGameCard';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router-dom';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, createRef } from 'react';
 import { SocketContext } from "../context/socket";
 import GlobalGameContext from "../game";
+import api from '../api';
 
 // toggles between live and completed games
 const GameToggle = ({alignment, setAlignment}) => {
@@ -60,16 +61,11 @@ const HomeScreen = () => {
     const { auth } = useContext(AuthContext);
     const socket = useContext(SocketContext);
     const { game } = useContext(GlobalGameContext);
-    //const { store } = useContext(GlobalStoreContext);
+    const { store } = useContext(GlobalStoreContext);
 
+    const [publishedGames, setPublishedGames] = useState([]);
 
-    // useEffect(() => {
-    //     store.loadIdNamePairs();
-    // }, []);
-
-    // obtain a list of cards based on what is being asked
-    // Story/Comic
-    // Completed/Joinable
+    let gameCodeInput = createRef();
 
     useEffect(() => {
         if (socket && auth.loggedIn && auth.user) {
@@ -82,122 +78,185 @@ const HomeScreen = () => {
         if (event.code === "Enter") {
             event.stopPropagation();
             event.preventDefault();
-            // Pass off to the search handler.
+            // Pass off to the join game handler
             let gameID = event.target.value;
             console.log("Attempting to join game with ID " + gameID);
             game.joinGame({gameID: gameID, username: auth.user.username});
         }
     }
 
+    const handleJoinClick = (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        console.log(gameCodeInput.current);
+        console.log("Attempting to join game with ID " + gameCodeInput.current.value);
+        game.joinGame({gameID: gameCodeInput.current.value, username: auth.user.username});
+    }
 
-    //Example data
-    const liveGames = [
-        {
-            players:["tim", "gabe", "david", "vicky"],
-            creator:"tim",
-            gameID : "IYBH",
-            numRounds : 5,
-            timePerRound : 30,
-            tags : ["Anime", "Superpower", "Stickman", "Basic"]
-        },
-        {
-            players:["tim", "gabe", "david", "vicky"],
-            creator:"gabe",
-            gameID : "JYGS",
-            numRounds : 2,
-            timePerRound : 10,
-            tags : ["notCool"]
-        },
-        {
-            players:["jan", "tim", "gabe", "david", "vicky"],
-            creator:"jan",
-            gameID : "YGFV",
-            numRounds : 4,
-            timePerRound : 27,
-            tags : ["b"]
-        },
-        {
-            players:["jack", "tim", "gabe", "david", "vicky"],
-            creator:"jack",
-            gameID : "KUGH",
-            numRounds : 8,
-            timePerRound : 35,
-            tags : []
-        },
-    ];
+    const [liveGames, setLiveGames] = useState([]);
 
-    const publishedGames = [
-        {
-            creator:"vicky",
-            gameID : "JYGS",
-            panels: [
-                ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
-                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
-            ],
-            communityVotes: [
-                ["npc1", "npc2"],
-                []
-            ],
-            comments: [
-                {
-                  user:"user1",
-                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user2",
-                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user3",
-                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
-                  postDate:new Date()
-                },
-                {
-                  user:"user4",
-                  message:"I hope one day I can see something as beautiful as this again. I can't believe something as amazing as this exists!",
-                  postDate:new Date()
-                },
-                {
-                  user:"user5",
-                  message:"I hope the user above me has a good day",
-                  postDate:new Date()
-                },
-            ],
-            tags : ["Unbelievable", "Pokemon", "Digimon", "War"]
-        },
-        {
-            creator:"david",
-            gameID : "KUGB",
-            panels: [
-                ["/images/mark_oukan_crown7_blue.png", "/images/4.png", "/images/4.png", "/images/4.png"],
-                ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
-            ],
-            communityVotes: [
-                [],
-                []
-            ],
-            comments: [
-                {
-                  user:"user1",
-                  message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user2",
-                  message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
-                  postDate:new Date()
-                },
-                {
-                  user:"user3",
-                  message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
-                  postDate:new Date()
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic === store.isComic) {
+                    filteredGames.push(g);
                 }
-            ],
-            tags : ["NewPlayer", "Crown"]
+            });
+            console.log(store.isComic ? "loading comics" : "loading stories");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+
+    }, [store.isComic, alignment]);
+
+    // load comics by default
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic) {
+                    filteredGames.push(g);
+                }
+            });
+            console.log("loading comics");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+    }, []);
+
+    //Load Published Games
+    useEffect(() => {
+        const getGames = async() => {
+            api.getLatestGames().then((response) => {
+                return response.data.games;
+            }).then((data) => {
+                console.log(data);
+                setPublishedGames(data);
+                return data;
+            })
         }
-    ];
+
+        getGames();
+    },[])
+
+    function deleteCard(id){
+        console.log("Deleting Card: ", id);
+        console.log(publishedGames.filter(g => g.gameID != id));
+        setPublishedGames(publishedGames.filter(g => g.gameID != id));
+    }
+
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic === store.isComic) {
+                    filteredGames.push(g);
+                }
+            });
+            console.log(store.isComic ? "loading comics" : "loading stories");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+
+    }, [store.isComic, alignment]);
+
+    // load comics by default
+    useEffect(() => {
+        socket.emit("getAllGames");
+
+        socket.on("gameList", (data) => {
+            const filteredGames = [];
+            data.forEach((g) => {
+                if (g.isComic) {
+                    filteredGames.push(g);
+                }
+            });
+            console.log("loading comics");
+            console.log(filteredGames);
+            setLiveGames(filteredGames);
+        });
+    }, []);
+
+    //const publishedGames = []
+    //     {
+    //         creator:"vicky",
+    //         gameID : "JYGS",
+    //         panels: [
+    //             ["/images/1.png", "/images/2.png", "/images/3.png", "/images/4.png"],
+    //             ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
+    //         ],
+    //         communityVotes: [
+    //             ["npc1", "npc2"],
+    //             []
+    //         ],
+    //         comments: [
+    //             {
+    //               user:"user1",
+    //               message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user2",
+    //               message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user3",
+    //               message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user4",
+    //               message:"I hope one day I can see something as beautiful as this again. I can't believe something as amazing as this exists!",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user5",
+    //               message:"I hope the user above me has a good day",
+    //               postDate:new Date()
+    //             },
+    //         ],
+    //         tags : ["Unbelievable", "Pokemon", "Digimon", "War"]
+    //     },
+    //     {
+    //         creator:"david",
+    //         gameID : "KUGB",
+    //         panels: [
+    //             ["/images/mark_oukan_crown7_blue.png", "/images/4.png", "/images/4.png", "/images/4.png"],
+    //             ["/images/1.png", "/images/1.png", "/images/1.png", "/images/1.png"]
+    //         ],
+    //         communityVotes: [
+    //             [],
+    //             []
+    //         ],
+    //         comments: [
+    //             {
+    //               user:"user1",
+    //               message:"WOAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH I can't believe what i'm seeing this reminds me of this one scene from another series. This made me want to go back and reread that series again.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user2",
+    //               message:"Wow, this was the best thing I've ever seen in my life. I will never be the same. 10 out of 10, would recommend.",
+    //               postDate:new Date()
+    //             },
+    //             {
+    //               user:"user3",
+    //               message:"This was my favorite part! I've looked at this for over  5 hours and can't get it out my head!",
+    //               postDate:new Date()
+    //             }
+    //         ],
+    //         tags : ["NewPlayer", "Crown"]
+    //     }
+    // ];
+
 
     return (
         <>
@@ -218,8 +277,8 @@ const HomeScreen = () => {
 
                     {alignment === "completed" ? 
                         <Grid container>
-                            {publishedGames.map(({creator, tags, communityVotes, comments, panels}, i) => (
-                                <PublishedGameCard key={i} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels}/>
+                            {publishedGames.map(({creator, tags, communityVotes, comments, panels, isComic, gameID}, i) => (
+                                <PublishedGameCard key={gameID} creator={creator} tags={tags} votes={communityVotes} comments={comments} panels={panels} isComic={isComic} gameID={gameID} deleteCard={deleteCard}/>
                             ))}
                         </Grid> : ''
                     }
@@ -232,7 +291,10 @@ const HomeScreen = () => {
                             <Typography align="center" variant="h4" sx={{mt: 3, mb: 2, width:'100%'}}>Filter Games</Typography>
                             <GameToggle alignment={alignment} setAlignment={setAlignment} />
                             <Typography align="center" variant="h4" sx={{mt: 3, width:'100%'}}>Join Game</Typography>
-                            <TextField color='secondary' disabled={!auth.loggedIn} onKeyPress={handleKeyPress} name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
+                            <TextField inputRef={gameCodeInput} color='secondary' disabled={!auth.loggedIn} onKeyPress={handleKeyPress} name="game-code" label="Game Code" id="game-code" sx={{mt: 3, mb: 2, width:'100%'}} />
+                            <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={handleJoinClick}>
+                                Join Game
+                            </Button>
                             <Button variant="contained" disabled={!auth.loggedIn} sx={{mt: 3, mb: 2, width:'100%', backgroundColor:"#4b4e6d", color:"white", fontWeight:"bold"}} onClick={() => handleClick('/create')}>
                                 Create Game
                             </Button>
