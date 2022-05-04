@@ -353,17 +353,13 @@ io.on('connect', function (socket) {
             else {
                 // reduce the clients list to those who follow this user
                 let followers = data.followers; // list of emails I assume?
-                console.log("followers: ", followers )
-                console.log("clients: ", clients)
                 const online_followers = clients.filter(client => followers.includes(client.email));
-                console.log("online_followers: ", online_followers)
 
                 // notify every online follower
                 online_followers.forEach( (follower) => {
-                    console.log('notifiying:', follower.email)
                     io.to(follower.clientId).emit("newGameNotification", {email: email, gameID: gameID});
                 });
-                 //socket.emit("notifyFollowers", true);
+                socket.emit("notifyFollowers", true);
             }
         });
     });
