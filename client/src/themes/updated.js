@@ -3,26 +3,39 @@ import { createTheme } from '@mui/material/styles';
 
 // Thanks lov for the color pallete
 // a theme will be created to see if this works
-const pink = '#dd6e80'
+const pink = '#e5a4c6'//'#dd6e80'
 const green = '#8ab48e'
 const purple = '#9667aa'
 const blue = '#a4c6e5'
 const black = '#000000'
 const white = '#FFFFFF'
 
+const white2 = '#E8ECEB'
+const orange = '#e28a2b'
+const light_blue = '#8CBDB9'
+const dark_blue = '#2D3E4E'
+const dark_orange = '#d49c69'
+
+// blue-purple
+const blue_purple = '#8a2be2'
+const eggshell_white = '#F9FEFF'
+const tri_blue = '#2b83e2'
+const tri_green = '#83e22b'
+const grey = '#0000AA'
+
 // primary palette
-let primary = blue;
-let secondary = pink;
-let background = purple;
+let primary = blue_purple;
+let secondary = tri_blue;
+let background = grey;
 
 // all buttons (except visit on game cards)
 let button_background = black;
 let button_text = white;
 
 // game cards
-let game_card_bg = blue;
-let tags = pink;
-let visit_button = pink;
+let game_card_bg = tri_blue;
+let tags = tri_green;
+let visit_button = tri_green;
 
 // user/player and lobby cards
 let card_border = green;
