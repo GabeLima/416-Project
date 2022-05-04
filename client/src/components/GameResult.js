@@ -87,7 +87,7 @@ const GameResult = () => {
   const [comments, setComments] = useState([]);
   const [commentField, setCommentField] = useState("");
   const [votedFor, setVotedFor] = useState(-1);
-  const [winnerIndex, setWinner] = useState(-1);
+  const [winnerIndex, setWinner] = useState([]);
 
   const vote = async(votedStory)=>{
     if(!auth.user){
@@ -163,7 +163,7 @@ const GameResult = () => {
   useEffect(()=>{
     if (game) {
       let winnerVotes = 0;
-      let winner = -1;
+      let winner = [];
       communityVotes.forEach((subset, i) => {
         if(auth.user && subset.includes(auth.user.email)){
           setVotedFor(i);
@@ -171,9 +171,19 @@ const GameResult = () => {
 
         if (subset.length > winnerVotes) {
           winnerVotes = subset.length;
-          winner = i;
+          // winner = i;
         }
       });
+
+      //Final winners
+      if(winnerVotes != 0){
+        communityVotes.forEach((subset, i) => {
+          if (subset.length == winnerVotes) {
+            // winnerVotes = subset.length;
+            winner.push(i);
+          }
+        });
+      }
 
       setWinner(winner);
     }
@@ -183,14 +193,14 @@ const GameResult = () => {
     // determine what type of carousel to show the user
     if (game.isComic) {
       cards = (panels.map((story, i) => {
-        return <StoryCard key={i} content={story} winner={winnerIndex===i} voted={votedFor===i} voteHandler={vote} index ={i}/>
+        return <StoryCard key={i} content={story} winner={winnerIndex.includes(i)} voted={votedFor===i} voteHandler={vote} index ={i}/>
       }));
     }
     else {
       cards = (panels.map((story, i) => {
         return (
           <div className="slideshow">
-            <SlideshowCard key={i} content={story} winner={winnerIndex===i} voted={votedFor===i} voteHandler={vote} index ={i}/>
+            <SlideshowCard key={i} content={story} winner={winnerIndex.includes(i)} voted={votedFor===i} voteHandler={vote} index ={i}/>
           </div>
         );
       }));
