@@ -483,12 +483,17 @@ io.on('connect', function (socket) {
         const g = games.get(gameID);
         //Every client is going to be calling this.
         if(g){
+            let votes = [];
+            // the number of "substories" we have is the number of players.
+            for (let i = 0; i < g.players.length; i++) {
+                votes.push([]);
+            }
             const gameData = new Games( {
                 isComic: g.isComic,
                 players: g.players,
                 panels: Array.from(g.panels.values()),
                 playerVotes: g.playerVotes,
-                communityVotes: [],
+                communityVotes: votes,
                 gameID: g.gameID,
                 comments: [],
                 tags: g.tags,
