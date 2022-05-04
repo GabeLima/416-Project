@@ -12,7 +12,7 @@ createGame = (req, res) => {
     }
 
     const newGame = new Game(body);
-    
+
     if (!newGame) {
         return res.status(400).json({ success: false, error: err })
     }
@@ -83,7 +83,7 @@ search = async (req, res) => {
             return res.status(200).json({ success: true, data: games});
         });
     }
-    
+
 }
 
 
@@ -120,7 +120,7 @@ getGame = async (req, res) => {
 updateGame = async (req, res) => {
     const {communityVotes, comments} = req.body;
     const gameID = req.params.gameID;
-    
+
     // ALL of these must be present.
     // players, panels, playerVotes, rounds, timePerRound, isPublic, tags will be immutable after a game is published.
     // TODO - We could have the client selectively send the relevant fields, but that might be something we discuss later when implementing front end.
@@ -133,9 +133,13 @@ updateGame = async (req, res) => {
             });
         }
 
-        // TODO - This blindly assumes the client will properly update these fields. Bad practice? Or is this fine?
-        game.communityVotes = communityVotes;
-        game.comments = comments;
+        if(communityVotes){
+            game.communityVotes = communityVotes;
+        }
+
+        if(comments){
+            game.comments = comments;
+        }
 
         game.
             save().
@@ -224,7 +228,7 @@ getImage = async(req, res) => {
         //             message: 'Image not found!',
         //         })
         //     }
-            
+
         //     console.log("Got Image: ", imageID);
         //     return res.status(200).json({ success: true, image: data.image.toString()});
         // });
@@ -241,7 +245,7 @@ getImage = async(req, res) => {
         }
 
         console.log("Got Image: ", panels);
-        return res.status(200).json({ success: true, image: result});        
+        return res.status(200).json({ success: true, image: result});
     }
     catch(err){
         console.log(err);
@@ -276,7 +280,7 @@ getText = async(req, res) => {
         //             message: 'Image not found!',
         //         })
         //     }
-            
+
         //     console.log("Got Image: ", imageID);
         //     return res.status(200).json({ success: true, image: data.image.toString()});
         // });
@@ -293,7 +297,7 @@ getText = async(req, res) => {
         }
 
         console.log("Got Text: ", panels);
-        return res.status(200).json({ success: true, text: result});        
+        return res.status(200).json({ success: true, text: result});
     }
     catch(err){
         console.log(err);
@@ -310,7 +314,7 @@ getLatestGames = async (req, res) => {
         let gameQuery = await Game.find().sort({createdAt : -1});
 
         console.log(gameQuery);
-    
+
         return res.status(200).json({ success: true, games: gameQuery});
     }
     catch(err){

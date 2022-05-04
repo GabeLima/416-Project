@@ -3,11 +3,12 @@ import { Avatar, Box, Button, Container, Grid, TextField, Typography, useTheme }
 import React, { useEffect, useState } from 'react'
 import StoryCard from './StoryCard';
 import GameComment from './GameComment';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import api from '../api'
 import { useHistory } from 'react-router-dom';
 import { useContext } from 'react';
 import AuthContext from '../auth'
+import { GlobalStoreContext } from '../store'
 
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
@@ -18,6 +19,9 @@ const GameResult = () => {
 
   const location = useLocation();
   const { auth } = useContext(AuthContext);
+  const { store } = useContext(GlobalStoreContext);
+  const params = useParams();
+  let id = params.id;
   const [comics, setComics] = useState([]);
   const [game, setGame] = useState();
   let history = useHistory();
@@ -79,17 +83,24 @@ const GameResult = () => {
   let winnerVotes = 0;
   let winnerIndex = 0;
   let cards = "";
-  let communityVotes,comments;
-  if (game) {
-    communityVotes = game.communityVotes;
-    comments = game.comments;
-    communityVotes.forEach((subset, i) => {
-      if (subset.length > winnerVotes) {
-        winnerVotes = subset.length;
-        winnerIndex = i;
-      }
-    });
+  let communityVotes;
+  // const [communityVotes, setCommunityVotes] = useState([]);
+  const [comments, setComments] = useState([]);
+  const [commentField, setCommentField] = useState("");
+  useEffect(()=>{
+    if (game) {
+      communityVotes = game.communityVotes;
+      setComments(game.comments);
+      communityVotes.forEach((subset, i) => {
+        if (subset.length > winnerVotes) {
+          winnerVotes = subset.length;
+          winnerIndex = i;
+        }
+      });
+    }
+  }, [game])
 
+  if(game){
     // determine what type of carousel to show the user
     if (game.isComic) {
       cards = (panels.map((story, i) => {
@@ -106,14 +117,47 @@ const GameResult = () => {
       }));
     }
   }
-  else {
-    communityVotes = [];
-    comments = [];
-  }
 
 
   console.log("panel");
   console.log(panels);
+
+  const makeComment = async(event) => {
+    event.preventDefault();
+    if(!auth.user){
+      console.log("Please login");
+      store.setErrorMessage("Please login");
+      return;
+    }
+    const formData = new FormData(event.currentTarget);
+    if(!formData.get('comment')){
+      store.setErrorMessage("Please type in the comment field");
+      return;
+    }
+
+    const c = {
+      username : auth.user.username,
+      email : auth.user.email,
+      content : formData.get('comment'),
+      postDate : new Date()
+    }
+
+    console.log(c);
+    // comments.push(c);
+    setComments([...comments, c]);
+    setCommentField("");                      //Clear out the field once done
+    console.log(comments);
+
+    try{
+      await api.updateGame({
+        gameID : id,
+        comments : [...comments, c]
+      });
+    }
+    catch(err){
+      store.setErrorMessage("Error happened on server.");
+    }
+  }
 
   const theme = useTheme();
   return (
@@ -133,17 +177,17 @@ const GameResult = () => {
             Comments
         </Typography>
 
-        <Container id="comment-space" style={{width:"72%"}}>
-          <TextField id="comment" variant="filled" fullWidth multiline label="Add a comment" ></TextField>
+        <Container id="comment-space" style={{width:"72%"}} component="form" onSubmit={makeComment} noValidate>
+          <TextField id="comment" variant="filled" fullWidth multiline label="Add a comment" name="comment" value={commentField} onChange = {(e)=>{setCommentField(e.target.value)}}></TextField>
           <Grid container justifyContent="right">
             <Grid item mt={2} mb={4}>
-              <Button style={{backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"600"}}>Comment</Button>
+              <Button type="submit" style={{backgroundColor: theme.button.bg, color: theme.button.text, fontWeight:"600"}}>Comment</Button>
             </Grid>
           </Grid>
         </Container>
 
-        {comments.map(({user, message, postDate}) => (
-          <GameComment user={user} message={message} postDate={postDate}/>
+        {comments.map(({username, content, postDate}, i) => (
+          <GameComment key={i} username={username} content={content} postDate={postDate}/>
         ))}
       </Box>
     </div>
