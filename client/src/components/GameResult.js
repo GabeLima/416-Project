@@ -80,47 +80,114 @@ const GameResult = () => {
 
 
   let panels = comics;
-  let winnerVotes = 0;
-  let winnerIndex = 0;
+  // let winnerIndex = 0;
   let cards = "";
-  let communityVotes;
-  // const [communityVotes, setCommunityVotes] = useState([]);
+  // let communityVotes;
+  const [communityVotes, setCommunityVotes] = useState([]);
   const [comments, setComments] = useState([]);
   const [commentField, setCommentField] = useState("");
-  useEffect(()=>{
-    if (game) {
-      communityVotes = game.communityVotes;
-      setComments(game.comments);
-      communityVotes.forEach((subset, i) => {
-        if (subset.length > winnerVotes) {
-          winnerVotes = subset.length;
-          winnerIndex = i;
+  const [votedFor, setVotedFor] = useState(-1);
+  const [winnerIndex, setWinner] = useState(-1);
+
+  const vote = async(votedStory)=>{
+    if(!auth.user){
+      console.log("Please login");
+      store.setErrorMessage("Please login");
+      return;
+    }
+    if(votedStory != undefined)                   //Player submited a vote
+    {
+        //Remove vote if already present
+        let cVotes = [...communityVotes];
+        console.log("Votes: ", cVotes);
+        console.log(communityVotes);
+        for(let i = 0; i < cVotes.length; i++)
+        {
+            let removedI = cVotes[i].indexOf(auth.user.email);
+            if(removedI > -1)
+            {
+                cVotes[i].splice(removedI, 1);
+                break;
+            }
         }
-      });
+
+        //Check if user is voting or unvoting
+        if(votedStory == votedFor){
+          setVotedFor(-1);
+        }else{
+          cVotes[votedStory].push(auth.user.email);
+          setVotedFor(votedStory);
+        }
+        setCommunityVotes(cVotes);
+
+        try{
+          await api.updateGame({
+            gameID : id,
+            communityVotes : cVotes
+          });
+        }
+        catch(err){
+          store.setErrorMessage("Error happened on server.");
+        }
+    }
+  }
+
+  useEffect(()=>{ //in a seperate useEFfect so it only runs once even if a state changes
+    if(game){
+      if(game.communityVotes.length == 0){
+        let cVotes = [];
+        for(let i = 0; i < game.panels.length; i++){
+          cVotes.push([]);
+        }
+        setCommunityVotes(cVotes);
+      }else{
+        setCommunityVotes(game.communityVotes);
+      }
+      setComments(game.comments);
     }
   }, [game])
+
+  useEffect(()=>{
+    if (game) {
+      let winnerVotes = 0;
+      let winner = -1;
+      communityVotes.forEach((subset, i) => {
+        if(auth.user && subset.includes(auth.user.email)){
+          setVotedFor(i);
+        }
+
+        if (subset.length > winnerVotes) {
+          winnerVotes = subset.length;
+          winner = i;
+        }
+      });
+
+      setWinner(winner);
+    }
+  }, [game, communityVotes])
 
   if(game){
     // determine what type of carousel to show the user
     if (game.isComic) {
       cards = (panels.map((story, i) => {
-        return <StoryCard key={i} content={story} winner={winnerIndex===i}/>
+        return <StoryCard key={i} content={story} winner={winnerIndex===i} voted={votedFor===i} voteHandler={vote} index ={i}/>
       }));
     }
     else {
       cards = (panels.map((story, i) => {
         return (
           <div className="slideshow">
-            <SlideshowCard key={i} content={story} winner={winnerIndex===i}/>
+            <SlideshowCard key={i} content={story} winner={winnerIndex===i} voted={votedFor===i} voteHandler={vote} index ={i}/>
           </div>
         );
       }));
     }
   }
 
+  
 
-  console.log("panel");
-  console.log(panels);
+  // console.log("panel");
+  // console.log(panels);
 
   const makeComment = async(event) => {
     event.preventDefault();
@@ -194,7 +261,7 @@ const GameResult = () => {
   )
 }
 
-const SlideshowCard = ({content, winner}) => {
+const SlideshowCard = ({content, winner, voted, voteHandler, index}) => {
   console.log(content);
   return (
     <Grid container justifyContent="center" alignItems="center" columnSpacing={4} mt={5}>
@@ -205,7 +272,10 @@ const SlideshowCard = ({content, winner}) => {
             <Slideshow stories={content}/>
         </Grid>
         <Grid item xs={1}>
-            <Button variant="outlined" size="large" startIcon={<Avatar src={"/images/heart_blur.png"}></Avatar>}>Vote</Button>
+            {voted ? 
+              <Button style={{backgroundColor:"#B6C5D0"}} variant="outlined" size="large" startIcon={<Avatar src={"/images/heart_blur.png"}></Avatar>} onClick={()=>{voteHandler(index);}}>Vote</Button> : 
+              <Button variant="outlined" size="large" startIcon={<Avatar src={"/images/heart_blur.png"}></Avatar>} onClick={()=>{voteHandler(index);}}>Vote</Button>
+            }
         </Grid>
     </Grid>
   )
