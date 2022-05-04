@@ -114,26 +114,39 @@ const GameResult = () => {
         //Check if user is voting or unvoting
         if(votedStory == votedFor){
           setVotedFor(-1);
+          try{
+            await api.updateGame({
+              gameID : id,
+              communityVotes : -1,
+              email : auth.user.email,
+              unVote : true
+            });
+          }
+          catch(err){
+            store.setErrorMessage("Error happened on server.");
+          }
         }else{
           cVotes[votedStory].push(auth.user.email);
           setVotedFor(votedStory);
+          try{
+            await api.updateGame({
+              gameID : id,
+              communityVotes : votedStory,
+              email : auth.user.email,
+              unVote : false
+            });
+          }
+          catch(err){
+            store.setErrorMessage("Error happened on server.");
+          }
         }
         setCommunityVotes(cVotes);
-
-        try{
-          await api.updateGame({
-            gameID : id,
-            communityVotes : cVotes
-          });
-        }
-        catch(err){
-          store.setErrorMessage("Error happened on server.");
-        }
     }
   }
 
   useEffect(()=>{ //in a seperate useEFfect so it only runs once even if a state changes
     if(game){
+      console.log("Votes:", communityVotes);
       if(game.communityVotes.length == 0){
         let cVotes = [];
         for(let i = 0; i < game.panels.length; i++){
@@ -218,7 +231,7 @@ const GameResult = () => {
     try{
       await api.updateGame({
         gameID : id,
-        comments : [...comments, c]
+        comments : c
       });
     }
     catch(err){

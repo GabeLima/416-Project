@@ -118,7 +118,7 @@ getGame = async (req, res) => {
 
 
 updateGame = async (req, res) => {
-    const {communityVotes, comments} = req.body;
+    const {communityVotes, comments, email, unVote} = req.body;
     const gameID = req.params.gameID;
 
     // ALL of these must be present.
@@ -133,12 +133,35 @@ updateGame = async (req, res) => {
             });
         }
 
-        if(communityVotes){
-            game.communityVotes = communityVotes;
+        // console.log("Vote: ", communityVotes);
+        // console.log("Email: ", email);
+        // console.log("Unvote: ", unVote);
+        if(communityVotes !== undefined){
+            // game.communityVotes = communityVotes;
+            //removing existing vote
+            let votes = [...game.communityVotes];
+            for(let i = 0; i < votes.length; i++)
+            {
+                let removedI = votes[i].indexOf(email);
+                if(removedI > -1)
+                {
+                    votes[i].splice(removedI, 1);
+                    break;
+                }
+            }
+
+            if(!unVote){    //If the user is not unvoting
+                votes[communityVotes].push(email);
+            }
+
+            game.communityVotes = votes;
+            game.markModified("communityVotes");
         }
 
+        console.log("Votes after: ", game.communityVotes);
+
         if(comments){
-            game.comments = comments;
+            game.comments.push(comments);
         }
 
         game.
