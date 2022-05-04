@@ -27,6 +27,7 @@ export const changePassword = (payload) => api.put(`/changePassword/`, payload);
 
 
 export const getGame = (gameID) => api.get(`/game/${gameID}`);
+export const updateGame = (payload) => api.put(`/game/${payload.gameID}`, payload);
 export const getImage = (payload) => api.post(`/image`, payload);
 export const getText = (payload) => api.post(`/text`, payload);
 
@@ -48,7 +49,8 @@ const apis = {
     getText,
     deleteGame,
     getLatestGames,
-    getGame
+    getGame,
+    updateGame
 }
 
 export default apis

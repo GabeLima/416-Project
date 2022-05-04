@@ -12,7 +12,7 @@ createGame = (req, res) => {
     }
 
     const newGame = new Game(body);
-    
+
     if (!newGame) {
         return res.status(400).json({ success: false, error: err })
     }
@@ -83,7 +83,7 @@ search = async (req, res) => {
             return res.status(200).json({ success: true, data: games});
         });
     }
-    
+
 }
 
 
@@ -118,9 +118,9 @@ getGame = async (req, res) => {
 
 
 updateGame = async (req, res) => {
-    const {communityVotes, comments} = req.body;
+    const {communityVotes, comments, email, unVote} = req.body;
     const gameID = req.params.gameID;
-    
+
     // ALL of these must be present.
     // players, panels, playerVotes, rounds, timePerRound, isPublic, tags will be immutable after a game is published.
     // TODO - We could have the client selectively send the relevant fields, but that might be something we discuss later when implementing front end.
@@ -133,9 +133,36 @@ updateGame = async (req, res) => {
             });
         }
 
-        // TODO - This blindly assumes the client will properly update these fields. Bad practice? Or is this fine?
-        game.communityVotes = communityVotes;
-        game.comments = comments;
+        // console.log("Vote: ", communityVotes);
+        // console.log("Email: ", email);
+        // console.log("Unvote: ", unVote);
+        if(communityVotes !== undefined){
+            // game.communityVotes = communityVotes;
+            //removing existing vote
+            let votes = [...game.communityVotes];
+            for(let i = 0; i < votes.length; i++)
+            {
+                let removedI = votes[i].indexOf(email);
+                if(removedI > -1)
+                {
+                    votes[i].splice(removedI, 1);
+                    break;
+                }
+            }
+
+            if(!unVote){    //If the user is not unvoting
+                votes[communityVotes].push(email);
+            }
+
+            game.communityVotes = votes;
+            game.markModified("communityVotes");
+        }
+
+        console.log("Votes after: ", game.communityVotes);
+
+        if(comments){
+            game.comments.push(comments);
+        }
 
         game.
             save().
@@ -224,7 +251,7 @@ getImage = async(req, res) => {
         //             message: 'Image not found!',
         //         })
         //     }
-            
+
         //     console.log("Got Image: ", imageID);
         //     return res.status(200).json({ success: true, image: data.image.toString()});
         // });
@@ -241,7 +268,7 @@ getImage = async(req, res) => {
         }
 
         console.log("Got Image: ", panels);
-        return res.status(200).json({ success: true, image: result});        
+        return res.status(200).json({ success: true, image: result});
     }
     catch(err){
         console.log(err);
@@ -276,7 +303,7 @@ getText = async(req, res) => {
         //             message: 'Image not found!',
         //         })
         //     }
-            
+
         //     console.log("Got Image: ", imageID);
         //     return res.status(200).json({ success: true, image: data.image.toString()});
         // });
@@ -293,7 +320,7 @@ getText = async(req, res) => {
         }
 
         console.log("Got Text: ", panels);
-        return res.status(200).json({ success: true, text: result});        
+        return res.status(200).json({ success: true, text: result});
     }
     catch(err){
         console.log(err);
@@ -310,7 +337,7 @@ getLatestGames = async (req, res) => {
         let gameQuery = await Game.find().sort({createdAt : -1});
 
         console.log(gameQuery);
-    
+
         return res.status(200).json({ success: true, games: gameQuery});
     }
     catch(err){
