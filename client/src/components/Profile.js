@@ -110,7 +110,7 @@ const Profile = (props) => {
                 return await api.getUser(user).then((response) => {
                     return response.data.user;
                 }).then((userI) => {
-                    console.log(userI);
+                    //console.log(userI);
                     setUserInfo(userI);
                 });
             }
@@ -122,8 +122,8 @@ const Profile = (props) => {
 
     useEffect(() => {
         if(userInfo && auth.user){
-            console.log(userInfo);
-            console.log(auth);
+            //console.log(userInfo);
+            //console.log(auth);
             //Checks if the user has followed the profile yet
             if(userInfo.followers.indexOf(auth.user.email) > -1){
                 setIsFollowing(true);
@@ -140,7 +140,7 @@ const Profile = (props) => {
                 api.searchGames(`u:${userInfo.username}`).then((response) => {
                     return response.data.data;
                 }).then((data) => {
-                    console.log(data);
+                    //console.log(data);
                     setPublishedGames(data);
                     return data;
                 })
@@ -151,8 +151,8 @@ const Profile = (props) => {
     }, [setIsFollowing, setIsOwner, userInfo, auth])
 
     function deleteCard(id){
-        console.log("Deleting Card: ", id);
-        console.log(publishedGames.filter(g => g.gameID != id));
+        //console.log("Deleting Card: ", id);
+        //console.log(publishedGames.filter(g => g.gameID != id));
         setPublishedGames(publishedGames.filter(g => g.gameID != id));
     }
 

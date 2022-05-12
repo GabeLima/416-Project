@@ -28,6 +28,7 @@ const AccountScreen = () => {
                 newPasswordVerify : formData.get('newPasswordVerify')
             }).then(() => {
                 auth.getLoggedIn();
+                store.setErrorMessage("Password successfully changed!");
             });
         }
         catch(Exception){
@@ -49,10 +50,12 @@ const AccountScreen = () => {
                 password : formData.get('password')
             }).then(() => {
                 auth.getLoggedIn();
+                store.setErrorMessage("Username successfully changed!");
             });
         }
         catch(Exception){
-            store.setErrorMessage("Incorrect information!");
+            let errorMsg = Exception.response.data.errorMessage;
+            store.setErrorMessage(errorMsg);
         }
     }
 
@@ -69,6 +72,7 @@ const AccountScreen = () => {
                 password : formData.get('password')
             }).then(() => {
                 auth.logoutUser();
+                store.setErrorMessage("Account successfully deleted.");
             });
         }catch(Exception){
             store.setErrorMessage("Incorrect information!");
