@@ -52,7 +52,9 @@ const AccountScreen = () => {
             });
         }
         catch(Exception){
-            store.setErrorMessage("Incorrect information!");
+            let errorMsg = Exception.response.data.errorMessage;
+            store.setErrorMessage(errorMsg);
+            //store.setErrorMessage("Incorrect information!");
         }
     }
 
