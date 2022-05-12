@@ -80,7 +80,16 @@ const CreateGame = (props) => {
     const handleKeyPress = (event) => {
         event.stopPropagation();
         event.preventDefault();
-        setCustomTags(event.target.value);
+        console.log(event);
+        if(event.target.value.includes("u:") || event.target.value.includes("U:")){
+            let newCustomTags = event.target.value.replace("u:", "");
+            newCustomTags = newCustomTags.replace("U:", "");
+            setCustomTags(newCustomTags);
+            store.setErrorMessage("Custom tags cannot include 'u:' ");
+        }
+        else{
+            setCustomTags(event.target.value.slice(0,60));
+        }
     }
 
     const timeSliderMarks = [
@@ -310,6 +319,7 @@ const CreateGame = (props) => {
                             borderColor: "#6A6A6A"
                         }}
                         onChange={handleKeyPress}
+                        value={customTags}
                     
                     />
                 </Box>

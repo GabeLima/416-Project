@@ -89,6 +89,13 @@ updateUser = async (req, res) => {
                     errorMessage: "Bad password!"
                 });
             }
+            var existingUser = await User.findOne({ username: req.body.username });
+            if(existingUser){
+                return res.status(400).json({ 
+                    success: false,
+                    errorMessage: "Username taken!"
+                });
+            }
 
             //Only reaches here if it passes password check
             user.username = req.body.username;
